@@ -63,16 +63,26 @@ DT::datatable(erisk_df, rownames=FALSE, filter='top')
 library(plotly)
 library(dplyr)
 
-# Get Manufacturer
-mtcars$manuf <- sapply(strsplit(rownames(mtcars), " "), "[[", 1)
 
-df <- erisk_df
-df <- df %>% group_by(COST_RISK)
-df <- df %>% summarize(count = n())
-fig <- df %>% plot_ly(labels = ~manuf, values = ~count)
-fig <- fig %>% add_pie(hole = 0.6)
-fig <- fig %>% layout(title = "Donut charts using Plotly",  showlegend = F,
+
+bagel_plot<- erisk_df %>%
+  group_by(COST_RISK) %>% 
+  summarize(count = n()) %>% 
+  plot_ly(labels = ~COST_RISK, values = ~count, text = ~count) %>% 
+  add_pie(hole = 0.6) %>% 
+  layout(title = "Donut charts using Plotly",  showlegend = T,
                       xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
                       yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE))
+bagel_plot
+
+values<- erisk_df %>%
+  group_by(COST_RISK) %>%
+  summarize(count=n())
+
+high<- values %>% filter(COST_RISK =="High")
+
+bagel_plot <- layout(bagel_plot, annotations=list(text=paste(round(high$count / sum(values$count) * 100), "%", sep=""), "showarrow"=F))
+bagel_plot
+
 
 ```
