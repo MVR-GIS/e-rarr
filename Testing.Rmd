@@ -4,67 +4,40 @@ library(magrittr)
 library(dplyr) 
 library(kableExtra) 
 library(rlang)
+library(plotly)
+library(dplyr)
+library(crosstalk)
+library(tidyverse)
 risk_db <- read_csv("data/risk_db.csv")
 
 risk <- rarr::wrangle_risk(risk_db)
 risk_table<-rarr::risk_register_table(risk)
 
-erisk_register_table <- function(risk) {
-  # Select for the needed fields
-  risk_df <- risk %>%
-    select(PROGRAM, PROJECT,risk_no_link, CONCERNS, RISKCATEGORY, RISK_STRATEGY,
-           EFFICACY_RISK, efficacy_risk_color,
-           COST_RISK, cost_risk_color,
-           SCHEDULE_RISK, schedule_risk_color)
-
-  # Create the unstyled kable
-  risk_register <- kbl(select(risk_df,
-                              risk_no_link,PROGRAM, PROJECT, CONCERNS,
-                              RISK_STRATEGY,EFFICACY_RISK,
-                              COST_RISK, SCHEDULE_RISK),
-                       col.names = c("Number","Program","Project", "Description", "Strategy",
-                                     "Efficacy", "Cost", "Schedule")) %>%
-    kable_styling(bootstrap_options = c("striped", "hover",
-                                        "condensed", "responsive"),
-                  font_size = 12)
-
-  # Group rows if records exist
-  if(length(risk$RISK_NO) >= 1) {
-    risk_register <- risk_register %>%
-      pack_rows(index = table(risk_df$RISKCATEGORY),
-                indent = FALSE,
-                label_row_css = "background-color: #dad8d8; color: #000000;") %>%
-      column_spec(4, color = "black",
-                  background = risk_df$efficacy_risk_color) %>%
-      column_spec(5, color = "black",
-                  background = risk_df$cost_risk_color) %>%
-      column_spec(6, color = "black",
-                  background = risk_df$schedule_risk_color)
-  }
-
-  return(risk_register)
-}
-
-erisk_table<-erisk_register_table(risk)
 ```
 
 ```{r data table, include=FALSE}
 library(DT) 
-risk$PROGRAM<-as.factor(risk$PROGRAM) 
-risk$PROJECT<-as.factor(risk$PROJECT) 
-erisk_df <- risk %>% select(PROGRAM, PROJECT,risk_no_link, CONCERNS, RISKCATEGORY, RISK_STRATEGY, EFFICACY_RISK, COST_RISK, SCHEDULE_RISK)
+risk$PROGRAM<-as.factor(risk$PROGRAM)
+risk$PROJECT<-as.factor(risk$PROJECT)
+risk$SCHEDULE_RISK<-as.factor(risk$SCHEDULE_RISK)
+risk$EFFICACY_RISK<-as.factor(risk$EFFICACY_RISK)
+risk$COST_RISK<-as.factor(risk$COST_RISK)
+
+erisk_df <- risk %>% select(OBJECTID,PROGRAM, PROJECT,risk_no_link, CONCERNS, RISKCATEGORY, RISK_STRATEGY, EFFICACY_RISK, COST_RISK, SCHEDULE_RISK)
 ```
 
 This data table can be filtered
 
 ```{r show table, echo=FALSE}
-DT::datatable(erisk_df, rownames=FALSE, filter='top')
+DT::datatable(erisk_df[,2:10], rownames=FALSE, filter='top',options=list(orderMulti = TRUE)) %>%
+  formatStyle('SCHEDULE_RISK', backgroundColor = styleEqual(c('Low','Moderate','High'), c('green','orange','red'))) %>%
+  formatStyle('EFFICACY_RISK', backgroundColor = styleEqual(c('Low','Moderate','High'), c('green','orange','red'))) %>%
+  formatStyle('COST_RISK', backgroundColor = styleEqual(c('Low','Moderate','High'), c('green','orange','red')))
 
-library(plotly)
-library(dplyr)
 
+```
 
-
+```{r show bagel, echo=FALSE}
 bagel_plot<- erisk_df %>%
   group_by(COST_RISK) %>% 
   summarize(count = n()) %>% 
@@ -73,16 +46,77 @@ bagel_plot<- erisk_df %>%
   layout(title = "Donut charts using Plotly",  showlegend = T,
                       xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
                       yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE))
-bagel_plot
+
+
 
 values<- erisk_df %>%
   group_by(COST_RISK) %>%
   summarize(count=n())
 
+
 high<- values %>% filter(COST_RISK =="High")
 
-bagel_plot <- layout(bagel_plot, annotations=list(text=paste(round(high$count / sum(values$count) * 100), "%", sep=""), "showarrow"=F))
+bagel_plot <- layout(bagel_plot, annotations=list(text=paste(round((high$count / sum(values$count) * 100),2), "%", sep=""), "showarrow"=F))
 bagel_plot
+
+
+```
+
+Crosstalk Example
+
+```{r crosstalkin, echo=FALSE}
+
+shared_risk<- SharedData$new(erisk_df, key = ~OBJECTID, group = "Program")
+
+program_filter<- filter_select(
+  id = "prgm",
+  label = "PROGRAM",
+  sharedData = shared_risk,
+  group = ~PROGRAM
+)
+
+projects_filter <- filter_select(
+  id = "prj",
+  label = "PROJECT",
+  sharedData = shared_risk,
+  group = ~PROJECT
+)
+
+test <- shared_risk %>% 
+  DT::datatable(erisk_df[2:10], rownames=FALSE) %>%
+  formatStyle('SCHEDULE_RISK', backgroundColor = styleEqual(c('Low','Moderate','High'), c('green','orange','red'))) %>%
+  formatStyle('EFFICACY_RISK', backgroundColor = styleEqual(c('Low','Moderate','High'), c('green','orange','red'))) %>%
+  formatStyle('COST_RISK', backgroundColor = styleEqual(c('Low','Moderate','High'), c('green','orange','red')))
+
+
+
+
+COST_RISK<- erisk_df %>%
+  group_by(COST_RISK) %>% 
+  summarize(count = n()) %>% 
+  plot_ly(labels = ~COST_RISK, values = ~count, text = ~count) %>% 
+  add_pie(hole = 0.6) %>% 
+  layout(title = "Cost Risk",  showlegend = T,
+                      xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
+                      yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE))
+
+values<- erisk_df %>%
+  group_by(COST_RISK) %>%
+  summarize(count=n())
+
+
+high<- values %>% filter(COST_RISK =="High")
+
+COST_RISK <- layout(COST_RISK, annotations=list(text=paste(round((high$count / sum(values$count) * 100),2), "%", sep=""), "showarrow"=F))
+
+  
+
+program_filter
+
+projects_filter
+
+test
+COST_RISK
 
 
 ```
