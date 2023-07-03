@@ -1,0 +1,49 @@
+---
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r, include=FALSE, echo=FALSE}
+library(readr) 
+library(magrittr) 
+library(dplyr) 
+library(kableExtra) 
+library(rlang)
+library(plotly)
+library(dplyr)
+library(crosstalk)
+library(tidyverse)
+library(leaflet)
+library(DT)
+erisk_item <- read_csv("data/RiskItem_FullView_Update.csv")
+risk_item_db<-data.frame(erisk_item)
+erisk_project <- read_csv("data/RiskProject_FullView.csv")
+risk_project_db<-data.frame(erisk_project)
+
+
+erisk_ItemProj<-left_join(risk_item_db, risk_project_db, by = "PROJECT_ID")
+
+erisk_testing<-erisk_ItemProj[,c(3,5,6,8,22,27,32,40,51,56,64,65)]
+
+RiskImpactTable<-erisk_ItemProj[,c(2,6,17,9,12,13,26,28,29,30,32,33,23,22,42)]
+
+risk_item<-filter(RiskImpactTable, RiskImpactTable$RISK_NAME == "Widening of Passing Lanes")
+
+```
+
+# Risk Summary: `r risk_item$RISK_NAME`
+
+### Lead Discipline: `r risk_item$DISCIPLINE`
+
+#### `r risk_item$RISK_STATEMENT`
+
+## Event Likelihood: `r risk_item$LIKELIHOOD_DISC`
+
+`r risk_item$PROB_OCCURRENCE_EVIDENCE`
+
+| Cost Impact                                   | Schedule Impact                                      | Performance Impact                                             |
+|-------------------|-------------------------|----------------------------|
+| *Lowest* \$`r risk_item$COST_IMPACT_LOWEST`   | *Lowest* `r risk_item$SCHEDULE_IMPACT_LOWEST` days   | ***Performance Impact:*** `r risk_item$PERFORMANCEIMPACT_DESC` |
+| *Highest* \$`r risk_item$COST_IMPACT_HIGHEST` | *Highest* `r risk_item$SCHEDULE_IMPACT_HIGHEST` days | ***Performance Impact Type:*** `r risk_item$PERFORMANCEIMPACTTYPE` |
+| `r risk_item$COST_IMPACT_EVIDENCE`            | `r risk_item$SCHEDULE_IMPACT_EVIDENCE`               | `r risk_item$PERFORMANCEIMPACT_DESC`                           |

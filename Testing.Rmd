@@ -1,4 +1,4 @@
-```{r data crunch, include=FALSE}
+```{r data crunch,include=FALSE}
 library(readr) 
 library(magrittr) 
 library(dplyr) 
@@ -9,7 +9,6 @@ library(dplyr)
 library(crosstalk)
 library(tidyverse)
 library(leaflet)
-library(DT)
 erisk_item <- read_csv("data/RiskItem_FullView.csv")
 risk_item_db<-data.frame(erisk_item)
 erisk_project <- read_csv("data/RiskProject_FullView.csv")
@@ -18,51 +17,24 @@ risk_db <- read_csv("data/risk_db.csv")
 risk <- rarr::wrangle_risk(risk_db)
 
 #cast numeric to string
-risk_item_db$RISK_ID<-as.character(risk_item_db$RISK_ID)
-risk_item_db$riskIDCode<-paste(risk_item_db$RISK_ID,"-",risk_item_db$DISCIPLINE_ACRONYM)
+risk_item_db$riskIDCode<-paste(risk_item_db$RISK_ID+"-"+risk_item_db$DISCIPLINE_ACRONYM)
 
 erisk_ItemProj<-left_join(risk_item_db, risk_project_db, by = "PROJECT_ID")
-erisk_testing<-erisk_ItemProj[,c(3,5,6,8,22,27,32,40,51,56,64,65)]
+erisk_testing<-erisk_ItemProj[,c(3,5,6,8,22,27,32,40,55,63,64)]
 
 
-erisk_testing<-erisk_testing %>%
-  rename(ProjectName = PROJECT_NAME.x,
-         Risk = RISK_NAME,
-         "Risk Category" = RISKCATEGORY,
-         "Risk Statement" = RISK_STATEMENT)
-
-
-erisk_testing<-erisk_testing %>% 
-  dplyr::mutate("Cost Risk" = case_when(COST_RISK_RANKING == 0 ~ "",
-                                      COST_RISK_RANKING == 1 ~ "Opportunity",
-                                      COST_RISK_RANKING == 2 ~ "Low",
-                                      COST_RISK_RANKING == 3 ~ "Moderate",
-                                      COST_RISK_RANKING == 4 ~ "High")) %>%
-                mutate("Performance Risk" = case_when(PERFORMANCEIMPACT_RISK_RANKING == 0 ~ "",
-                                                      PERFORMANCEIMPACT_RISK_RANKING == 1 ~ "Opportunity",
-                                                      PERFORMANCEIMPACT_RISK_RANKING == 2 ~ "Low",
-                                                      PERFORMANCEIMPACT_RISK_RANKING == 3 ~ "Moderate",
-                                                      PERFORMANCEIMPACT_RISK_RANKING == 4 ~ "High"))%>%
-                mutate("Schedule Risk" = case_when(SCHEDULE_RISK_RANKING == 0 ~ "",
-                                                   SCHEDULE_RISK_RANKING == 1 ~ "Opportunity",
-                                                   SCHEDULE_RISK_RANKING == 2 ~ "Low",
-                                                   SCHEDULE_RISK_RANKING == 3 ~ "Moderate",
-                                                   SCHEDULE_RISK_RANKING == 4 ~ "High"))
-
-
+risk_table<-rarr::risk_register_table(risk)
 
 ```
 
-```{r leaflet map, echo=FALSE, message=FALSE, warning=FALSE, warnings=FALSE}
-erisk_testing2<-erisk_testing %>%
-  select(ProjectName, Risk, 'Risk Category', 'Risk Statement', 'Cost Risk', 'Performance Risk', 'Schedule Risk', PROJECT_LATITUDE, PROJECT_LONGITUDE, USACE_ORGANIZATION)
-shared_proj<-SharedData$new(erisk_testing2)
+```{r leaflet map, echo=FALSE}
+shared_proj<-SharedData$new(erisk_testing)
 
 filter_select(
   id = "prj",
   label = "Project",
   sharedData = shared_proj,
-  group = ~ProjectName
+  group = ~PROJECT_NAME.x
 )
 
 filter_select(
@@ -73,66 +45,31 @@ filter_select(
 )
 
 shared_proj %>%
+  DT::datatable(filter = "top",
+                extensions= c("Buttons"),
+        options(buttons = list(
+        I("colvis"),  # turn columns on and off
+        "csv",  # download as .csv
+        "excel"  # download as .xlsx
+        )
+        )
+  )
+
+shared_proj %>%
   leaflet() %>%
   addProviderTiles("Esri.WorldImagery") %>%
   addCircleMarkers(lng=~PROJECT_LONGITUDE, lat=~PROJECT_LATITUDE,color="aqua", fillColor="aqua", weight=2)
 
 
 shared_proj %>%
-  DT::datatable(filter = "top",
-                extensions = 'Buttons', 
-                options = list(buttons = c('copy','csv','excel','pdf'),
-                          lengthMenu=list(c(10,30, 50, -1), c('10', '30', '50', 'All')),
-                          paging = T)) %>%
-     formatStyle('Performance Risk', backgroundColor = styleEqual(
-                     c("", 'Opportunity', 'Low', 'Moderate', 'High'),
-                     c('white', 'deepskyblue', 'green', 'orange', 'red')
-                   )) %>%
-                   formatStyle('Cost Risk', backgroundColor = styleEqual(
-                    c("", 'Opportunity', 'Low', 'Moderate', 'High'),
-                     c('white', 'deepskyblue', 'green', 'orange', 'red')
-                   )) %>%
-                   formatStyle('Schedule Risk', backgroundColor = styleEqual(
-                     c("", 'Opportunity', 'Low', 'Moderate', 'High'),
-                    c('white', 'deepskyblue', 'green', 'orange', 'red')
-                   ))
-
-  
-# d2
-# erisk_test_filt<- erisk_testing %>%
-#   select(ProjectName, Risk, 'Risk Category', 'Risk Statement', 'Cost Risk', 'Performance Risk', 'Schedule Risk')
-# 
-# shared_proj2<-SharedData$new(erisk_test_filt, group = "data_subset")
-
-# shared_proj2 %>%
-#   DT::datatable(filter = 'top',
-#                 options = list(buttons = c('copy','csv','excel','pdf'),
-#                           lengthMenu=list(c(10,30, 50, -1), c('10', '30', '50', 'All')),
-#                           paging = T)%>%
-#                   formatStyle('Performance Risk', backgroundColor = styleEqual(
-#                     c("", 'Opportunity', 'Low', 'Moderate', 'High'),
-#                     c('white', 'deepskyblue', 'green', 'orange', 'red')
-#                   )) %>%
-#                   formatStyle('Cost Risk', backgroundColor = styleEqual(
-#                     c("", 'Opportunity', 'Low', 'Moderate', 'High'),
-#                     c('white', 'deepskyblue', 'green', 'orange', 'red')
-#                   )) %>%
-#                   formatStyle('Schedule Risk', backgroundColor = styleEqual(
-#                     c("", 'Opportunity', 'Low', 'Moderate', 'High'),
-#                     c('white', 'deepskyblue', 'green', 'orange', 'red')
-#                   )))
-
-
-
-# shared_proj %>%
-#   group_by(COST_RISK) %>% 
-#   summarize(count = n()) %>% 
-#   plot_ly(labels = ~COST_RISK, values = ~count, text = ~count) %>% 
-#   add_pie(hole = 0.6) %>% 
-#   layout(title = "Donut charts using Plotly",  showlegend = T,
-#                       xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
-#                       yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
-#          colorway = c('green','orange','red'))
+  group_by(COST_RISK) %>% 
+  summarize(count = n()) %>% 
+  plot_ly(labels = ~COST_RISK, values = ~count, text = ~count) %>% 
+  add_pie(hole = 0.6) %>% 
+  layout(title = "Donut charts using Plotly",  showlegend = T,
+                      xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
+                      yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
+         colorway = c('green','orange','red'))
 
   
 
@@ -140,56 +77,49 @@ shared_proj %>%
 
 ```{r data table, include=FALSE}
 library(DT) 
+risk$PROGRAM<-as.factor(risk$PROGRAM)
+risk$PROJECT<-as.factor(risk$PROJECT)
+risk$SCHEDULE_RISK<-as.factor(risk$SCHEDULE_RISK)
+risk$EFFICACY_RISK<-as.factor(risk$EFFICACY_RISK)
+risk$COST_RISK<-as.factor(risk$COST_RISK)
 
-# risk$PROGRAM<-as.factor(risk$PROGRAM)
-# risk$PROJECT<-as.factor(risk$PROJECT)
-# risk$SCHEDULE_RISK<-as.factor(risk$SCHEDULE_RISK)
-# risk$EFFICACY_RISK<-as.factor(risk$EFFICACY_RISK)
-# risk$COST_RISK<-as.factor(risk$COST_RISK)
-# 
-# erisk_df <- erisk %>% select(OBJECTID,PROGRAM, PROJECT,risk_no_link, CONCERNS, RISKCATEGORY, RISK_STRATEGY, EFFICACY_RISK, COST_RISK, SCHEDULE_RISK)
+erisk_df <- risk %>% select(OBJECTID,PROGRAM, PROJECT,risk_no_link, CONCERNS, RISKCATEGORY, RISK_STRATEGY, EFFICACY_RISK, COST_RISK, SCHEDULE_RISK)
 ```
 
-This data table can be filtered #4 is high 1 is opportunity
+This data table can be filtered
 
-```{r show table, echo=FALSE, include=FALSE}
-#2 is low, 3 is medium, 4 is high, 1 is opportunity, 0 is blank
-erisk_testing$ProjectName<-as.factor(erisk_testing$ProjectName)
-erisk_testing$`Risk Category`<-as.factor(erisk_testing$`Risk Category`)
-
-
-DT::datatable(erisk_testing[,c(1:4,13:15)], rownames=FALSE, filter='top',options = list(buttons = c('copy','csv','excel','pdf'),
-                          lengthMenu=list(c(10,30, 50, -1), c('10', '30', '50', 'All')),
-                          paging = T)) %>%
-  formatStyle('Performance Risk', backgroundColor = styleEqual(c("",'Opportunity','Low','Moderate','High'), c('white','deepskyblue','green','orange','red'))) %>%
-  formatStyle('Cost Risk', backgroundColor = styleEqual(c("",'Opportunity','Low','Moderate','High'), c('white','deepskyblue','green','orange','red'))) %>%
-  formatStyle('Schedule Risk', backgroundColor = styleEqual(c("",'Opportunity','Low','Moderate','High'), c('white','deepskyblue','green','orange','red')))
+```{r show table, echo=FALSE}
+DT::datatable(erisk_df[,2:10], rownames=FALSE, filter='top',options=list(orderMulti = TRUE)) %>%
+  formatStyle('SCHEDULE_RISK', backgroundColor = styleEqual(c('Low','Moderate','High'), c('green','orange','red'))) %>%
+  formatStyle('EFFICACY_RISK', backgroundColor = styleEqual(c('Low','Moderate','High'), c('green','orange','red'))) %>%
+  formatStyle('COST_RISK', backgroundColor = styleEqual(c('Low','Moderate','High'), c('green','orange','red')))
 
 
 ```
 
 ```{r show bagel, echo=FALSE}
-# bagel_plot<- erisk_df %>%
-#   group_by(COST_RISK) %>% 
-#   summarize(count = n()) %>% 
-#   plot_ly(labels = ~COST_RISK, values = ~count, text = ~count) %>% 
-#   add_pie(hole = 0.6) %>% 
-#   layout(title = "Donut charts using Plotly",  showlegend = T,
-#                       xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
-#                       yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
-#          colorway = c('green','orange','red'))
-# 
-# 
-# 
-# values<- erisk_df %>%
-#   group_by(COST_RISK) %>%
-#   summarize(count=n())
-# 
-# 
-# high<- values %>% filter(COST_RISK =="High")
-# 
-# bagel_plot <- layout(bagel_plot, annotations=list(text=paste(round((high$count / sum(values$count) * 100),2), "%", sep=""), "showarrow"=F))
-# bagel_plot
+bagel_plot<- erisk_df %>%
+  group_by(COST_RISK) %>% 
+  summarize(count = n())
+%>% 
+  plot_ly(labels = ~COST_RISK, values = ~count, text = ~count) %>% 
+  add_pie(hole = 0.6) %>% 
+  layout(title = "Donut charts using Plotly",  showlegend = T,
+                      xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
+                      yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
+         colorway = c('green','orange','red'))
+
+
+
+values<- erisk_df %>%
+  group_by(COST_RISK) %>%
+  summarize(count=n())
+
+
+high<- values %>% filter(COST_RISK =="High")
+
+bagel_plot <- layout(bagel_plot, annotations=list(text=paste(round((high$count / sum(values$count) * 100),2), "%", sep=""), "showarrow"=F))
+bagel_plot
 
 
 ```
@@ -197,47 +127,45 @@ DT::datatable(erisk_testing[,c(1:4,13:15)], rownames=FALSE, filter='top',options
 Crosstalk Example
 
 ```{r crosstalkin, echo=FALSE}
-# 
-# shared_risk<- SharedData$new(erisk_df, key = ~OBJECTID, group = "Program")
-# 
-# program_filter<- filter_select(
-#   id = "prgm",
-#   label = "PROGRAM",
-#   sharedData = shared_risk,
-#   group = ~PROGRAM
-# )
-# 
-# projects_filter <- filter_select(
-#   id = "prj",
-#   label = "PROJECT",
-#   sharedData = shared_risk,
-#   group = ~PROJECT
-# )
-# 
-# test <- shared_risk %>% 
-#   DT::datatable(erisk_df[2:10], rownames=FALSE) %>%
-#   formatStyle('SCHEDULE_RISK', backgroundColor = styleEqual(c('Low','Moderate','High'), c('green','orange','red'))) %>%
-#   formatStyle('EFFICACY_RISK', backgroundColor = styleEqual(c('Low','Moderate','High'), c('green','orange','red'))) %>%
-#   formatStyle('COST_RISK', backgroundColor = styleEqual(c('Low','Moderate','High'), c('green','orange','red')))
-# 
-# 
-# 
-# 
-# COST_RISK<- erisk_df %>%
-#   group_by(COST_RISK) %>% 
-#   summarize(count = n()) %>% 
-#   plot_ly(labels = ~COST_RISK, values = ~count, text = ~count) %>% 
-#   add_pie(hole = 0.6) %>% 
-#   layout(title = "Cost Risk",  showlegend = T,
-#                       xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
-#                       yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE))
-# 
-# values<- erisk_df %>%
-#   group_by(COST_RISK) %>%
-#   summarize(count=n())
-# 
-# 
-# 
-# 
+
+shared_risk<- SharedData$new(erisk_df, key = ~OBJECTID, group = "Program")
+
+program_filter<- filter_select(
+  id = "prgm",
+  label = "PROGRAM",
+  sharedData = shared_risk,
+  group = ~PROGRAM
+)
+
+projects_filter <- filter_select(
+  id = "prj",
+  label = "PROJECT",
+  sharedData = shared_risk,
+  group = ~PROJECT
+)
+
+test <- shared_risk %>% 
+  DT::datatable(erisk_df[2:10], rownames=FALSE) %>%
+  formatStyle('SCHEDULE_RISK', backgroundColor = styleEqual(c('Low','Moderate','High'), c('green','orange','red'))) %>%
+  formatStyle('EFFICACY_RISK', backgroundColor = styleEqual(c('Low','Moderate','High'), c('green','orange','red'))) %>%
+  formatStyle('COST_RISK', backgroundColor = styleEqual(c('Low','Moderate','High'), c('green','orange','red')))
+
+
+
+
+COST_RISK<- erisk_df %>%
+  group_by(COST_RISK) %>% 
+  summarize(count = n()) %>% 
+  plot_ly(labels = ~COST_RISK, values = ~count, text = ~count) %>% 
+  add_pie(hole = 0.6) %>% 
+  layout(title = "Cost Risk",  showlegend = T,
+                      xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
+                      yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE))
+
+values<- erisk_df %>%
+  group_by(COST_RISK) %>%
+  summarize(count=n())
+
+
 
 ```

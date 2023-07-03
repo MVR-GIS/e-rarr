@@ -1,3 +1,8 @@
+---
+output:
+  html_document: default
+  pdf_document: default
+---
 ```{r data crunch, include=FALSE}
 library(readr) 
 library(magrittr) 
@@ -27,10 +32,11 @@ erisk_testing$PROJECT_NAME.x<-as.factor(erisk_testing$PROJECT_NAME.x)
 erisk_testing$USACE_ORGANIZATION<-as.factor(erisk_testing$USACE_ORGANIZATION)
 
 erisk_testing<-erisk_testing %>%
-  rename(ProjectName = PROJECT_NAME.x,
-         Risk = RISK_NAME,
+  rename("Project Name" = PROJECT_NAME.x,
+         "Risk" = RISK_NAME,
          "Risk Category" = RISKCATEGORY,
-         "Risk Statement" = RISK_STATEMENT)
+         "Risk Statement" = RISK_STATEMENT,
+         "USACE Organization" = USACE_ORGANIZATION)
 
 
 erisk_testing<-erisk_testing %>% 
@@ -50,49 +56,122 @@ erisk_testing<-erisk_testing %>%
                                                    SCHEDULE_RISK_RANKING == 3 ~ "Moderate",
                                                    SCHEDULE_RISK_RANKING == 4 ~ "High"))
 
-
+  
 
 ```
 
-```{r leaflet map}
-erisk_testing2<-erisk_testing %>%
-  select(ProjectName, Risk, 'Risk Category', 'Risk Statement', 'Cost Risk', 'Performance Risk', 'Schedule Risk', PROJECT_LATITUDE, PROJECT_LONGITUDE, USACE_ORGANIZATION)
-
-shared_proj<-SharedData$new(erisk_testing2)
+```{r leaflet map, echo = FALSE, warning=FALSE}
 erisk_testing1<-erisk_testing %>%
-  select(ProjectName, Risk, 'Risk Category', 'Risk Statement', 'Cost Risk', 'Performance Risk', 'Schedule Risk', USACE_ORGANIZATION)
-shared_proj2<-SharedData$new(erisk_testing1)
+  select('Project Name', 'Risk', 'Risk Category', 'Risk Statement', 'Cost Risk', 'Performance Risk','Schedule Risk',riskIDCode, PROJECT_LATITUDE, PROJECT_LONGITUDE, 'USACE Organization')
+
+
+cost_Sample<-erisk_testing1 %>%
+  filter(`Cost Risk`!="") %>% 
+  group_by(`Project Name`) %>%
+  count(`Cost Risk`)%>%
+  group_by(`Project Name`) %>%
+  mutate(perc = round(n/sum(n)*100,2)) %>%
+   mutate('color' = case_when(`Cost Risk` == "Opportunity" ~ 'deepskyblue', 
+  `Cost Risk`=='Low'~'green', 
+  `Cost Risk` =='Moderate'~'orange',
+  `Cost Risk` == 'High'~ 'red')) %>%
+  plotly::arrange(factor(`Cost Risk`,levels=c('Opportunity', 'Low', 'Moderate', 'High')))
+ 
+
+
+shared_proj<-SharedData$new(erisk_testing1, group = "projfilt")
+
+
+cost_risk_plot<-erisk_testing1 %>%
+  filter(`Cost Risk`!="") %>% 
+  group_by(`Project Name`) %>%
+  count(`Cost Risk`)%>%
+  group_by(`Project Name`) %>%
+  mutate(perc = round(n/sum(n)*100,2)) %>%
+   mutate('color' = case_when(`Cost Risk` == "Opportunity" ~ 'deepskyblue', 
+  `Cost Risk`=='Low'~'green', 
+  `Cost Risk` =='Moderate'~'orange',
+  `Cost Risk` == 'High'~ 'red')) %>%
+  plotly::arrange(factor(`Cost Risk`,levels=c('Opportunity', 'Low', 'Moderate', 'High')))%>%
+  SharedData$new(group = "projfilt", key = ~`Project Name`)
+
+schedule_risk_plot<-erisk_testing1 %>%
+  filter(`Schedule Risk`!="") %>%
+  group_by(`Project Name`) %>%
+  count(`Schedule Risk`)%>%
+  group_by(`Project Name`) %>%
+  mutate(perc = round(n/sum(n)*100,2))%>%
+  plotly::arrange(factor(`Schedule Risk`,levels=c('Opportunity', 'Low', 'Moderate', 'High')))%>%
+   mutate('color' = case_when(`Schedule Risk` == "Opportunity" ~ 'deepskyblue', 
+  `Schedule Risk`=='Low'~'green', 
+  `Schedule Risk` =='Moderate'~'orange',
+  `Schedule Risk` == 'High'~ 'red')) %>%
+  SharedData$new(group = "projfilt")
+
+
+perform_risk_plot<-erisk_testing1 %>%
+  filter(`Performance Risk`!="") %>%
+  group_by(`Project Name`) %>%
+  count(`Performance Risk`)%>%
+  group_by(`Project Name`) %>%
+  mutate(perc = round(n/sum(n)*100,2))%>%
+  plotly::arrange(factor(`Performance Risk`,levels=c('Opportunity', 'Low', 'Moderate', 'High')))%>%
+   mutate('color' = case_when(`Performance Risk` == "Opportunity" ~ 'deepskyblue', 
+  `Performance Risk`=='Low'~'green', 
+  `Performance Risk` =='Moderate'~'orange',
+  `Performance Risk` == 'High'~ 'red')) %>%
+  SharedData$new(group = "projfilt")
 
 filter_select(
   id = "prj",
   label = "Project",
   sharedData = shared_proj,
-  group = ~ProjectName
+  group = ~`Project Name`
 )
 
-filter_select(
-  id = "dst",
-  label = "District",
-  sharedData = shared_proj,
-  group = ~USACE_ORGANIZATION
-)
+# filter_select(
+#   id = "dst",
+#   label = "District",
+#   sharedData = shared_proj,
+#   group = ~`USACE Organization`
+# )
+
+
+
 
 shared_proj %>%
   leaflet() %>%
   addProviderTiles("Esri.WorldImagery") %>%
   addCircleMarkers(lng=~PROJECT_LONGITUDE, lat=~PROJECT_LATITUDE,color="aqua", fillColor="aqua", weight=2)
 
-shared_proj %>%
-  group_by('Cost Risk')%>%
-  plot_ly(labels = ~'Cost Risk', values = ~count('Cost Risk'), text = ~count('Cost Risk')) %>%
-  add_pie(hole = 0.6) %>%
-  layout(title = "Donut charts using Plotly",  showlegend = T,
-                      xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
-                      yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
-         colorway = c('green','orange','red'))
 
-    
-  
+
+cost_plot<- cost_risk_plot %>%
+  plot_ly(type = "pie", values = ~n, labels = ~`Cost Risk`, sort=FALSE, marker = list(colors = ~color))%>%
+  layout(title = "Cost Risk",  showlegend = F,
+                      xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
+                      yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE))
+cost_plot
+
+# schedule_plot<-schedule_risk_plot%>% 
+#   plot_ly(labels = ~`Schedule Risk`, values = ~n, sort=FALSE, marker = list(colors = ~color)) %>%
+#   add_pie() %>%
+#   layout(title = "Schedule Risk",  showlegend = F,
+#                       xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
+#                       yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE))
+# 
+# performance_plot<-perform_risk_plot %>%
+#   plot_ly(labels = ~`Performance Risk`, values = ~n, sort=FALSE, marker = list(colors = ~color)) %>%
+#   add_pie() %>%
+#   layout(title = "Performance Risk",  showlegend = F,
+#                       xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
+#                       yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE))
+# 
+
+# plotty<-bscols(widths = c(4,4,4), cost_plot, schedule_plot, performance_plot)
+
+# plotty
+
 shared_proj %>%
   DT::datatable(filter = "top",
                 extensions = 'Buttons', 
