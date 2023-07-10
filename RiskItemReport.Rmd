@@ -84,7 +84,7 @@ ggplot(mockdf, aes(x=ID, y=yval))+
 `r risk_item$PROB_OCCURRENCE_EVIDENCE`
 
 | Cost Impact                                   | Schedule Impact                                      | Performance Impact                                                 |
-|-----------------------------------------------|------------------------------------------------------|--------------------------------------------------------------------|
+|--------------------|-----------------------|-----------------------------|
 | *Lowest* \$`r risk_item$COST_IMPACT_LOWEST`   | *Lowest* `r risk_item$SCHEDULE_IMPACT_LOWEST` days   | ***Performance Impact:*** `r risk_item$PERFORMANCEIMPACT_DESC`     |
 | *Highest* \$`r risk_item$COST_IMPACT_HIGHEST` | *Highest* `r risk_item$SCHEDULE_IMPACT_HIGHEST` days | ***Performance Impact Type:*** `r risk_item$PERFORMANCEIMPACTTYPE` |
 | `r risk_item$COST_IMPACT_EVIDENCE`            | `r risk_item$SCHEDULE_IMPACT_EVIDENCE`               | `r risk_item$PERFORMANCEIMPACT_DESC`                               |
@@ -99,3 +99,4 @@ kbl(risk_treat_table, "html", col.names = NULL) %>%
 
 
 ```
+#TEST
