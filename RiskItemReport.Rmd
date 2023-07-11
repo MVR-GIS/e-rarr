@@ -106,5 +106,3 @@ kbl(risk_treat_table,"html",col.names = NULL) %>%
 hi
 
 hello again
-
-goodbye
