@@ -5,7 +5,7 @@ output:
   always_allow_html: true
 ---
 
-```{r, include=FALSE, echo=FALSE}
+```{r, include=FALSE, echo=FALSE, warning = FALSE}
 library(readr) 
 library(magrittr) 
 library(dplyr) 
@@ -55,7 +55,7 @@ risk_treat_table<-risk_treatment %>%
 
 ```{r, milestoneplot, echo=FALSE, warning=FALSE, out.height= "10%" }
 mockdf<- data.frame(ID = c("Project Initiation","Alternatives","Tentatively Selected Plan","Agency Decision","Senior Leaders Briefing","Chief's Report/Director's Report"),
-                    yval = c(0.15,0.15,0.15,0.15,0.15,0.15),
+                    yval = c(0,0,0,0,0,0),
                     xval = c(1,2,3,4,5,6))
 mockdf$xwrap = str_wrap(mockdf$ID, width=10)
 
@@ -73,7 +73,8 @@ ggplot(mockdf, aes(x=ID, y=yval))+
         plot.margin =unit(c(0,0,0,0), units="mm"))
 
 ggplotly(mockplot, tooltip="x")
-plot_ly
+plot_ly(mockdf, x=mockdf$ID, y=mockdf$yval,type="scatter", mode = 'markers') %>%
+  layout(xaxis=showgrid=F, yaxis= showgrid=F)
 
 ```
 
