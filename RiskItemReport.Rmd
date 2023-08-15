@@ -1,9 +1,3 @@
----
-output:
-  html_document: default
-  pdf_document: default
-  always_allow_html: true
----
 
 ```{r, include=FALSE, echo=FALSE, warning = FALSE}
 library(readr) 
@@ -53,7 +47,7 @@ risk_treat_table<-risk_treatment %>%
 
 # Risk Summary: `r risk_item$RISK_NAME`
 
-```{r, milestoneplot, echo=FALSE, warning=FALSE, out.height= "5%" }
+```{r, milestoneplot, echo=FALSE, warning=FALSE, out.height= "15%", fig.align='center'}
 mockdf<- data.frame(ID = c("Project Initiation","Alternatives","Tentatively Selected Plan","Agency Decision","Senior Leaders Briefing","Chief's Report/Director's Report"),
                     yval = c(0.15,0.15,0.15,0.15,0.15,0.15),
                     xval = c(1,2,3,4,5,6))
@@ -65,14 +59,19 @@ ggplot(mockdf, aes(x=ID, y=yval))+
   geom_point(aes(x=risk_item$MILESTONE, y=0.15), colour="deepskyblue2", fill="deepskyblue2", shape = 21, size =8, stroke=1.5)+
   geom_text(aes(y=0.15,label=xwrap), vjust=1.7)+
   scale_y_continuous(expand=c(0,0))+
+  coord_cartesian(ylim=c(0.15,0.15))+
   theme(line = element_blank(),
         title = element_blank(),
         axis.text.y = element_blank(),
         axis.text.x = element_blank(),
         panel.background = element_blank(), 
-        plot.margin =unit(c(0,0,0,0), units="mm"))
+        plot.margin=unit(c(-10,0,-10,0),"cm"),complete=TRUE)
 
 
+```
+
+```{r , echo=FALSE, fig.align='center' }
+knitr::include_graphics("C:/workspace/e-rarr/images/montecarlo.png")
 ```
 
 ### Lead Discipline: `r risk_item$DISCIPLINE`
@@ -84,7 +83,7 @@ ggplot(mockdf, aes(x=ID, y=yval))+
 `r risk_item$PROB_OCCURRENCE_EVIDENCE`
 
 | Cost Impact                                   | Schedule Impact                                      | Performance Impact                                                 |
-|-----------------------------------------------|------------------------------------------------------|--------------------------------------------------------------------|
+|--------------------|-----------------------|-----------------------------|
 | *Lowest* \$`r risk_item$COST_IMPACT_LOWEST`   | *Lowest* `r risk_item$SCHEDULE_IMPACT_LOWEST` days   | ***Performance Impact:*** `r risk_item$PERFORMANCEIMPACT_DESC`     |
 | *Highest* \$`r risk_item$COST_IMPACT_HIGHEST` | *Highest* `r risk_item$SCHEDULE_IMPACT_HIGHEST` days | ***Performance Impact Type:*** `r risk_item$PERFORMANCEIMPACTTYPE` |
 | `r risk_item$COST_IMPACT_EVIDENCE`            | `r risk_item$SCHEDULE_IMPACT_EVIDENCE`               | `r risk_item$PERFORMANCEIMPACT_DESC`                               |
@@ -100,5 +99,35 @@ kbl(risk_treat_table,"html",col.names = NULL) %>%
 
 ```
 
-hi
+```{r, include=FALSE, echo=FALSE, warning = FALSE}
+risk_transact <- read_csv("data/RiskTransaction_FullView.csv")
+risk_log<-data.frame(risk_transact)
+risk_log<-risk_log %>%
+  mutate('costcolor' = case_when(COST_RISK_RANKING == 0 ~ 'deepskyblue',
+  COST_RISK_RANKING ==1 ~'green', 
+  COST_RISK_RANKING == 2 ~'orange',
+  COST_RISK_RANKING ==  3 ~ 'red')) %>%
+  mutate('schedulecolor' = case_when(SCHEDULE_RISK_RANKING == 0 ~ 'deepskyblue',
+  SCHEDULE_RISK_RANKING ==1 ~'green', 
+  SCHEDULE_RISK_RANKING == 2 ~'orange',
+  SCHEDULE_RISK_RANKING ==  3 ~ 'red')) %>%
+  mutate('performancecolor' = case_when(PERFORMANCEIMPACT_RISK_RANKING == 0 ~ 'deepskyblue',
+  PERFORMANCEIMPACT_RISK_RANKING ==1 ~'green', 
+  PERFORMANCEIMPACT_RISK_RANKING == 2 ~'orange',
+  PERFORMANCEIMPACT_RISK_RANKING ==  3 ~ 'red'))%>%
+  mutate(TREAT_IMPLEMENT_IMG = if_else(is.na(TREATMENTS_IMPLEMENTED), NA, imagepath))
+         
+         
+risk_item_log<-filter(risk_log, RISK_ID == 7, PROJECT_ID == 3069)
+risk_log_table<-risk_item_log %>%
+  select(DATE_TIME, REASON, RISK_LOG_NOTE, TREAT_IMPLEMENT_IMG, COST_RISK_RANKING, SCHEDULE_RISK_RANKING, PERFORMANCEIMPACT_RISK_RANKING, costcolor, schedulecolor, performancecolor )
+```
+
+## Risk Log: 
+```{r, echo=FALSE}
+risk_log_table$TREAT_IMPLEMENT_IMG = sprintf("![](%s)", risk_log_table$TREAT_IMPLEMENT_IMG)
+kbl(risk_log_table,"html") %>% 
+    kable_styling()
+                                                    
+```
 
