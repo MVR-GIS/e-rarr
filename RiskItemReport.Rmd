@@ -49,20 +49,22 @@ risk_treat_table<-risk_treatment %>%
 # Risk Summary: `r risk_item$RISK_NAME`
 
 ```{r, milestoneplot, echo=FALSE, warning=FALSE, out.height= "15%", fig.align='center'}
-mockdf<- data.frame(ID = c("Project Initiation","Identify Alternatives","Tentatively Selected Plan","Agency Decision","Senior Leaders Briefing","Chief's Report /Director's Report"),
+mockdf<- data.frame(ID = c("Project Initiation","Identify Alternatives","Tentatively Selected Plan","Agency Decision","Senior Leaders Briefing","Chief's Report/Director's Report"),
                     yval = c(0.15,0.15,0.15,0.15,0.15,0.15),
                     xval = c(1,2,3,4,5,6))
-mockdf$xwrap = str_wrap(mockdf$ID, width=15)
-level_order<-c('Project Initiation','Identify Alternatives','Tentatively Selected Plan','Agency Decision','Senior Leaders Briefing',"Chief's Report /Director's Report")
-mockdf$xwrap = factor(mockdf$xwrap, levels = c("Project Initiation","Identify Alternatives","Tentatively Selected Plan","Agency Decision","Senior Leaders Briefing","Chief's Report /Director's Report"))
+mockdf$xwrap = str_wrap(mockdf$ID, width=10)
+level_order<-c('Project Initiation','Identify Alternatives','Tentatively Selected Plan','Agency Decision','Senior Leaders Briefing',"Chief's Report/Director's Report")
+
 
 ggplot(mockdf, aes(x=factor(ID, level=c(level_order)), y=yval))+
   geom_segment(x=1, y = 0.15, xend = 6, yend = 0.15, size=1.5, color = "grey")+
-  geom_point(size=8,color="grey", fill="snow1", shape=21, stroke=1.5, label=mockdf$xwrap)+
+  geom_point(size=8,color="grey", fill="snow1", shape=21, stroke=1.5)+
   geom_point(aes(x=risk_item$MILESTONE, y=0.15), colour="deepskyblue2", fill="deepskyblue2", shape = 21, size =8, stroke=1.5)+
-  geom_text_repel(aes(label=xwrap), vjust=2,force=0)+
+  #geom_text_repel(aes(label=xwrap, color="red"), position="nudge")+
+  geom_label(label=mockdf$xwrap,nudge_y=1, )+
   scale_y_continuous(expand=c(0,0))+
-  coord_cartesian(ylim=c(0.15,0.15))
+  coord_cartesian(ylim=c(0.15,0.15))+
+   theme_void()
   # theme(line = element_blank(),
   #       title = element_blank(),
   #       axis.text.y = element_blank(),
