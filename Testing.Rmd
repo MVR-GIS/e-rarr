@@ -100,8 +100,7 @@ DT::datatable(erisk_df[,2:10], rownames=FALSE, filter='top',options=list(orderMu
 ```{r show bagel, echo=FALSE}
 bagel_plot<- erisk_df %>%
   group_by(COST_RISK) %>% 
-  summarize(count = n())
-%>% 
+  summarize(count = n())%>% 
   plot_ly(labels = ~COST_RISK, values = ~count, text = ~count) %>% 
   add_pie(hole = 0.6) %>% 
   layout(title = "Donut charts using Plotly",  showlegend = T,
