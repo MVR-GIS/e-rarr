@@ -1,3 +1,9 @@
+---
+output:
+  html_document: default
+  pdf_document: default
+  always_allow_html: true
+---
 
 ```{r, include=FALSE, echo=FALSE, warning = FALSE}
 library(readr) 
@@ -48,11 +54,11 @@ risk_treat_table<-risk_treatment %>%
 
 # Risk Summary: `r risk_item$RISK_NAME`
 
-```{r, milestoneplot, echo=FALSE, warning=FALSE, out.height= "15%", fig.align='center'}
-mockdf<- data.frame(ID = c("Project Initiation","Identify Alternatives","Tentatively Selected Plan","Agency Decision","Senior Leaders Briefing","Chief's Report/Director's Report"),
+```{r, milestoneplot, echo=FALSE, warning=FALSE,fig.height=1.75, fig.width=7, fig.align='center'}
+mockdf<- data.frame(ID = c("Project Initiation","Identify Alternatives","Tentatively Selected Plan","Agency Decision","Senior Leaders Briefing","Chief's/Director's Report"),
                     yval = c(0.15,0.15,0.15,0.15,0.15,0.15),
                     xval = c(1,2,3,4,5,6))
-mockdf$xwrap = str_wrap(mockdf$ID, width=10)
+mockdf$xwrap = str_wrap(mockdf$ID, width=14)
 level_order<-c('Project Initiation','Identify Alternatives','Tentatively Selected Plan','Agency Decision','Senior Leaders Briefing',"Chief's Report/Director's Report")
 
 
@@ -60,18 +66,17 @@ ggplot(mockdf, aes(x=factor(ID, level=c(level_order)), y=yval))+
   geom_segment(x=1, y = 0.15, xend = 6, yend = 0.15, size=1.5, color = "grey")+
   geom_point(size=8,color="grey", fill="snow1", shape=21, stroke=1.5)+
   geom_point(aes(x=risk_item$MILESTONE, y=0.15), colour="deepskyblue2", fill="deepskyblue2", shape = 21, size =8, stroke=1.5)+
-  geom_text_repel(aes(label=xwrap, color="red"), position="nudge")+
-  #geom_label(label=mockdf$xwrap,nudge_y=1 )+
+  geom_text(aes(label=xwrap), position="nudge", vjust=1.7)+
   scale_y_continuous(expand=c(0,0))+
   coord_cartesian(ylim=c(0.15,0.15))+
-   theme_void()
   theme(line = element_blank(),
         title = element_blank(),
         axis.text.y = element_blank(),
         axis.text.x = element_blank(),
         axis.ticks.length = unit(0, "pt"),
         panel.background = element_blank(),
-        plot.margin=unit(c(0,0,0,0),"cm"))
+        )+
+  theme(plot.margin=unit(c(0,0,0,0),"mm"))
 
 
 ```
@@ -89,7 +94,7 @@ knitr::include_graphics("C:/workspace/e-rarr/images/montecarlo.png")
 `r risk_item$PROB_OCCURRENCE_EVIDENCE`
 
 | Cost Impact                                   | Schedule Impact                                      | Performance Impact                                                 |
-|--------------------|-----------------------|-----------------------------|
+|-----------------------------------------------|------------------------------------------------------|--------------------------------------------------------------------|
 | *Lowest* \$`r risk_item$COST_IMPACT_LOWEST`   | *Lowest* `r risk_item$SCHEDULE_IMPACT_LOWEST` days   | ***Performance Impact:*** `r risk_item$PERFORMANCEIMPACT_DESC`     |
 | *Highest* \$`r risk_item$COST_IMPACT_HIGHEST` | *Highest* `r risk_item$SCHEDULE_IMPACT_HIGHEST` days | ***Performance Impact Type:*** `r risk_item$PERFORMANCEIMPACTTYPE` |
 | `r risk_item$COST_IMPACT_EVIDENCE`            | `r risk_item$SCHEDULE_IMPACT_EVIDENCE`               | `r risk_item$PERFORMANCEIMPACT_DESC`                               |
@@ -128,7 +133,8 @@ risk_log_table<-risk_item_log %>%
   select(DATE_TIME, REASON, RISK_LOG_NOTE, TREAT_IMPLEMENT_IMG, COST_RISK_RANKING, SCHEDULE_RISK_RANKING, PERFORMANCEIMPACT_RISK_RANKING, costcolor, schedulecolor, performancecolor )
 ```
 
-## Risk Log: 
+## Risk Log:
+
 ```{r, echo=FALSE}
 risk_log_table$TREAT_IMPLEMENT_IMG = sprintf("![](%s)", risk_log_table$TREAT_IMPLEMENT_IMG)
 risk_log_table[1:7]%>%
@@ -140,4 +146,3 @@ kbl("html", col.names =c("Edit Date", "Reason for Change", "Risk Log Note",  "Me
 
                                                     
 ```
-
