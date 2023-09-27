@@ -5,7 +5,7 @@ output:
   always_allow_html: true
 ---
 
-```{r pull data from api, include=FALSE}
+```{r pull data from api, eval=FALSE, include=FALSE}
 library(httr) # handles GET requests through the API
 library(jsonlite) # Converts JSON input to df and readable output
 library(writexl) 
@@ -134,8 +134,7 @@ projectID <- 3576
   riskTransactions$rows  
 ```
 
-
-```{r, include=FALSE, echo=FALSE, warning = FALSE}
+```{r echo=FALSE, message=FALSE, warning=FALSE, include=FALSE}
 library(readr) 
 library(magrittr) 
 library(dplyr) 
@@ -184,12 +183,12 @@ risk_treat_table<-risk_treatment %>%
 
 # Risk Summary: `r risk_item$RISK_NAME`
 
-```{r, milestoneplot, echo=FALSE, warning=FALSE,fig.height=1.75, fig.width=7, fig.align='center'}
-mockdf<- data.frame(ID = c("Project Initiation","Identify Alternatives","Tentatively Selected Plan","Agency Decision","Senior Leaders Briefing","Chief's/Director's Report"),
+```{r fig.align='center', fig.height=1.75, fig.width=7, message=FALSE, warning=FALSE, milestoneplot, echo=FALSE}
+mockdf<- data.frame(ID = c("Project Initiation","Identify Alternatives","Tentatively Selected Plan","Agency Decision","Senior Briefing","Chief/Director's Report"),
                     yval = c(0.15,0.15,0.15,0.15,0.15,0.15),
                     xval = c(1,2,3,4,5,6))
 mockdf$xwrap = str_wrap(mockdf$ID, width=14)
-level_order<-c('Project Initiation','Identify Alternatives','Tentatively Selected Plan','Agency Decision','Senior Leaders Briefing',"Chief's Report/Director's Report")
+level_order<-c('Project Initiation','Identify Alternatives','Tentatively Selected Plan','Agency Decision','Senior Briefing',"Chief Report/Director's Report")
 
 
 ggplot(mockdf, aes(x=factor(ID, level=c(level_order)), y=yval))+
@@ -211,17 +210,25 @@ ggplot(mockdf, aes(x=factor(ID, level=c(level_order)), y=yval))+
 
 ```
 
+##### **Lead Discipline:** `r risk_item$DISCIPLINE`
+
+##### `r risk_item$RISK_STATEMENT`
+
 ```{r , echo=FALSE, fig.align='center' }
 knitr::include_graphics("C:/workspace/e-rarr/images/montecarlo.png")
 ```
 
-### Lead Discipline: `r risk_item$DISCIPLINE`
+#### **Event Likelihood:** `r risk_item$LIKELIHOOD_DISC`
 
-#### `r risk_item$RISK_STATEMENT`
+#### `r risk_item$PROB_OCCURRENCE_EVIDENCE`
 
-## Event Likelihood: `r risk_item$LIKELIHOOD_DISC`
+#### No Impact
 
-`r risk_item$PROB_OCCURRENCE_EVIDENCE`
+| Cost Impact                 | Schedule Impact                   | Performance Impact                   |
+|---------------------|-------------------------|---------------------------|
+| No Cost Impact anticipated. | No Schedule Impact is Anticipated | No Performance Impact is anticipated |
+
+#### Uniform Example
 
 | Cost Impact                                   | Schedule Impact                                      | Performance Impact                                                 |
 |--------------------|-----------------------|-----------------------------|
@@ -229,17 +236,28 @@ knitr::include_graphics("C:/workspace/e-rarr/images/montecarlo.png")
 | *Highest* \$`r risk_item$COST_IMPACT_HIGHEST` | *Highest* `r risk_item$SCHEDULE_IMPACT_HIGHEST` days | ***Performance Impact Type:*** `r risk_item$PERFORMANCEIMPACTTYPE` |
 | `r risk_item$COST_IMPACT_EVIDENCE`            | `r risk_item$SCHEDULE_IMPACT_EVIDENCE`               | `r risk_item$PERFORMANCEIMPACT_DESC`                               |
 
+| Cost Impact                                 | Schedule Impact                                    | Performance Impact                                             |
+|--------------------|-----------------------|----------------------------|
+| *Lowest* \$`r risk_item$COST_IMPACT_LOWEST` | *Lowest* `r risk_item$SCHEDULE_IMPACT_LOWEST` days | ***Performance Impact:*** `r risk_item$PERFORMANCEIMPACT_DESC` |
+
+#### Point Estimate Example
+
+| Cost Impact                                      | Schedule Impact                                      | Performance Impact                                                                                                         |
+|-----------------|-----------------|-------------------------------------|
+| Most Likely `r risk_item$COST_IMPACT_MOSTLIKELY` | Most Likely `r risk_item$SCHEDULE_IMPACT_MOSTLIKELY` | ***Performance Impact:*** `r risk_item$PERFORMANCEIMPACT_DESC` Performance Impact Type: `r risk_item$PERFORMANCIMPACTTYPE` |
+| `r risk_item$COST_IMPACT_EVIDENCE`               | `r risk_item$SCHEDULE_IMPACT_EVIDENCE`               | `r risk_item$PERFORMANCEIMPACT_DESC`                                                                                       |
+
 ## Risk Treatments
 
-```{r, echo=FALSE}
-risk_treat_table$IMPLEMENT_IMG = sprintf("![](%s)", risk_treat_table$IMPLEMENT_IMG)
-kbl(risk_treat_table,"html",col.names = NULL) %>%
+```{r echo=FALSE, message=FALSE}
+risk_treat_table$IMPLEMENT_IMG = sprintf("![    ](%s)", risk_treat_table$IMPLEMENT_IMG)
+kbl(risk_treat_table,"html",col.names = NULL, align= "llccc") %>%
   add_header_above(c("Measures"=2, "Impacts" = 2,"Implemented" = 1))
 
 
 ```
 
-```{r, include=FALSE, echo=FALSE, warning = FALSE}
+```{r echo=FALSE, message=FALSE, warning=FALSE, include=FALSE}
 risk_transact <- read_csv("data/RiskTransaction_FullView.csv")
 risk_log<-data.frame(risk_transact)
 risk_log<-risk_log %>%
@@ -265,14 +283,15 @@ risk_log_table<-risk_item_log %>%
 
 ## Risk Log:
 
-```{r, echo=FALSE}
+```{r echo=FALSE, message=FALSE}
 risk_log_table$TREAT_IMPLEMENT_IMG = sprintf("![](%s)", risk_log_table$TREAT_IMPLEMENT_IMG)
 risk_log_table[1:7]%>%
-kbl("html", col.names =c("Edit Date", "Reason for Change", "Risk Log Note",  "Measures Implemented", "Cost","Schedule","Performance")) %>%
+kbl("html", col.names =c("Edit Date", "Reason for Change", "Risk Log Note",  "Measures Implemented", "Cost","Schedule","Performance"), align="lllcccc") %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))%>%
   column_spec(5,color="black", background=risk_log_table$costcolor)%>%
   column_spec(6,color="black", background=risk_log_table$schedulecolor)%>%
-  column_spec(7,color="black", background=risk_log_table$performancecolor)
+  column_spec(7,color="black", background=risk_log_table$performancecolor)%>%
+  column_spec (5:7,border_left = T, border_right = T)
 
                                                     
 ```
