@@ -21,13 +21,13 @@ library(crosstalk)
 library(tidyverse)
 library(leaflet)
 library(DT)
-erisk_item <- read_csv("C:/workspace/e-rarr/data/RiskItem_FullView_Update.csv")
+erisk_item <- read_csv("C:/workspace/e-rarr/RiskItemReportShinyApp/data/RiskItem_FullView_Update.csv")
 risk_item_db<-data.frame(erisk_item)
-erisk_project <- read_csv("C:/workspace/e-rarr/data/RiskProject_FullView.csv")
+erisk_project <- read_csv("C:/workspace/e-rarr/RiskItemReportShinyApp/data/RiskProject_FullView.csv")
 risk_project_db<-data.frame(erisk_project)
-risk_treat <- read_csv("C:/workspace/e-rarr/data/RiskTreatment_FullView.csv")
-imagepath<-"C:/workspace/e-rarr/images/check.png"
-risk_transact <- read_csv("C:/workspace/e-rarr/data/RiskTransaction_FullView.csv")
+risk_treat <- read_csv("C:/workspace/e-rarr//RiskItemReportShinyApp/data/RiskTreatment_FullView.csv")
+imagepath<-"C:/workspace/e-rarr//RiskItemReportShinyApp/images/check.png"
+risk_transact <- read_csv("C:/workspace/e-rarr//RiskItemReportShinyApp/data/RiskTransaction_FullView.csv")
 
 
 erisk_ItemProj<-left_join(risk_item_db, risk_project_db, by = "PROJECT_ID")
@@ -92,7 +92,7 @@ ggplot(mockdf, aes(x=factor(ID, level=c(level_order)), y=yval))+
 ##### `r risk_item$RISK_STATEMENT`
 
 ```{r , echo=FALSE, fig.align='center' }
-knitr::include_graphics("C:/workspace/e-rarr/images/montecarlo.png")
+knitr::include_graphics("C:/workspace/e-rarr/RiskItemReportShinyApp/images/montecarlo.png")
 ```
 
 #### **Event Likelihood:** `r risk_item$LIKELIHOOD_DISC`

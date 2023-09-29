@@ -5,6 +5,7 @@ output:
 params:
   riskID: 6
   projID: 3069
+runtime: shiny
 ---
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, include=FALSE}
@@ -27,18 +28,24 @@ erisk_project <- read_csv("C:/workspace/e-rarr/data/RiskProject_FullView.csv")
 risk_project_db<-data.frame(erisk_project)
 risk_treat <- read_csv("C:/workspace/e-rarr/data/RiskTreatment_FullView.csv")
 imagepath<-"C:/workspace/e-rarr/images/check.png"
-risk_transact <- read_csv("C:/workspace/e-rarr/data/RiskTransaction_FullView.csv")
 
+```
 
+Choose a project and risk item
+```{r echo=FALSE}
+selectInput("Project","Projects", choices=c(risk_treat$PROJECT_NAME))
+
+```
+```{r echo=FALSE, message=FALSE, warning=FALSE, include=FALSE}
 erisk_ItemProj<-left_join(risk_item_db, risk_project_db, by = "PROJECT_ID")
 
-erisk_testing<-erisk_ItemProj[,c(3,5,6,8,22,27,32,40,51,56,64,65)]
+erisk_testing<-erisk_ItemProj[,c(3,4,5,6,8,22,27,32,40,51,56,64,65)]
 
-RiskImpactTable<-erisk_ItemProj[,c(1,2,3,6,17,9,12,13,26,27,28,29,30,31,32,33,23,22,42,48,49,50,51,52)]
+RiskImpactTable<-erisk_ItemProj[,c(1,2,3,4,6,17,9,12,13,26,27,28,29,30,31,32,33,23,22,42,48,49,50,51,52)]
 
 
-risk_item<-filter(RiskImpactTable, RiskImpactTable$RISK_ID == params$riskID, RiskImpactTable$PROJECT_ID == params$projID)
-risk_treatment<-filter(risk_treat, risk_treat$PROJECT_ID == params$projID, risk_treat$RISK_ID == params$riskID)
+risk_item<-filter(RiskImpactTable, RiskImpactTable$RISK_ID == params$riskID, RiskImpactTable$PROJECT_ID == input$project)
+risk_treatment<-filter(risk_treat, risk_treat$PROJECT_ID == input$project, risk_treat$RISK_ID == params$riskID)
 
 risk_item_table<- risk_item %>%
   select(COST_IMPACT_LOWEST,COST_IMPACT_HIGHEST, COST_IMPACT_EVIDENCE,SCHEDULE_IMPACT_LOWEST, SCHEDULE_IMPACT_HIGHEST, SCHEDULE_IMPACT_EVIDENCE,PERFORMANCEIMPACT_DESC, PERFORMANCEIMPACTTYPE, PERFORMANCEIMPACT_DESC, SCHEDULE_IMPACT_DISTTYPE)
@@ -136,6 +143,7 @@ kbl(risk_treat_table,"html",col.names = NULL, align= "llccc") %>%
 ```
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, include=FALSE, eval = treat_condit}
+risk_transact <- read_csv("C:/workspace/e-rarr/data/RiskTransaction_FullView.csv")
 risk_log<-data.frame(risk_transact)
 risk_log<-risk_log %>%
   mutate('costcolor' = case_when(COST_RISK_RANKING == 0 ~ 'deepskyblue',
