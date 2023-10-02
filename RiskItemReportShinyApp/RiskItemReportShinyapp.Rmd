@@ -6,7 +6,6 @@ html_document:
       bootswatch: solar
 date: "2023-09-29"
 runtime: shiny
-
 ---
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, include=FALSE}
@@ -25,6 +24,8 @@ library(leaflet)
 library(DT)
 library(shinythemes)
 library(shiny)
+library(stringr)
+
 erisk_item <- read_csv("C:/workspace/e-rarr/RiskItemReportShinyApp/data/RiskItem_FullView_Update.csv")
 risk_item_db<-data.frame(erisk_item)
 erisk_project <- read_csv("C:/workspace/e-rarr/RiskItemReportShinyApp/data/RiskProject_FullView.csv")
@@ -39,16 +40,29 @@ erisk_ItemProj<-left_join(risk_item_db, risk_project_db, by = "PROJECT_ID")
 erisk_testing<-erisk_ItemProj[,c(3,4,5,6,8,22,27,32,40,51,56,64,65)]
 
 RiskImpactTable<-erisk_ItemProj[,c(1,2,3,4,6,17,9,12,13,26,27,28,29,30,31,32,33,23,22,42,48,49,50,51,52)]
+RiskImpactTable<-RiskImpactTable |>
+  mutate(RiskID_Name = str_c(RISK_IDENTIFIER," ", RISK_NAME))
 ```
 
 ```{r , echo=FALSE }
 shinyApp(
   ui = fluidPage(theme = shinytheme("darkly"),
-    selectInput("projectInput", "Select a project", choices=c(RiskImpactTable$PROJECT_ID)),
-    selectInput("riskInput", "Select a risk item", choices=c(RiskImpactTable$RISK_ID)),
+    selectInput("projectInput", "Select a project", choices=c(RiskImpactTable$PROJECT_NAME.x)),
+    selectInput("riskInput", "Select a risk item", choices=c(RiskImpactTable$RISK_NAME)),
     downloadButton("report", "Generate report")
   ),
   server = function(input, output) {
+    observe({
+      risks = RiskImpactTable |>
+        filter(RiskImpactTable$PROJECT_NAME.x == input$projectInput) |>
+        pull(RISK_NAME) |>
+        unique() |>
+        sort()
+       updateSelectInput(
+        inputId = "riskInput", 
+        choices = risks
+       )
+    })
     output$report <- downloadHandler(
       # For PDF output, change this to "report.pdf"
       filename = "report.html",
