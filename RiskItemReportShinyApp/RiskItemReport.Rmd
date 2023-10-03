@@ -1,10 +1,11 @@
 ---
-title: 
+title: "Risk Item Report"
 output:
   html_document: default
+  pdf_document: default
 params:
-  riskID: "Inaccurate Floodplain for Formulation and Economic Analysis"
-  projID: "City of Boston Coastal Storm Risk"
+  riskID: Inaccurate Floodplain for Formulation and Economic Analysis
+  projID: City of Boston Coastal Storm Risk
 ---
 
 ```{css, echo=FALSE}
@@ -115,7 +116,6 @@ knitr::include_graphics("C:/workspace/e-rarr/RiskItemReportShinyApp/images/monte
 
 #### `r risk_item$PROB_OCCURRENCE_EVIDENCE`
 
- 
 
 #### **No Impact**
 
@@ -138,7 +138,7 @@ knitr::include_graphics("C:/workspace/e-rarr/RiskItemReportShinyApp/images/monte
 #### **Point Estimate Example**
 
 | Cost Impact                                      | Schedule Impact                                      | Performance Impact                                                                                                         |
-|------------------|------------------|-----------------------------------|
+|-------------------|-------------------|-----------------------------------|
 | Most Likely `r risk_item$COST_IMPACT_MOSTLIKELY` | Most Likely `r risk_item$SCHEDULE_IMPACT_MOSTLIKELY` | ***Performance Impact:*** `r risk_item$PERFORMANCEIMPACT_DESC` Performance Impact Type: `r risk_item$PERFORMANCIMPACTTYPE` |
 | `r risk_item$COST_IMPACT_EVIDENCE`               | `r risk_item$SCHEDULE_IMPACT_EVIDENCE`               | `r risk_item$PERFORMANCEIMPACT_DESC`                                                                                       |
 
