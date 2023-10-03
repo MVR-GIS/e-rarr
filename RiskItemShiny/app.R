@@ -1,10 +1,3 @@
----
-output: 
-html_document:
-runtime: shiny
----
-
-```{r echo=FALSE, message=FALSE, warning=FALSE, include=FALSE}
 library(readr) 
 library(magrittr) 
 library(dplyr) 
@@ -20,7 +13,6 @@ library(leaflet)
 library(DT)
 library(shinythemes)
 library(shiny)
-library(bslib)
 library(stringr)
 
 erisk_item <- read_csv("C:/workspace/e-rarr/RiskItemReportShinyApp/data/RiskItem_FullView_Update.csv")
@@ -31,7 +23,6 @@ risk_treat <- read_csv("C:/workspace/e-rarr/RiskItemReportShinyApp/data/RiskTrea
 imagepath<-"C:/workspace/e-rarr/RiskItemReportShinyApp/images/check.png"
 
 
-
 erisk_ItemProj<-left_join(risk_item_db, risk_project_db, by = "PROJECT_ID")
 
 erisk_testing<-erisk_ItemProj[,c(3,4,5,6,8,22,27,32,40,51,56,64,65)]
@@ -39,26 +30,16 @@ erisk_testing<-erisk_ItemProj[,c(3,4,5,6,8,22,27,32,40,51,56,64,65)]
 RiskImpactTable<-erisk_ItemProj[,c(1,2,3,4,6,17,9,12,13,26,27,28,29,30,31,32,33,23,22,42,48,49,50,51,52)]
 RiskImpactTable<-RiskImpactTable |>
   mutate(RiskID_Name = str_c(RISK_IDENTIFIER," ", RISK_NAME))
-```
 
 
-```{r , echo=FALSE }
 shinyApp(
-  ui = fluidPage(theme = bslib::bs_theme(
-    bootswatch = "darkly"),
-    bslib::bs_themer(),
-    h1("NESP Risk Reporting Application"),
-    sidebarLayout(
-      sidebarPanel(
-    selectInput("projectInput", "Select a project", choices=c(RiskImpactTable$PROJECT_NAME.x)),
-    selectInput("riskInput", "Select a risk item", choices=c(RiskImpactTable$RISK_NAME)),
-    actionButton("render", "View Report"),
-    downloadButton("report", "Download report"),
+  ui = fluidPage(theme = shinytheme("darkly"),
+                 selectInput("projectInput", "Select a project", choices=c(RiskImpactTable$PROJECT_NAME.x)),
+                 selectInput("riskInput", "Select a risk item", choices=c(RiskImpactTable$RISK_NAME)),
+                 downloadButton("report", "Generate report"),
+                 actionButton("render", "Render Report"),
+                 htmlOutput("reportrend")
   ),
-  mainPanel(
-    htmlOutput("reportrend")
-    )
-  )),
   server = function(input, output) {
     observe({
       risks = RiskImpactTable |>
@@ -66,12 +47,12 @@ shinyApp(
         pull(RISK_NAME) |>
         unique() |>
         sort()
-       updateSelectInput(
+      updateSelectInput(
         inputId = "riskInput", 
         choices = risks
-       )
+      )
     })
-      observeEvent(input$render, {
+    observeEvent(input$render, {
       output$reportrend <- renderUI({
         includeHTML(
           rmarkdown::render("RiskItemReport.Rmd", params=list(projID = input$projectInput, riskID= input$riskInput)
@@ -90,18 +71,18 @@ shinyApp(
         # can happen when deployed).
         tempReport <- file.path(tempdir(), "RiskItemReport.Rmd")
         file.copy("RiskItemReport.Rmd", tempReport, overwrite = TRUE)
-
+        
         # Set up parameters to pass to Rmd document
         params <- list( projID = input$projectInput, riskID= input$riskInput)
-
+        
         # Knit the document, passing in the `params` list, and eval it in a
         # child of the global environment (this isolates the code in the document
         # from the code in this app).
         rmarkdown::render(tempReport, output_file = file,
-          params = params,
-          envir = new.env(parent = globalenv()))
-      })
-  },
-  options=list(height=2000, width=1000)
+                          params = params,
+                          envir = new.env(parent = globalenv())
+        )
+      }
+    )
+  }
 )
-```
