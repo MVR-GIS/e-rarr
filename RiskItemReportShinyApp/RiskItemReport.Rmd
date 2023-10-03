@@ -1,8 +1,7 @@
 ---
 title: "Risk Item Report"
 output:
-  html_document: default
-  pdf_document: default
+  html_document:
 params:
   riskID: Inaccurate Floodplain for Formulation and Economic Analysis
   projID: City of Boston Coastal Storm Risk
@@ -148,7 +147,7 @@ knitr::include_graphics("C:/workspace/e-rarr/RiskItemReportShinyApp/images/monte
 
 ```{r echo=FALSE, message=FALSE, eval = treat_condit}
 risk_treat_table$IMPLEMENT_IMG = sprintf("![    ](%s)", risk_treat_table$IMPLEMENT_IMG)
-kbl(risk_treat_table,"html",col.names = NULL, align= "llccc") %>%
+kbl(risk_treat_table,format = "html",col.names = NULL, align= "llccc") %>%
   add_header_above(c("Measures"=2, "Impacts" = 2,"Implemented" = 1))
 
 
@@ -184,7 +183,7 @@ risk_log_table<-risk_item_log %>%
 ```{r log table, echo=FALSE, message=FALSE, eval = treat_condit}
 risk_log_table$TREAT_IMPLEMENT_IMG = sprintf("![](%s)", risk_log_table$TREAT_IMPLEMENT_IMG)
 risk_log_table[1:7]%>%
-kbl("html", col.names =c("Edit Date", "Reason for Change", "Risk Log Note",  "Measures Implemented", "Cost","Schedule","Performance"), align="lllcccc") %>%
+kbl(format = "html", col.names =c("Edit Date", "Reason for Change", "Risk Log Note",  "Measures Implemented", "Cost","Schedule","Performance"), align="lllcccc") %>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))%>%
   column_spec(5,color="black", background=risk_log_table$costcolor)%>%
   column_spec(6,color="black", background=risk_log_table$schedulecolor)%>%
