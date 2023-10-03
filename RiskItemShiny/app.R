@@ -23,7 +23,6 @@ risk_treat <- read_csv("C:/workspace/e-rarr/RiskItemReportShinyApp/data/RiskTrea
 imagepath<-"C:/workspace/e-rarr/RiskItemReportShinyApp/images/check.png"
 
 
-
 erisk_ItemProj<-left_join(risk_item_db, risk_project_db, by = "PROJECT_ID")
 
 erisk_testing<-erisk_ItemProj[,c(3,4,5,6,8,22,27,32,40,51,56,64,65)]
