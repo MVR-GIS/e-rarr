@@ -15,11 +15,11 @@ library(shinythemes)
 library(shiny)
 library(stringr)
 
-erisk_item <- read_csv("C:/workspace/e-rarr/RiskItemReportShinyApp/data/RiskItem_FullView_Update.csv")
+erisk_item <- read_csv("C:/workspace/e-rarr/RiskItemReportShinyApp/data/RiskItem_FullView_Update.csv", show_col_types = FALSE)
 risk_item_db<-data.frame(erisk_item)
-erisk_project <- read_csv("C:/workspace/e-rarr/RiskItemReportShinyApp/data/RiskProject_FullView.csv")
+erisk_project <- read_csv("C:/workspace/e-rarr/RiskItemReportShinyApp/data/RiskProject_FullView.csv",show_col_types = FALSE)
 risk_project_db<-data.frame(erisk_project)
-risk_treat <- read_csv("C:/workspace/e-rarr/RiskItemReportShinyApp/data/RiskTreatment_FullView.csv")
+risk_treat <- read_csv("C:/workspace/e-rarr/RiskItemReportShinyApp/data/RiskTreatment_FullView.csv",show_col_types = FALSE)
 imagepath<-"C:/workspace/e-rarr/RiskItemReportShinyApp/images/check.png"
 
 
