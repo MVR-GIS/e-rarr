@@ -33,7 +33,7 @@ RiskImpactTable<-RiskImpactTable |>
 
 
 shinyApp(
-  ui = fluidPage(theme = shinytheme("darkly"),
+  ui = fluidPage(theme = shinytheme("cosmo"),
                  selectInput("projectInput", "Select a project", choices=c(RiskImpactTable$PROJECT_NAME.x)),
                  selectInput("riskInput", "Select a risk item", choices=c(RiskImpactTable$RISK_NAME)),
                  downloadButton("report", "Generate report"),
