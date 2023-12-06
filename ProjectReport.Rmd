@@ -14,6 +14,7 @@ library(readr)
 library(magrittr) 
 library(dplyr) 
 library(kableExtra) 
+library(rmarkdown)
 library(rlang)
 library(plotly)
 library(dplyr)
@@ -32,7 +33,7 @@ risk_item_db$RISK_ID<-as.character(risk_item_db$RISK_ID)
 risk_item_db$riskIDCode<-paste(risk_item_db$RISK_ID,"-",risk_item_db$DISCIPLINE_ACRONYM)
 
 erisk_ItemProj<-left_join(risk_item_db, risk_project_db, by = "PROJECT_ID")
-erisk_testing<-erisk_ItemProj[,c(3,5,6,8,22,27,32,40,51,56,64,65)]
+erisk_testing<-erisk_ItemProj[,c(3,4,5,6,8,22,27,32,40,51,56,64,65)]
 
 erisk_testing$PROJECT_NAME.x<-as.factor(erisk_testing$PROJECT_NAME.x)
 erisk_testing$USACE_ORGANIZATION<-as.factor(erisk_testing$USACE_ORGANIZATION)

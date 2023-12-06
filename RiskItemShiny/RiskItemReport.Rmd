@@ -87,7 +87,7 @@ level_order<-c('Project Initiation','Identify Alternatives','Tentatively Selecte
 ggplot(mockdf, aes(x=factor(ID, level=c(level_order)), y=yval))+
   geom_segment(x=1, y = 0.15, xend = 6, yend = 0.15, size=1.5, color = "grey")+
   geom_point(size=8,color="grey", fill="snow1", shape=21, stroke=1.5)+
-  geom_point(aes(x=risk_item$MILESTONE, y=0.15), colour="deepskyblue2", fill="deepskyblue2", shape = 21, size =8, stroke=1.5)+
+  geom_point(aes(x=risk_item$MILESTONE, y=0.15), colour="steelblue3", fill="steelblue3", shape = 21, size =8, stroke=1.5)+
   geom_text(aes(label=xwrap), position="nudge", vjust=1.7)+
   scale_y_continuous(expand=c(0,0))+
   coord_cartesian(ylim=c(0.15,0.15))+
@@ -156,15 +156,15 @@ kbl(risk_treat_table,format = "html",col.names = NULL, align= "llccc") %>%
 ```{r echo=FALSE, message=FALSE, warning=FALSE, include=FALSE, eval = treat_condit}
 risk_log<-data.frame(risk_transact)
 risk_log<-risk_log %>%
-  mutate('costcolor' = case_when(COST_RISK_RANKING == 0 ~ 'deepskyblue',
+  mutate('costcolor' = case_when(COST_RISK_RANKING == 0 ~ 'steelblue3',
   COST_RISK_RANKING ==1 ~'green', 
   COST_RISK_RANKING == 2 ~'orange',
   COST_RISK_RANKING ==  3 ~ 'red')) %>%
-  mutate('schedulecolor' = case_when(SCHEDULE_RISK_RANKING == 0 ~ 'deepskyblue',
+  mutate('schedulecolor' = case_when(SCHEDULE_RISK_RANKING == 0 ~ 'steelblue3',
   SCHEDULE_RISK_RANKING ==1 ~'green', 
   SCHEDULE_RISK_RANKING == 2 ~'orange',
   SCHEDULE_RISK_RANKING ==  3 ~ 'red')) %>%
-  mutate('performancecolor' = case_when(PERFORMANCEIMPACT_RISK_RANKING == 0 ~ 'deepskyblue',
+  mutate('performancecolor' = case_when(PERFORMANCEIMPACT_RISK_RANKING == 0 ~ 'steelblue3',
   PERFORMANCEIMPACT_RISK_RANKING ==1 ~'green', 
   PERFORMANCEIMPACT_RISK_RANKING == 2 ~'orange',
   PERFORMANCEIMPACT_RISK_RANKING ==  3 ~ 'red'))%>%
@@ -192,3 +192,5 @@ kbl(format = "html", col.names =c("Edit Date", "Reason for Change", "Risk Log No
 
                                                     
 ```
+
+##Risk Manager: `r risk_item$First_Name`
