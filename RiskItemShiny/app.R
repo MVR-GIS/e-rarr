@@ -15,11 +15,11 @@ library(shinythemes)
 library(shiny)
 library(stringr)
 
-erisk_item <- read_csv("C:/workspace/e-rarr/RiskItemReportShinyApp/data/RiskItem_FullView_Update.csv")
+erisk_item <- read_csv("C:/workspace/e-rarr/RiskItemReportShinyApp/data/RiskItem_FullView_Update.csv", show_col_types = FALSE)
 risk_item_db<-data.frame(erisk_item)
-erisk_project <- read_csv("C:/workspace/e-rarr/RiskItemReportShinyApp/data/RiskProject_FullView.csv")
+erisk_project <- read_csv("C:/workspace/e-rarr/RiskItemReportShinyApp/data/RiskProject_FullView.csv",show_col_types = FALSE)
 risk_project_db<-data.frame(erisk_project)
-risk_treat <- read_csv("C:/workspace/e-rarr/RiskItemReportShinyApp/data/RiskTreatment_FullView.csv")
+risk_treat <- read_csv("C:/workspace/e-rarr/RiskItemReportShinyApp/data/RiskTreatment_FullView.csv",show_col_types = FALSE)
 imagepath<-"C:/workspace/e-rarr/RiskItemReportShinyApp/images/check.png"
 
 
@@ -33,7 +33,7 @@ RiskImpactTable<-RiskImpactTable |>
 
 
 shinyApp(
-  ui = fluidPage(theme = shinytheme("darkly"),
+  ui = fluidPage(theme = shinytheme("cosmo"),
                  selectInput("projectInput", "Select a project", choices=c(RiskImpactTable$PROJECT_NAME.x)),
                  selectInput("riskInput", "Select a risk item", choices=c(RiskImpactTable$RISK_NAME)),
                  downloadButton("report", "Generate report"),

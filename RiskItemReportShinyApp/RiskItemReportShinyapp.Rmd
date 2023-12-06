@@ -44,9 +44,7 @@ RiskImpactTable<-RiskImpactTable |>
 
 ```{r , echo=FALSE }
 shinyApp(
-  ui = fluidPage(theme = bslib::bs_theme(
-    bootswatch = "darkly"),
-    bslib::bs_themer(),
+  ui = fluidPage(theme = shinytheme("darkly"),
     h1("NESP Risk Reporting Application"),
     sidebarLayout(
       sidebarPanel(
