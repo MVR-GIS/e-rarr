@@ -44,7 +44,7 @@ risk_item_filt<- risk_item_db |>
 
 erisk_testing<-erisk_ItemProj[,c(3,5,6,8,22,27,32,40,51,56,64,65)]
 
-RiskImpactTable<-erisk_ItemProj[,c(1,2,3,4,6,7,17,9,12,13,26,27,28,29,30,31,32,33,39,23,22,42,48,49,50,51,52)]
+RiskImpactTable<-erisk_ItemProj[,c(1,2,3,4,6,7,17,9,12,13,26,27,28,29,30,31,32,33,39,23,22,42,46,47,48,49,50,51,52)]
 
 risk_transact<-left_join(risk_transact, risk_item_filt, by=c("PROJECT_ID", "RISK_ID"))     
 risk_treat<-left_join(risk_treat, risk_item_filt, by=c("PROJECT_ID", "RISK_ID"))
@@ -87,7 +87,7 @@ level_order<-c('Project Initiation','Identify Alternatives','Tentatively Selecte
 ggplot(mockdf, aes(x=factor(ID, level=c(level_order)), y=yval))+
   geom_segment(x=1, y = 0.15, xend = 6, yend = 0.15, size=1.5, color = "grey")+
   geom_point(size=8,color="grey", fill="snow1", shape=21, stroke=1.5)+
-  geom_point(aes(x=risk_item$MILESTONE, y=0.15), colour="deepskyblue2", fill="deepskyblue2", shape = 21, size =8, stroke=1.5)+
+  geom_point(aes(x=risk_item$MILESTONE, y=0.15), colour="steelblue", fill="steelblue", shape = 21, size =8, stroke=1.5)+
   geom_text(aes(label=xwrap), position="nudge", vjust=1.7)+
   scale_y_continuous(expand=c(0,0))+
   coord_cartesian(ylim=c(0.15,0.15))+
@@ -156,19 +156,19 @@ kbl(risk_treat_table,format = "html",col.names = NULL, align= "llccc") %>%
 ```{r echo=FALSE, message=FALSE, warning=FALSE, include=FALSE, eval = treat_condit}
 risk_log<-data.frame(risk_transact)
 risk_log<-risk_log %>%
-  mutate('costcolor' = case_when(COST_RISK_RANKING == 0 ~ 'deepskyblue',
+  mutate('costcolor' = case_when(COST_RISK_RANKING == 0 ~ 'steelblue',
   COST_RISK_RANKING ==1 ~'green', 
   COST_RISK_RANKING == 2 ~'orange',
   COST_RISK_RANKING ==  3 ~ 'red')) %>%
-  mutate('schedulecolor' = case_when(SCHEDULE_RISK_RANKING == 0 ~ 'deepskyblue',
+  mutate('schedulecolor' = case_when(SCHEDULE_RISK_RANKING == 0 ~ 'steelblue',
   SCHEDULE_RISK_RANKING ==1 ~'green', 
   SCHEDULE_RISK_RANKING == 2 ~'orange',
   SCHEDULE_RISK_RANKING ==  3 ~ 'red')) %>%
-  mutate('performancecolor' = case_when(PERFORMANCEIMPACT_RISK_RANKING == 0 ~ 'deepskyblue',
+  mutate('performancecolor' = case_when(PERFORMANCEIMPACT_RISK_RANKING == 0 ~ 'steelblue',
   PERFORMANCEIMPACT_RISK_RANKING ==1 ~'green', 
   PERFORMANCEIMPACT_RISK_RANKING == 2 ~'orange',
   PERFORMANCEIMPACT_RISK_RANKING ==  3 ~ 'red'))%>%
-  mutate(TREAT_IMPLEMENT_IMG = if_else(is.na(TREATMENTS_IMPLEMENTED), NA, imagepath))
+  mutate(TREAT_IMPLEMENT_IMG = if_else(is.na(TREATMENTS_IMPLEMENTED), "", imagepath))
          
          
 risk_item_log<-filter(risk_log, RISK_NAME == params$riskID, PROJECT_NAME == params$projID)
@@ -192,3 +192,6 @@ kbl(format = "html", col.names =c("Edit Date", "Reason for Change", "Risk Log No
 
                                                     
 ```
+
+#### Risk Manager: `r risk_item$FIRST_NAME` `r risk_item$LAST_NAME`
+
