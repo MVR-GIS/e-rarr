@@ -1,7 +1,8 @@
 ---
 title: "Risk Item Report"
 output:
-  html_document:
+  html_document: null
+  pdf_document: default
 params:
   riskID: Inaccurate Floodplain for Formulation and Economic Analysis
   projID: City of Boston Coastal Storm Risk
