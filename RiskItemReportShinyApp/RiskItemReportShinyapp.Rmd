@@ -46,23 +46,20 @@ RiskImpactTable<-RiskImpactTable |>
 shinyApp(
   ui = fluidPage(theme = bslib::bs_theme(
     bootswatch = "cosmo"),
-    #h1("NESP Risk Reporting Application"),
-    tabsetPanel(id="Report Tabs",
-      tabPanel("Risk Item Report","one",
-                sidebarLayout(
-      sidebarPanel(
-    selectInput("projectInput", "Select a project", choices=c(RiskImpactTable$PROJECT_NAME.x)),
+    titlePanel("NESP Risk Reporting Application"),
+    sidebarLayout(
+      sidebarPanel(selectInput("projectInput", "Select a project", choices=c(RiskImpactTable$PROJECT_NAME.x)),
     selectInput("riskInput", "Select a risk item", choices=c(RiskImpactTable$RISK_NAME)),
     actionButton("render", "View Report"),
-    downloadButton("report", "Download report"),
-  ),
+    downloadButton("report", "Download report"),),
+    
   mainPanel(
-    htmlOutput("reportrend")
-    )
-  )),
-  tabPanel("Project Report","two"),
-  tabPanel("All Risk Items","three"),
-  )),
+    tabsetPanel(id="Report Tabs",
+      tabPanel("Risk Item Report",
+      htmlOutput("reportrend")),
+  tabPanel("Project Report"),
+  tabPanel("All Risk Items"),
+  )))),
   server = function(input, output) {
     observe({
       risks = RiskImpactTable |>
