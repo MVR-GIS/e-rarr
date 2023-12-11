@@ -80,6 +80,15 @@ shinyApp(
         )
       })
     })
+            observeEvent(input$render, {
+      output$reportrend <- renderUI({
+        includeHTML(
+          rmarkdown::render("RiskItemReport.Rmd", params=list(projID = input$projectInput, riskID= input$riskInput)
+          ),
+          tags$iframe(src="/RiskItemReport.html")
+        )
+      })
+    })
     output$report <- downloadHandler(
       # For PDF output, change this to "report.pdf"
       filename = function(){

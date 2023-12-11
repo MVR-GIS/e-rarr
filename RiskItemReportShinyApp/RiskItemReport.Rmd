@@ -5,6 +5,7 @@ output:
 params:
   riskID: Inaccurate Floodplain for Formulation and Economic Analysis
   projID: City of Boston Coastal Storm Risk
+runtime: shiny
 ---
 
 ```{css, echo=FALSE}
