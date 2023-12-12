@@ -45,7 +45,7 @@ risk_item_filt<- risk_item_db |>
 
 erisk_testing<-erisk_ItemProj[,c(3,5,6,8,22,27,32,40,51,56,64,65)]
 
-RiskImpactTable<-erisk_ItemProj[,c(1,2,3,4,6,7,17,9,12,13,26,27,28,29,30,31,32,33,39,23,22,42,48,49,50,51,52)]
+RiskImpactTable<-erisk_ItemProj[,c(1,2,3,4,6,7,17,9,12,13,26,27,28,29,30,31,32,33,39,23,22,42,46,47,48,49,50,51,52)]
 
 risk_transact<-left_join(risk_transact, risk_item_filt, by=c("PROJECT_ID", "RISK_ID"))     
 risk_treat<-left_join(risk_treat, risk_item_filt, by=c("PROJECT_ID", "RISK_ID"))
@@ -193,3 +193,4 @@ kbl(format = "html", col.names =c("Edit Date", "Reason for Change", "Risk Log No
 
                                                     
 ```
+### Risk Manager: `r risk_item$FIRST_NAME` `r risk_item$LAST_NAME` 
