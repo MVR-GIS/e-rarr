@@ -1,6 +1,5 @@
 ---
-output: 
-html_document:
+output: html_document
 runtime: shiny
 ---
 
@@ -58,9 +57,10 @@ shinyApp(
       tabPanel("Risk Item Report",
       htmlOutput("reportrend")),
   tabPanel("Project Report"),
-  tabPanel("All Risk Items"),
+  tabPanel("All Risk Items",
+           htmlOutput("AllRiskRend")),
   )))),
-  server = function(input, output) {
+  server = function(input, output, session) {
     observe({
       risks = RiskImpactTable |>
         filter(RiskImpactTable$PROJECT_NAME.x == input$projectInput) |>
@@ -81,11 +81,10 @@ shinyApp(
       })
     })
             observeEvent(input$render, {
-      output$reportrend <- renderUI({
+      output$AllRiskRend <- renderUI({
         includeHTML(
-          rmarkdown::render("RiskItemReport.Rmd", params=list(projID = input$projectInput, riskID= input$riskInput)
-          ),
-          tags$iframe(src="/RiskItemReport.html")
+          rmarkdown::render("AllRiskDetailTable.Rmd", params=list(projID = input$projectInput)
+          )
         )
       })
     })

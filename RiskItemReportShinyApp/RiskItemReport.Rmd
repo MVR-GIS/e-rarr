@@ -1,7 +1,6 @@
 ---
 title: "Risk Item Report"
-output:
-  html_document:
+output: html_document
 params:
   riskID: Inaccurate Floodplain for Formulation and Economic Analysis
   projID: City of Boston Coastal Storm Risk
@@ -28,7 +27,8 @@ library(crosstalk)
 library(tidyverse)
 library(leaflet)
 library(DT)
-erisk_item <- read_csv("C:/workspace/e-rarr/RiskItemReportShinyApp/data/RiskItem_FullView_Update.csv")
+#erisk_item_old <- read_csv("C:/workspace/e-rarr/RiskItemReportShinyApp/data/RiskItem_FullView_Update.csv")
+erisk_item <- read.csv("C:/workspace/e-rarr/RiskItemReportShinyApp/data/RISKLISTFULL.csv")
 risk_item_db<-data.frame(erisk_item)
 erisk_project <- read_csv("C:/workspace/e-rarr/RiskItemReportShinyApp/data/RiskProject_FullView.csv")
 risk_project_db<-data.frame(erisk_project)
@@ -41,11 +41,11 @@ erisk_ItemProj<-left_join(risk_item_db, risk_project_db, by = "PROJECT_ID")
 risk_item_filt<- risk_item_db |>
   select(RISK_ID, PROJECT_ID, RISK_NAME)
 
-      
 
-erisk_testing<-erisk_ItemProj[,c(3,5,6,8,22,27,32,40,51,56,64,65)]
+#RiskImpactTable<-erisk_ItemProj[,c(1,2,3,4,6,7,17,9,12,13,26,27,28,29,30,31,32,33,39,23,22,42,46,47,48,49,50,51,52)]
+RiskImpactTable<-erisk_ItemProj |>
+  select("RISK_ID","RISK_IDENTIFIER","PROJECT_ID","PROJECT_NAME.x", "RISK_NAME","RISKCATEGORY", "DISCIPLINE", "RISK_STATEMENT","LIKELIHOOD_DESC", "PROB_OCCURRENCE_EVIDENCE",  "COST_IMPACT_LOWEST", "COST_IMPACT_MOSTLIKELY", "COST_IMPACT_HIGHEST", "COST_IMPACT_EVIDENCE","SCHEDULE_IMPACT_LOWEST", "SCHEDULE_IMPACT_MOSTLIKELY", "SCHEDULE_IMPACT_HIGHEST", "SCHEDULE_IMPACT_EVIDENCE", "LIFECYCLEPHASENAME.x", "PERFORMANCEIMPACT_DESC", "PERFORMANCEIMPACT" , "MILESTONE", "RISK_MANAGER", "COST_IMPACT_DISTTYPE", "SCHEDULE_IMPACT_DISTTYPE", "NO_PERFORMANCE_IMPACT", "NO_COST_IMPACT","NO_SCHEDULE_IMPACT")
 
-RiskImpactTable<-erisk_ItemProj[,c(1,2,3,4,6,7,17,9,12,13,26,27,28,29,30,31,32,33,39,23,22,42,46,47,48,49,50,51,52)]
 
 risk_transact<-left_join(risk_transact, risk_item_filt, by=c("PROJECT_ID", "RISK_ID"))     
 risk_treat<-left_join(risk_treat, risk_item_filt, by=c("PROJECT_ID", "RISK_ID"))
@@ -54,7 +54,7 @@ risk_item<-filter(RiskImpactTable, RiskImpactTable$RISK_NAME == params$riskID, R
 risk_treatment<-filter(risk_treat, risk_treat$PROJECT_NAME == params$projID, risk_treat$RISK_NAME == params$riskID)
 
 risk_item_table<- risk_item |>
-  select(COST_IMPACT_LOWEST,COST_IMPACT_HIGHEST, COST_IMPACT_EVIDENCE,SCHEDULE_IMPACT_LOWEST, SCHEDULE_IMPACT_HIGHEST, SCHEDULE_IMPACT_EVIDENCE,PERFORMANCEIMPACT_DESC, PERFORMANCEIMPACTTYPE, PERFORMANCEIMPACT_DESC, SCHEDULE_IMPACT_DISTTYPE)
+  select(COST_IMPACT_LOWEST,COST_IMPACT_HIGHEST, COST_IMPACT_EVIDENCE,SCHEDULE_IMPACT_LOWEST, SCHEDULE_IMPACT_HIGHEST, SCHEDULE_IMPACT_EVIDENCE,PERFORMANCEIMPACT_DESC, PERFORMANCEIMPACT, PERFORMANCEIMPACT_DESC, SCHEDULE_IMPACT_DISTTYPE)
 
 
 risk_treat_table<-risk_treatment |>
@@ -128,7 +128,7 @@ knitr::include_graphics("C:/workspace/e-rarr/RiskItemReportShinyApp/images/monte
 | Cost Impact                                   | Schedule Impact                                      | Performance Impact                                                 |
 |--------------------|-----------------------|-----------------------------|
 | *Lowest* \$`r risk_item$COST_IMPACT_LOWEST`   | *Lowest* `r risk_item$SCHEDULE_IMPACT_LOWEST` days   | ***Performance Impact:*** `r risk_item$PERFORMANCEIMPACT_DESC`     |
-| *Highest* \$`r risk_item$COST_IMPACT_HIGHEST` | *Highest* `r risk_item$SCHEDULE_IMPACT_HIGHEST` days | ***Performance Impact Type:*** `r risk_item$PERFORMANCEIMPACTTYPE` |
+| *Highest* \$`r risk_item$COST_IMPACT_HIGHEST` | *Highest* `r risk_item$SCHEDULE_IMPACT_HIGHEST` days | ***Performance Impact Type:*** `r risk_item$PERFORMANCEIMPACT` |
 | `r risk_item$COST_IMPACT_EVIDENCE`            | `r risk_item$SCHEDULE_IMPACT_EVIDENCE`               | `r risk_item$PERFORMANCEIMPACT_DESC`                               |
 
 | Cost Impact                                 | Schedule Impact                                    | Performance Impact                                             |
@@ -193,4 +193,4 @@ kbl(format = "html", col.names =c("Edit Date", "Reason for Change", "Risk Log No
 
                                                     
 ```
-### Risk Manager: `r risk_item$FIRST_NAME` `r risk_item$LAST_NAME` 
+##### Risk Manager: `r risk_item$RISK_MANAGER` 
