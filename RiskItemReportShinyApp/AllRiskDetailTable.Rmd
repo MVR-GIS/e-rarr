@@ -25,7 +25,8 @@ library(tidyverse)
 library(leaflet)
 library(DT)
 erisk_item <- read_csv("C:/workspace/e-rarr/RiskItemReportShinyApp/data/RiskItem_FullView_Update.csv", show_col_types = FALSE)
-risk_item_db<-data.frame(erisk_item)
+erisk_item2 <- read_csv("C:/workspace/e-rarr/RiskItemReportShinyApp/data/RISKLISTFULL.csv", show_col_types = FALSE)
+risk_item_db<-data.frame(erisk_item2)
 erisk_project <- read_csv("C:/workspace/e-rarr/RiskItemReportShinyApp/data/RiskProject_FullView.csv", show_col_types = FALSE)
 risk_project_db<-data.frame(erisk_project)
 
@@ -33,35 +34,38 @@ risk_item_db<-left_join(risk_item_db, risk_project_db , by = "PROJECT_ID")|>
   select(-ends_with(".y")) 
 
 RiskDeets <- risk_item_db |>
-  select("PROJECT_ID","RISK_IDENTIFIER", "PROJECT_NAME.x","RISK_NAME","RISKCATEGORY","RISK_STATEMENT" ,"LIFECYCLEPHASENAME.x","MILESTONE","LIKELIHOOD","DISCIPLINE", "PERFORMANCEIMPACTTYPE", "PERFORMANCEIMPACT_RISK_RANKING","COST_IMPACT_MOSTLIKELY", "SCHEDULE_IMPACT_MOSTLIKELY", "SCHEDULE_RISK_RANKING", "PRIMARYMISSION", "USACE_ORGANIZATION")
+  select("PROJECT_ID","RISK_IDENTIFIER", "PROJECT_NAME.x","RISK_NAME","RISKCATEGORY","RISK_STATEMENT" ,"LIFECYCLEPHASENAME.x","MILESTONE","LIKELIHOOD","DISCIPLINE", "PERFORMANCEIMPACT", "PERFORMANCE_RANK_DESC","COST_IMPACT_MOSTLIKELY", "COST_RANK_DESC", "SCHEDULE_IMPACT_MOSTLIKELY", "SCHEDULE_RANK_DESC", "PRIMARYMISSION", "USACE_ORGANIZATION.x")
 
 
 
-RiskDeets<-RiskDeets |>
-  dplyr::mutate("PERFORMANCE RANKING" = case_when(PERFORMANCEIMPACT_RISK_RANKING == 0 ~ "",
-                                                      PERFORMANCEIMPACT_RISK_RANKING == 1 ~ "Opportunity",
-                                                      PERFORMANCEIMPACT_RISK_RANKING == 2 ~ "Low",
-                                                      PERFORMANCEIMPACT_RISK_RANKING == 3 ~ "Moderate",
-                                                      PERFORMANCEIMPACT_RISK_RANKING == 4 ~ "High"))|>
-                mutate("SCHEDULE RANKING" = case_when(SCHEDULE_RISK_RANKING == 0 ~ "",
-                                                   SCHEDULE_RISK_RANKING == 1 ~ "Opportunity",
-                                                   SCHEDULE_RISK_RANKING == 2 ~ "Low",
-                                                   SCHEDULE_RISK_RANKING == 3 ~ "Moderate",
-                                                   SCHEDULE_RISK_RANKING == 4 ~ "High"))
+# RiskDeets<-RiskDeets |>
+#   dplyr::mutate("PERFORMANCE RANKING" = case_when(PERFORMANCEIMPACT_RISK_RANKING == 0 ~ "",
+#                                                       PERFORMANCEIMPACT_RISK_RANKING == 1 ~ "Opportunity",
+#                                                       PERFORMANCEIMPACT_RISK_RANKING == 2 ~ "Low",
+#                                                       PERFORMANCEIMPACT_RISK_RANKING == 3 ~ "Moderate",
+#                                                       PERFORMANCEIMPACT_RISK_RANKING == 4 ~ "High"))|>
+#                 mutate("SCHEDULE RANKING" = case_when(SCHEDULE_RISK_RANKING == 0 ~ "",
+#                                                    SCHEDULE_RISK_RANKING == 1 ~ "Opportunity",
+#                                                    SCHEDULE_RISK_RANKING == 2 ~ "Low",
+#                                                    SCHEDULE_RISK_RANKING == 3 ~ "Moderate",
+#                                                    SCHEDULE_RISK_RANKING == 4 ~ "High"))
 
 
 Risk_List_Proj <-filter(RiskDeets, RiskDeets$PROJECT_ID == params$projID)
 
 RiskDeetsTable<-Risk_List_Proj |>
-  select("RISK_IDENTIFIER","RISK_NAME","RISKCATEGORY","RISK_STATEMENT" ,"LIFECYCLEPHASENAME.x","MILESTONE","LIKELIHOOD","DISCIPLINE", "PERFORMANCEIMPACTTYPE", "PERFORMANCE RANKING", "COST_IMPACT_MOSTLIKELY", "SCHEDULE_IMPACT_MOSTLIKELY", "SCHEDULE RANKING")|>
+  select("RISK_IDENTIFIER","RISK_NAME","RISKCATEGORY","RISK_STATEMENT" ,"LIFECYCLEPHASENAME.x","MILESTONE","LIKELIHOOD","DISCIPLINE", "PERFORMANCEIMPACT",  "PERFORMANCE_RANK_DESC", "COST_IMPACT_MOSTLIKELY","COST_RANK_DESC", "SCHEDULE_IMPACT_MOSTLIKELY", "SCHEDULE_RANK_DESC")|>
     rename("RISK" = RISK_IDENTIFIER,
          "RISK NAME" = RISK_NAME,
          "RISK CATEGORY" = RISKCATEGORY,
          "RISK STATEMENT" = RISK_STATEMENT,
          "PHASE" = LIFECYCLEPHASENAME.x,
-         "PERFORMANCE IMPACT TYPE" = PERFORMANCEIMPACTTYPE,
+         "PERFORMANCE IMPACT TYPE" = PERFORMANCEIMPACT,
+         "PERFORMANCE RANKING" = PERFORMANCE_RANK_DESC,
          "COST IMPACT" = COST_IMPACT_MOSTLIKELY,
-         "SCHEDULE IMPACT" = SCHEDULE_IMPACT_MOSTLIKELY)
+         "COST RANKING" = COST_RANK_DESC,
+         "SCHEDULE IMPACT" = SCHEDULE_IMPACT_MOSTLIKELY,
+         "SCHEDULE RANKING" = SCHEDULE_RANK_DESC)
 
 ```
 
@@ -74,10 +78,8 @@ RiskDeetsTable<-Risk_List_Proj |>
 ### ALL PROJECT RISK IMPACTS
 ```{r,  echo = FALSE, warning=FALSE}
 RiskDeetsTable |>
-  DT::datatable(rownames = FALSE,filter = "top",
-                extensions = 'Buttons', 
-                options = list(buttons = c('copy','csv','excel','pdf'),
-                          lengthMenu=list(c(20,40, 60, -1), c('20', '40', '60', 'All')),
-                          paging = F))
+kableExtra::kbl(format = "html") |>
+  kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive", latex_options="scale_down"))
+
 ```
 
