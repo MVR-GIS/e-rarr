@@ -33,11 +33,8 @@ imagepath<-"C:/workspace/e-rarr/RiskItemReportShinyApp/images/check.png"
 
 erisk_ItemProj<-left_join(risk_item_db, risk_project_db, by = "PROJECT_ID")
 
-erisk_testing<-erisk_ItemProj[,c(3,4,5,6,8,22,27,32,40,51,56,64,65)]
 
-RiskImpactTable<-erisk_ItemProj[,c(1,2,3,4,6,17,9,12,13,26,27,28,29,30,31,32,33,23,22,42,48,49,50,51,52)]
-RiskImpactTable<-RiskImpactTable |>
-  mutate(RiskID_Name = str_c(RISK_IDENTIFIER," ", RISK_NAME))
+RiskImpactTable<-erisk_ItemProj[,c("PROJECT_NAME.x", "RISK_NAME", "USACE_ORGANIZATION","P2_LOOKUP")]
 ```
 
 
@@ -47,8 +44,12 @@ shinyApp(
     bootswatch = "cosmo"),
     titlePanel("NESP Risk Reporting Application"),
     sidebarLayout(
-      sidebarPanel(selectInput("projectInput", "Select a project", choices=c(RiskImpactTable$PROJECT_NAME.x)),
-    selectInput("riskInput", "Select a risk item", choices=c(RiskImpactTable$RISK_NAME)),
+      sidebarPanel(selectInput("districtInput", "Select District", choices=c(" ",RiskImpactTable$USACE_ORGANIZATION)
+),selectInput("projectInput", "Select a project", choices=c(" ",RiskImpactTable$PROJECT_NAME.x)),
+tags$h6("or"),
+selectInput("p2Input", "Select a P2 Number", choices=c(" ",RiskImpactTable$P2_LOOKUP)),
+selectInput("riskInput", "Select a risk item", choices=c(" ",RiskImpactTable$RISK_NAME)
+),
     actionButton("render", "View Report"),
     downloadButton("report", "Download report"),),
     
@@ -72,14 +73,25 @@ shinyApp(
         choices = risks
        )
     })
-      observeEvent(input$render, {
-      output$reportrend <- renderUI({
-        includeHTML(
-          rmarkdown::render("RiskItemReport.Rmd", params=list(projID = input$projectInput, riskID= input$riskInput)
-          )
+    observe({
+      risks = RiskImpactTable |>
+        filter(RiskImpactTable$P2_LOOKUP == input$p2Input) |>
+      pull(RISK_NAME) |>
+        unique() |>
+        sort()
+       updateSelectInput(
+        inputId = "riskInput", 
+        choices = risks
         )
-      })
     })
+    #   observeEvent(input$render, {
+    #   output$reportrend <- renderUI({
+    #     includeHTML(
+    #       rmarkdown::render("RiskItemReport.Rmd", params=list(projID = input$projectInput, riskID= input$riskInput)
+    #       )
+    #     )
+    #   })
+    # })
             observeEvent(input$render, {
       output$AllRiskRend <- renderUI({
         includeHTML(
