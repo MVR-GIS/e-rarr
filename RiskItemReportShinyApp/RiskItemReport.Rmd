@@ -1,5 +1,5 @@
 ---
-title: "Risk Item Report"
+title: ""
 output: html_document
 params:
   riskID: Inaccurate Floodplain for Formulation and Economic Analysis
@@ -26,13 +26,16 @@ library(dplyr)
 library(crosstalk)
 library(tidyverse)
 library(leaflet)
+library(english)
 library(DT)
+options(scipen = 999)
+
 #erisk_item_old <- read_csv("C:/workspace/e-rarr/RiskItemReportShinyApp/data/RiskItem_FullView_Update.csv")
 erisk_item <- read.csv("C:/workspace/e-rarr/RiskItemReportShinyApp/data/RISKLISTFULL.csv")
 risk_item_db<-data.frame(erisk_item)
 erisk_project <- read_csv("C:/workspace/e-rarr/RiskItemReportShinyApp/data/RiskProject_FullView.csv")
 risk_project_db<-data.frame(erisk_project)
-risk_treat <- read_csv("C:/workspace/e-rarr//RiskItemReportShinyApp/data/RiskTreatment_FullView.csv")
+risk_treat <- read_csv("C:/workspace/e-rarr//RiskItemReportShinyApp/data/RiskTreatment_FullView.csv",col_names = TRUE)
 imagepath<-"C:/workspace/e-rarr//RiskItemReportShinyApp/images/check.png"
 risk_transact <- read_csv("C:/workspace/e-rarr//RiskItemReportShinyApp/data/RiskTransaction_FullView.csv")
 
@@ -42,7 +45,7 @@ risk_item_filt<- risk_item_db |>
   select(RISK_ID, PROJECT_ID, RISK_NAME)
 
 
-#RiskImpactTable<-erisk_ItemProj[,c(1,2,3,4,6,7,17,9,12,13,26,27,28,29,30,31,32,33,39,23,22,42,46,47,48,49,50,51,52)]
+
 RiskImpactTable<-erisk_ItemProj |>
   select("RISK_ID","RISK_IDENTIFIER","PROJECT_ID","PROJECT_NAME.x", "RISK_NAME","RISKCATEGORY", "DISCIPLINE", "RISK_STATEMENT","LIKELIHOOD_DESC", "PROB_OCCURRENCE_EVIDENCE",  "COST_IMPACT_LOWEST", "COST_IMPACT_MOSTLIKELY", "COST_IMPACT_HIGHEST", "COST_IMPACT_EVIDENCE","SCHEDULE_IMPACT_LOWEST", "SCHEDULE_IMPACT_MOSTLIKELY", "SCHEDULE_IMPACT_HIGHEST", "SCHEDULE_IMPACT_EVIDENCE", "LIFECYCLEPHASENAME.x", "PERFORMANCEIMPACT_DESC", "PERFORMANCEIMPACT" , "MILESTONE", "RISK_MANAGER", "COST_IMPACT_DISTTYPE", "SCHEDULE_IMPACT_DISTTYPE", "NO_PERFORMANCE_IMPACT", "NO_COST_IMPACT","NO_SCHEDULE_IMPACT")
 
@@ -60,12 +63,17 @@ risk_item_table<- risk_item |>
 risk_treat_table<-risk_treatment |>
   select(RISK_TREATMENT_ID,PROPOSED_RISK_TREATMENT,COST_IMPACT_RISK_TREATMENT,
          SCHEDULE_IMPACT_RISK_TREATMENT, IMPLEMENTED, RISK_NAME) |>
+    DT::formatCurrency(risk_treatment,risk_treatment$COST_IMPACT_RISK_TREATMENT)|>
   mutate(IMPLEMENT_IMG = case_when(
     IMPLEMENTED == 1 ~ imagepath,
-    IMPLEMENTED == 0 ~ "")) |>
+    IMPLEMENTED == 0 ~ " ")) |>
   select(RISK_TREATMENT_ID,PROPOSED_RISK_TREATMENT,COST_IMPACT_RISK_TREATMENT,
-         SCHEDULE_IMPACT_RISK_TREATMENT, IMPLEMENT_IMG)
+         SCHEDULE_IMPACT_RISK_TREATMENT, IMPLEMENT_IMG) |>
+  mutate(PROPOSED_RISK_TREATMENT = paste0(( "Measure "), str_to_title(english::english(RISK_TREATMENT_ID)),": ",PROPOSED_RISK_TREATMENT )) |>
+  #DT::formatCurrency(COST_IMPACT_RISK_TREATMENT)|>
+  mutate(SCHEDULE_IMPACT_RISK_TREATMENT = paste(SCHEDULE_IMPACT_RISK_TREATMENT, "Days"))
 
+#mutate(COST_IMPACT_RISK_TREATMENT = paste0("$", COST_IMPACT_RISK_TREATMENT)) |>
 treat_condit <- ifelse(nrow(risk_treat_table)>0,TRUE,FALSE)
 
     
@@ -148,49 +156,13 @@ knitr::include_graphics("C:/workspace/e-rarr/RiskItemReportShinyApp/images/monte
 
 ```{r echo=FALSE, message=FALSE, eval = treat_condit}
 risk_treat_table$IMPLEMENT_IMG = sprintf("![    ](%s)", risk_treat_table$IMPLEMENT_IMG)
+
+
 kbl(risk_treat_table,format = "html",col.names = NULL, align= "llccc") %>%
   add_header_above(c("Measures"=2, "Impacts" = 2,"Implemented" = 1))
 
 
 ```
 
-```{r echo=FALSE, message=FALSE, warning=FALSE, include=FALSE, eval = treat_condit}
-risk_log<-data.frame(risk_transact)
-risk_log<-risk_log %>%
-  mutate('costcolor' = case_when(COST_RISK_RANKING == 0 ~ 'deepskyblue',
-  COST_RISK_RANKING ==1 ~'green', 
-  COST_RISK_RANKING == 2 ~'orange',
-  COST_RISK_RANKING ==  3 ~ 'red')) %>%
-  mutate('schedulecolor' = case_when(SCHEDULE_RISK_RANKING == 0 ~ 'deepskyblue',
-  SCHEDULE_RISK_RANKING ==1 ~'green', 
-  SCHEDULE_RISK_RANKING == 2 ~'orange',
-  SCHEDULE_RISK_RANKING ==  3 ~ 'red')) %>%
-  mutate('performancecolor' = case_when(PERFORMANCEIMPACT_RISK_RANKING == 0 ~ 'deepskyblue',
-  PERFORMANCEIMPACT_RISK_RANKING ==1 ~'green', 
-  PERFORMANCEIMPACT_RISK_RANKING == 2 ~'orange',
-  PERFORMANCEIMPACT_RISK_RANKING ==  3 ~ 'red'))%>%
-  mutate(TREAT_IMPLEMENT_IMG = if_else(is.na(TREATMENTS_IMPLEMENTED), NA, imagepath))
-         
-         
-risk_item_log<-filter(risk_log, RISK_NAME == params$riskID, PROJECT_NAME == params$projID)
-risk_log_table<-risk_item_log %>%
-  select(DATE_TIME, REASON, RISK_LOG_NOTE, TREAT_IMPLEMENT_IMG, COST_RISK_RANKING, SCHEDULE_RISK_RANKING, PERFORMANCEIMPACT_RISK_RANKING, costcolor, schedulecolor, performancecolor )
-```
-
-## Risk Log:
-
-`r if(!treat_condit){"Risk transactions have not been completed for this risk item"}`
-
-```{r log table, echo=FALSE, message=FALSE, eval = treat_condit}
-risk_log_table$TREAT_IMPLEMENT_IMG = sprintf("![](%s)", risk_log_table$TREAT_IMPLEMENT_IMG)
-risk_log_table[1:7]%>%
-kbl(format = "html", col.names =c("Edit Date", "Reason for Change", "Risk Log Note",  "Measures Implemented", "Cost","Schedule","Performance"), align="lllcccc") %>%
-  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))%>%
-  column_spec(5,color="black", background=risk_log_table$costcolor)%>%
-  column_spec(6,color="black", background=risk_log_table$schedulecolor)%>%
-  column_spec(7,color="black", background=risk_log_table$performancecolor)%>%
-  column_spec (5:7,border_left = T, border_right = T)
-
-                                                    
-```
+                                                
 ##### Risk Manager: `r risk_item$RISK_MANAGER` 
