@@ -1,11 +1,10 @@
 ---
 title: "Risk Item Report"
 output:
-  pdf_document: default
   html_document: default
 params:
-  riskID: 6
-  projID: 3069
+  riskID: 2
+  projID: 2307
 ---
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, include=FALSE}
