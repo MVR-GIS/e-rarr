@@ -78,8 +78,11 @@ RiskDeetsTable<-Risk_List_Proj |>
 ### ALL PROJECT RISK IMPACTS
 ```{r,  echo = FALSE, warning=FALSE}
 RiskDeetsTable |>
-kableExtra::kbl(format = "html") |>
-  kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive", latex_options="scale_down"))
+kableExtra::kbl(format = "html", align = 'ccclcccccc') |>
+  kableExtra::kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive", latex_options="scale_down", font_size=6)) |>
+  column_spec(4, width_min = '3in')
+  
+
 
 ```
 
