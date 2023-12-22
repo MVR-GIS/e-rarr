@@ -3,7 +3,7 @@ title: '&#32;'
 output:
   html_document: 
 params:
-  projID: 3069
+  projID: City of Boston Coastal Storm Risk
 runtime: shiny
 ---
 ```{css, echo=FALSE}
@@ -51,7 +51,7 @@ RiskDeets <- risk_item_db |>
 #                                                    SCHEDULE_RISK_RANKING == 4 ~ "High"))
 
 
-Risk_List_Proj <-filter(RiskDeets, RiskDeets$PROJECT_ID == params$projID)
+Risk_List_Proj <-filter(RiskDeets, RiskDeets$PROJECT_NAME.x == params$projID)
 
 RiskDeetsTable<-Risk_List_Proj |>
   select("RISK_IDENTIFIER","RISK_NAME","RISKCATEGORY","RISK_STATEMENT" ,"LIFECYCLEPHASENAME.x","MILESTONE","LIKELIHOOD","DISCIPLINE", "PERFORMANCEIMPACT",  "PERFORMANCE_RANK_DESC", "COST_IMPACT_MOSTLIKELY","COST_RANK_DESC", "SCHEDULE_IMPACT_MOSTLIKELY", "SCHEDULE_RANK_DESC")|>
