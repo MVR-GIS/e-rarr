@@ -27,7 +27,7 @@ risk_item_db<-data.frame(erisk_item)
 erisk_project <- read_csv("C:/workspace/e-rarr/RiskItemReportShinyApp/data/RiskProject_FullView.csv")
 risk_project_db<-data.frame(erisk_project)
 risk_treat <- read_csv("C:/workspace/e-rarr/RiskItemReportShinyApp/data/RiskTreatment_FullView.csv")
-imagepath<-"C:/workspace/e-rarr/RiskItemReportShinyApp/images/check.png"
+imagepath<-"C:/workspace/e-rarr/RiskItemReportShinyApp/images/castle.tif"
 
 
 
@@ -42,12 +42,13 @@ RiskImpactTable<-erisk_ItemProj[,c("PROJECT_NAME.x", "RISK_NAME", "USACE_ORGANIZ
 shinyApp(
   ui = fluidPage(theme = bslib::bs_theme(
     bootswatch = "cosmo"),
-    titlePanel("NESP Risk Reporting Application"),
+    navbarPage(title="Risk Analysis Reporting System",
+  tabPanel("National"),
+  tabPanel("Division"),
+  tabPanel("District"),
+  tabPanel("Project",
     sidebarLayout(
-      sidebarPanel(selectInput("districtInput", "Select District", choices=c(" ",RiskImpactTable$USACE_ORGANIZATION)
-),selectInput("projectInput", "Select a project", choices=c(" ",RiskImpactTable$PROJECT_NAME.x)),
-tags$h6("or"),
-selectInput("p2Input", "Select a P2 Number", choices=c(" ",RiskImpactTable$P2_LOOKUP)),
+      sidebarPanel(selectInput("projectInput", "Select a project", choices=c(" ",RiskImpactTable$PROJECT_NAME.x)),
 selectInput("riskInput", "Select a risk item", choices=c(" ",RiskImpactTable$RISK_NAME)
 ),
     actionButton("render", "View Report"),
@@ -60,7 +61,7 @@ selectInput("riskInput", "Select a risk item", choices=c(" ",RiskImpactTable$RIS
   tabPanel("Project Report"),
   tabPanel("All Risk Items",
            htmlOutput("AllRiskRend")),
-  )))),
+  )))))),
   server = function(input, output, session) {
     observe({
       risks = RiskImpactTable |>
@@ -73,25 +74,25 @@ selectInput("riskInput", "Select a risk item", choices=c(" ",RiskImpactTable$RIS
         choices = risks
        )
     })
-    observe({
-      risks = RiskImpactTable |>
-        filter(RiskImpactTable$P2_LOOKUP == input$p2Input) |>
-      pull(RISK_NAME) |>
-        unique() |>
-        sort()
-       updateSelectInput(
-        inputId = "riskInput", 
-        choices = risks
-        )
-    })
-    #   observeEvent(input$render, {
-    #   output$reportrend <- renderUI({
-    #     includeHTML(
-    #       rmarkdown::render("RiskItemReport.Rmd", params=list(projID = input$projectInput, riskID= input$riskInput)
-    #       )
+    # observe({
+    #   risks = RiskImpactTable |>
+    #     filter(RiskImpactTable$P2_LOOKUP == input$p2Input) |>
+    #   pull(RISK_NAME) |>
+    #     unique() |>
+    #     sort()
+    #    updateSelectInput(
+    #     inputId = "riskInput",
+    #     choices = risks
     #     )
-    #   })
     # })
+      observeEvent(input$render, {
+      output$reportrend <- renderUI({
+        includeHTML(
+          rmarkdown::render("RiskItemReport.Rmd", params=list(projID = input$projectInput, riskID= input$riskInput)
+          )
+        )
+      })
+    })
             observeEvent(input$render, {
       output$AllRiskRend <- renderUI({
         includeHTML(
