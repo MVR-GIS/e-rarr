@@ -1,9 +1,14 @@
----
-output: html_document
-runtime: shiny
----
+#
+# This is a Shiny web application. You can run the application by clicking
+# the 'Run App' button above.
+#
+# Find out more about building applications with Shiny here:
+#
+#    http://shiny.rstudio.com/
+#
 
-```{r echo=FALSE, message=FALSE, warning=FALSE, include=FALSE}
+library(shiny)
+
 library(readr) 
 library(magrittr) 
 library(dplyr) 
@@ -35,33 +40,34 @@ erisk_ItemProj<-left_join(risk_item_db, risk_project_db, by = "PROJECT_ID")
 
 
 RiskImpactTable<-erisk_ItemProj[,c("PROJECT_NAME.x", "RISK_NAME", "USACE_ORGANIZATION","P2_LOOKUP")]
-```
 
 
-```{r , echo=FALSE }
+
+
+
 shinyApp(
   ui = fluidPage(theme = bslib::bs_theme(
     bootswatch = "cosmo"),
     navbarPage(title="Risk Analysis Reporting System",
-  tabPanel("National"),
-  tabPanel("Division"),
-  tabPanel("District"),
-  tabPanel("Project",
-    sidebarLayout(
-      sidebarPanel(selectInput("projectInput", "Select a project", choices=c(" ",RiskImpactTable$PROJECT_NAME.x)),
-selectInput("riskInput", "Select a risk item", choices=c(" ",RiskImpactTable$RISK_NAME)
-),
-    actionButton("render", "View Report"),
-    downloadButton("report", "Download report"),),
-    
-  mainPanel(
-    tabsetPanel(id="Report Tabs",
-      tabPanel("Risk Item Report",
-      htmlOutput("reportrend")),
-  tabPanel("Project Report"),
-  tabPanel("All Risk Items",
-           htmlOutput("AllRiskRend")),
-  )))))),
+               tabPanel("National"),
+               tabPanel("Division"),
+               tabPanel("District"),
+               tabPanel("Project",
+                        sidebarLayout(
+                          sidebarPanel(selectInput("projectInput", "Select a project", choices=c(" ",RiskImpactTable$PROJECT_NAME.x)),
+                                       selectInput("riskInput", "Select a risk item", choices=c(" ",RiskImpactTable$RISK_NAME)
+                                       ),
+                                       actionButton("render", "View Report"),
+                                       downloadButton("report", "Download report"),),
+                          
+                          mainPanel(
+                            tabsetPanel(id="Report Tabs",
+                                        tabPanel("Risk Item Report",
+                                                 htmlOutput("reportrend")),
+                                        tabPanel("Project Report"),
+                                        tabPanel("All Risk Items",
+                                                 htmlOutput("AllRiskRend")),
+                            )))))),
   server = function(input, output, session) {
     observe({
       risks = RiskImpactTable |>
@@ -69,23 +75,12 @@ selectInput("riskInput", "Select a risk item", choices=c(" ",RiskImpactTable$RIS
         pull(RISK_NAME) |>
         unique() |>
         sort()
-       updateSelectInput(
+      updateSelectInput(
         inputId = "riskInput", 
         choices = risks
-       )
+      )
     })
-    # observe({
-    #   risks = RiskImpactTable |>
-    #     filter(RiskImpactTable$P2_LOOKUP == input$p2Input) |>
-    #   pull(RISK_NAME) |>
-    #     unique() |>
-    #     sort()
-    #    updateSelectInput(
-    #     inputId = "riskInput",
-    #     choices = risks
-    #     )
-    # })
-      observeEvent(input$render, {
+    observeEvent(input$render, {
       output$reportrend <- renderUI({
         includeHTML(
           rmarkdown::render("RiskItemReport.Rmd", params=list(projID = input$projectInput, riskID= input$riskInput)
@@ -93,7 +88,7 @@ selectInput("riskInput", "Select a risk item", choices=c(" ",RiskImpactTable$RIS
         )
       })
     })
-            observeEvent(input$render, {
+    observeEvent(input$render, {
       output$AllRiskRend <- renderUI({
         includeHTML(
           rmarkdown::render("AllRiskDetailTable.Rmd", params=list(projID = input$projectInput)
@@ -112,18 +107,17 @@ selectInput("riskInput", "Select a risk item", choices=c(" ",RiskImpactTable$RIS
         # can happen when deployed).
         tempReport <- file.path(tempdir(), "RiskItemReport.Rmd")
         file.copy("RiskItemReport.Rmd", tempReport, overwrite = TRUE)
-
+        
         # Set up parameters to pass to Rmd document
         params <- list( projID = input$projectInput, riskID= input$riskInput)
-
+        
         # Knit the document, passing in the `params` list, and eval it in a
         # child of the global environment (this isolates the code in the document
         # from the code in this app).
         rmarkdown::render(tempReport, output_file = file,
-          params = params,
-          envir = new.env(parent = globalenv()))
+                          params = params,
+                          envir = new.env(parent = globalenv()))
       })
   },
-  options=list(height=2000, width=1000)
+  #options=list(height=1500, width=2000)
 )
-```
