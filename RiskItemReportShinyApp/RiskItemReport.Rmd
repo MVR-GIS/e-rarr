@@ -2,8 +2,8 @@
 title: ""
 output: html_document
 params:
-  riskID: Inaccurate Floodplain for Formulation and Economic Analysis
-  projID: City of Boston Coastal Storm Risk
+  riskID: Environmental Surveys - Wetlands
+  projID: St. Augustine Back Bay CSRM
 runtime: shiny
 ---
 
@@ -69,7 +69,7 @@ risk_treat_table<-risk_treatment |>
   select(RISK_TREATMENT_ID,PROPOSED_RISK_TREATMENT,COST_IMPACT_RISK_TREATMENT,
          SCHEDULE_IMPACT_RISK_TREATMENT, IMPLEMENT_IMG) |>
   mutate(PROPOSED_RISK_TREATMENT = paste0(( "Measure "), str_to_title(english::english(RISK_TREATMENT_ID)),": ",PROPOSED_RISK_TREATMENT )) |>
-  mutate(SCHEDULE_IMPACT_RISK_TREATMENT = paste(SCHEDULE_IMPACT_RISK_TREATMENT, "Days"))
+  mutate(SCHEDULE_IMPACT_RISK_TREATMENT = paste(SCHEDULE_IMPACT_RISK_TREATMENT, "Days")) |>
 
 treat_condit <- ifelse(nrow(risk_treat_table)>0,TRUE,FALSE)
 
@@ -147,7 +147,7 @@ knitr::include_graphics("C:/workspace/e-rarr/RiskItemReportShinyApp/images/monte
 | Most Likely `r risk_item$COST_IMPACT_MOSTLIKELY` | Most Likely `r risk_item$SCHEDULE_IMPACT_MOSTLIKELY` | ***Performance Impact:*** `r risk_item$PERFORMANCEIMPACT_DESC` Performance Impact Type: `r risk_item$PERFORMANCIMPACTTYPE` |
 | `r risk_item$COST_IMPACT_EVIDENCE`               | `r risk_item$SCHEDULE_IMPACT_EVIDENCE`               | `r risk_item$PERFORMANCEIMPACT_DESC`                                                                                       |
 
-## Risk Treatments:
+#### Risk Treatments:
 
 `r if(!treat_condit){"Risk treatments have not been completed for this risk item"}`
 
@@ -155,7 +155,8 @@ knitr::include_graphics("C:/workspace/e-rarr/RiskItemReportShinyApp/images/monte
 risk_treat_table$IMPLEMENT_IMG = sprintf("![    ](%s)", risk_treat_table$IMPLEMENT_IMG)
 
 
-kbl(risk_treat_table,format = "html",col.names = NULL, align= "llccc") %>%
+kbl(risk_treat_table,format = "html",col.names = NULL, align= "llccc") |>
+  kable_styling() |>
   add_header_above(c("Measures"=2, "Impacts" = 2,"Implemented" = 1))
 
 
