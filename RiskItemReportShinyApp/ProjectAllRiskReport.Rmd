@@ -1,0 +1,75 @@
+---
+title: ""
+output: html_document
+params:
+  riskID: Environmental Surveys - Wetlands
+  projID: St. Augustine Back Bay CSRM
+runtime: shiny
+---
+
+```{css, echo=FALSE}
+h1 {
+  text-align: center;
+}
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, include=FALSE}
+library(readr) 
+library(magrittr) 
+library(dplyr) 
+library(kableExtra) 
+library(rlang)
+library(plotly)
+library(ggplot2)
+library(ggrepel)
+library(dplyr)
+library(crosstalk)
+library(tidyverse)
+library(leaflet)
+library(english)
+library(DT)
+options(scipen = 999)
+
+erisk_item <- read.csv("C:/workspace/e-rarr/RiskItemReportShinyApp/data/RISKLISTFULL.csv")
+risk_item_db<-data.frame(erisk_item)
+erisk_project <- read_csv("C:/workspace/e-rarr/RiskItemReportShinyApp/data/RiskProject_FullView.csv")
+risk_project_db<-data.frame(erisk_project)
+
+risk_item_db<-left_join(risk_item_db, risk_project_db , by = "PROJECT_ID")|>
+  select(-ends_with(".y")) 
+
+RiskDeets <- risk_item_db |>
+  select("PROJECT_ID","RISK_IDENTIFIER", "PROJECT_NAME.x","RISK_NAME","RISKCATEGORY","RISK_STATEMENT" ,"LIFECYCLEPHASENAME.x","MILESTONE","LIKELIHOOD","DISCIPLINE", "PERFORMANCEIMPACT", "PERFORMANCE_RANK_DESC","COST_IMPACT_MOSTLIKELY", "COST_RANK_DESC", "SCHEDULE_IMPACT_MOSTLIKELY", "SCHEDULE_RANK_DESC", "PRIMARYMISSION", "USACE_ORGANIZATION.x")
+
+
+Risk_List_Proj <-filter(RiskDeets, RiskDeets$PROJECT_NAME.x == params$projID)
+Risk_List_Proj$COST_IMPACT_MOSTLIKELY <- as.character(formattable::currency(Risk_List_Proj$COST_IMPACT_MOSTLIKELY))
+
+
+ProjRiskTable<-risk_item_db|>
+  select("PROJECT_NAME","LIFECYCLEPHASENAME","USACE_ORGANIZATION", "RISK_IDENTIFIER", "DISCIPLINE", "COST_RANK_DESC", "SCHEDULE_RANK_DESC","PERFORMANCEIMPACT_DESC")
+         
+erisk_ItemProj<-left_join(risk_item_db, risk_project_db, by = "PROJECT_ID")                                                                                                                          
+risk_item_filt<- risk_item_db |>
+  select(RISK_ID, PROJECT_ID, RISK_NAME)
+
+
+
+proj_risks<-filter(ProjRiskTable, ProjRiskTable$PROJECT_NAME == params$projID)
+proj_risk_item<- filter(ProjRiskTable, ProjRiskTable$RISK_NAME == params$riskID, ProjRiskTable$PROJECT_NAME == params$projID)
+
+```
+
+
+
+
+#### Project: `r risk_item$PROJECT_NAME`
+
+#### Risk Phase: `r risk_item$LIFECYCLEPHASENAME`, Category: `r risk_item$RISKCATEGORY`
+
+#### All Project Risk Impacts
+
+```{r proj risk pies, fig.align='center', message=FALSE, warning=FALSE, echo=FALSE}
+
+
+```
