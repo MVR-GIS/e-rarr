@@ -1,26 +1,11 @@
-#
-# This is a Shiny web application. You can run the application by clicking
-# the 'Run App' button above.
-#
-# Find out more about building applications with Shiny here:
-#
-#    http://shiny.rstudio.com/
-#
-
 library(shiny)
-
 library(readr) 
 library(magrittr) 
 library(dplyr) 
 library(kableExtra) 
 library(rlang)
-library(plotly)
-library(ggplot2)
-library(ggrepel)
 library(dplyr)
-library(crosstalk)
 library(tidyverse)
-library(leaflet)
 library(DT)
 library(shinythemes)
 library(shiny)
