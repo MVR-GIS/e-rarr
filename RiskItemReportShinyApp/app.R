@@ -34,15 +34,11 @@ shinyApp(
   ui = fluidPage(theme = bslib::bs_theme(
     bootswatch = "cosmo"),
     navbarPage(title="Risk Analysis Reporting System",
-               tabPanel("National"),
-               tabPanel("Division"),
-               tabPanel("District"),
                tabPanel("Project",
                         sidebarLayout(
                           sidebarPanel(selectInput("projectInput", "Select a project", choices=c(" ",RiskImpactTable$PROJECT_NAME.x)),
                                        selectInput("riskInput", "Select a risk item", choices=c(" ",RiskImpactTable$RISK_NAME)
                                        ),
-                                       actionButton("render", "View Report"),
                                        downloadButton("report", "Download report"),),
                           
                           mainPanel(
@@ -65,22 +61,19 @@ shinyApp(
         choices = risks
       )
     })
-    observeEvent(input$render, {
       output$reportrend <- renderUI({
         includeHTML(
           rmarkdown::render("RiskItemReport.Rmd", params=list(projID = input$projectInput, riskID= input$riskInput)
           )
         )
       })
-    })
-    observeEvent(input$render, {
       output$AllRiskRend <- renderUI({
         includeHTML(
           rmarkdown::render("AllRiskDetailTable.Rmd", params=list(projID = input$projectInput)
           )
         )
       })
-    })
+
     output$report <- downloadHandler(
       # For PDF output, change this to "report.pdf"
       filename = function(){
