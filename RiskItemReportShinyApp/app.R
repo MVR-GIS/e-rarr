@@ -17,7 +17,6 @@ risk_item_db<-data.frame(erisk_item)
 erisk_project <- read_csv("C:/workspace/e-rarr/RiskItemReportShinyApp/data/RiskProject_FullView.csv")
 risk_project_db<-data.frame(erisk_project)
 risk_treat <- read_csv("C:/workspace/e-rarr/RiskItemReportShinyApp/data/RiskTreatment_FullView.csv")
-imagepath<-"C:/workspace/e-rarr/RiskItemReportShinyApp/images/castle.tif"
 
 
 
@@ -36,10 +35,17 @@ shinyApp(
     navbarPage(title="Risk Analysis Reporting System",
                tabPanel("Project",
                         sidebarLayout(
-                          sidebarPanel(selectInput("projectInput", "Select a project", choices=c(" ",RiskImpactTable$PROJECT_NAME.x)),
-                                       selectInput("riskInput", "Select a risk item", choices=c(" ",RiskImpactTable$RISK_NAME)
-                                       ),
-                                       downloadButton("report", "Download report"),),
+                          sidebarPanel(
+                            selectInput("districtInput", "Select a District", choices=sort(c("",RiskImpactTable$USACE_ORGANIZATION)),selected = NULL,
+                                        multiple = F),
+                            selectInput("projectInput", "Select a project", choices=c("",RiskImpactTable$PROJECT_NAME.x)),
+                                       h6("or"),
+                                      selectInput("P2Input","Enter a P2 Number", choices=c(" ",RiskImpactTable$P2_LOOKUP),selected = NULL,
+                                                  multiple = F
+                                      ),
+                                       selectInput("riskInput", "Select a risk item", choices=sort(c(" ",RiskImpactTable$RISK_NAME)),selected = NULL,
+                                                   multiple = F), 
+                                       downloadButton("report", "Download report"),width=2),
                           
                           mainPanel(
                             tabsetPanel(id="Report Tabs",
@@ -58,17 +64,17 @@ shinyApp(
         sort()
       updateSelectInput(
         inputId = "riskInput", 
-        choices = risks
-      )
+        choices = risks)
+      
     })
       output$reportrend <- renderUI({
-        includeHTML(
-          rmarkdown::render("RiskItemReport.Rmd", params=list(projID = input$projectInput, riskID= input$riskInput)
-          )
+        includeMarkdown(
+          rmarkdown::render("RiskItemReport.Rmd", params=list(projID = input$projectInput, riskID = input$riskInput)
+         )
         )
       })
       output$AllRiskRend <- renderUI({
-        includeHTML(
+        includeMarkdown(
           rmarkdown::render("AllRiskDetailTable.Rmd", params=list(projID = input$projectInput)
           )
         )
