@@ -1,0 +1,21 @@
+   selectInput("districtInput", "Select a District", choices=sort(c("",RiskImpactTable$USACE_ORGANIZATION)),selected = NULL,
+                                        multiple = F),
+
+
+      projects = RiskImpactTable |>
+        filter(RiskImpactTable$USACE_ORGANIZATION == input$districtInput) |>
+        pull(PROJECT_NAME.x) |>
+        unique() |>
+        sort()
+      updateSelectInput(
+        inputId = "projectInput", 
+        choices = projects
+      )
+      P2s = RiskImpactTable |>
+        filter(RiskImpactTable$USACE_ORGANIZATION == input$districtInput) |>
+        pull(P2_LOOKUP) |>
+        unique() |>
+        sort()
+      updateSelectInput(
+        inputId = "P2Input", 
+        choices = P2s
