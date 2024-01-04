@@ -23,9 +23,7 @@ library(plotly)
 library(ggplot2)
 library(ggrepel)
 library(dplyr)
-library(crosstalk)
 library(tidyverse)
-library(leaflet)
 library(english)
 library(DT)
 options(scipen = 999)
@@ -46,30 +44,59 @@ Risk_List_Proj <-filter(RiskDeets, RiskDeets$PROJECT_NAME.x == params$projID)
 Risk_List_Proj$COST_IMPACT_MOSTLIKELY <- as.character(formattable::currency(Risk_List_Proj$COST_IMPACT_MOSTLIKELY))
 
 
-ProjRiskTable<-risk_item_db|>
-  select("PROJECT_NAME","LIFECYCLEPHASENAME","USACE_ORGANIZATION", "RISK_IDENTIFIER", "DISCIPLINE", "COST_RANK_DESC", "SCHEDULE_RANK_DESC","PERFORMANCEIMPACT_DESC")
-         
-erisk_ItemProj<-left_join(risk_item_db, risk_project_db, by = "PROJECT_ID")                                                                                                                          
-risk_item_filt<- risk_item_db |>
-  select(RISK_ID, PROJECT_ID, RISK_NAME)
+
+proj_risks<-filter(Risk_List_Proj, Risk_List_Proj$PROJECT_NAME == params$projID)
+proj_risk_item<- filter(Risk_List_Proj, Risk_List_Proj$RISK_NAME == params$riskID, Risk_List_Proj$PROJECT_NAME == params$projID)
 
 
 
-proj_risks<-filter(ProjRiskTable, ProjRiskTable$PROJECT_NAME == params$projID)
-proj_risk_item<- filter(ProjRiskTable, ProjRiskTable$RISK_NAME == params$riskID, ProjRiskTable$PROJECT_NAME == params$projID)
+
+
+ProjRiskTable<-ProjRiskTable    
 
 ```
 
 
 
 
-#### Project: `r risk_item$PROJECT_NAME`
-
-#### Risk Phase: `r risk_item$LIFECYCLEPHASENAME`, Category: `r risk_item$RISKCATEGORY`
+#### Project: `r proj_risk_item$PROJECT_NAME.x`
+`r proj_risk_item$PRIMARYMISSION` `r proj_risk_item$LIFECYCLEPHASENAME.x`
+`r proj_risk_item$USACE_ORGANIZATION.x`
 
 #### All Project Risk Impacts
 
 ```{r proj risk pies, fig.align='center', message=FALSE, warning=FALSE, echo=FALSE}
+##where cost impact =yes 
+
+factors<- c('Low','Medium','High','Opportunity')
+
+pie_color <- c('rgb(31,120,180)','rgb(51,160,44)', 'rgb(255,127,0)','rgb(227,26,28)')
+
+pieplots<-
+
+CostFact<-factor(ProjRiskTable$COST_RANK_DESC)  
+values<- ProjRiskTable |>
+  group_by(COST_RANK_DESC) |>
+  summarize(count=n())
+
+
+fig<- plot_ly(textposition = 'inside',
+        textinfo = 'value', marker=list(pie_color))
+fig <- fig|> 
+  add_pie(data=count(ProjRiskTable,COST_RANK_DESC),labels=~factors, values=~COST_RANK_DESC, name = "COST", domain = list(row = 0, column=0))
+fig <- fig|> 
+  add_pie(data=count(ProjRiskTable,SCHEDULE_RANK_DESC),labels=~SCHEDULE_RANK_DESC, values=~n, name = "SCHEDULE", domain = list(row = 0, column=1))
+fig <- fig|> 
+  add_pie(data=count(ProjRiskTable,PERFORMANCE_RANK_DESC),labels=~PERFORMANCE_RANK_DESC, values=~n, name = "PERFORMANCE", domain = list(row = 0, column=2))
+
+fig <- fig %>% layout(title = "", showlegend = T,
+                      grid=list(rows=1, columns=3),
+                      xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
+                      yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE))
+
+fig
+
+
 
 
 ```
