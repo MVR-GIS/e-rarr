@@ -166,5 +166,4 @@ values<- erisk_df %>%
   summarize(count=n())
 
 
-
 ```
