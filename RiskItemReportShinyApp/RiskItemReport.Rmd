@@ -2,7 +2,7 @@
 title: ""
 output: html_document
 params:
-  riskID: Environmental Surveys - Wetlands
+  riskID: Cultural Resource Surveys
   projID: St. Augustine Back Bay CSRM
 runtime: shiny
 ---
@@ -35,9 +35,9 @@ erisk_item <- read.csv("C:/workspace/e-rarr/RiskItemReportShinyApp/data/RISKLIST
 risk_item_db<-data.frame(erisk_item)
 erisk_project <- read_csv("C:/workspace/e-rarr/RiskItemReportShinyApp/data/RiskProject_FullView.csv")
 risk_project_db<-data.frame(erisk_project)
-risk_treat <- read_csv("C:/workspace/e-rarr//RiskItemReportShinyApp/data/RiskTreatment_FullView.csv",col_names = TRUE)
-imagepath<-"C:/workspace/e-rarr//RiskItemReportShinyApp/images/check.png"
-risk_transact <- read_csv("C:/workspace/e-rarr//RiskItemReportShinyApp/data/RiskTransaction_FullView.csv")
+risk_treat <- read_csv("C:/workspace/e-rarr/RiskItemReportShinyApp/data/RiskTreatment_FullView.csv",col_names = TRUE)
+imagepath<-"C:/workspace/e-rarr/RiskItemReportShinyApp/www/check.png"
+risk_transact <- read_csv("C:/workspace/e-rarr/RiskItemReportShinyApp/data/RiskTransaction_FullView.csv")
 
 
 erisk_ItemProj<-left_join(risk_item_db, risk_project_db, by = "PROJECT_ID")                                                                                                                          
@@ -93,7 +93,7 @@ level_order<-c('Project Initiation','Identify Alternatives','Tentatively Selecte
 ggplot(mockdf, aes(x=factor(ID, level=c(level_order)), y=yval))+
   geom_segment(x=1, y = 0.15, xend = 6, yend = 0.15, size=1.5, color = "grey")+
   geom_point(size=8,color="grey", fill="snow1", shape=21, stroke=1.5)+
-   geom_point(aes(x=risk_item$MILESTONE, y=0.15), colour="deepskyblue2", fill="deepskyblue2", shape = 21, size =8, stroke=1.5)+
+  geom_point(aes(x=risk_item$MILESTONE, y=0.15), colour="deepskyblue2", fill="deepskyblue2", shape = 21, size =8, stroke=1.5)+
   geom_text(aes(label=xwrap), position="nudge", vjust=1.7)+
   scale_y_continuous(expand=c(0,0))+
   coord_cartesian(ylim=c(0.15,0.15))+
@@ -114,7 +114,7 @@ ggplot(mockdf, aes(x=factor(ID, level=c(level_order)), y=yval))+
 ##### `r risk_item$RISK_STATEMENT`
 
 ```{r , echo=FALSE, fig.align='center' }
-knitr::include_graphics("C:/workspace/e-rarr/RiskItemReportShinyApp/images/montecarlo.png")
+knitr::include_graphics("C:/workspace/e-rarr/RiskItemReportShinyApp/www/montecarlo.png")
 ```
 
 #### **Event Likelihood:** `r risk_item$LIKELIHOOD_DISC`
