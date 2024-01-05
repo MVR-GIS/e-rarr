@@ -31,7 +31,7 @@ RiskImpactTable<-erisk_ItemProj[,c("PROJECT_NAME.x", "RISK_NAME", "USACE_ORGANIZ
 
 shinyApp(
   ui = fluidPage(theme = bslib::bs_theme(
-    bootswatch = "cosmo"),
+    bootswatch = "flatly"),
     navbarPage(title="Risk Analysis Reporting System",
                tabPanel("Project",
                         sidebarLayout(
@@ -57,15 +57,35 @@ shinyApp(
                             )))))),
   server = function(input, output, session) {
     observe({
-      risks = RiskImpactTable |>
-        filter(RiskImpactTable$PROJECT_NAME.x == input$projectInput) |>
+      projects = RiskImpactTable |>
+      filter(RiskImpactTable$USACE_ORGANIZATION == input$districtInput) |>
+      pull(PROJECT_NAME.x) |>
+      unique() |>
+      sort()
+    updateSelectInput(
+      inputId = "projectInput", 
+      choices =c("", projects),
+      selected = input$projectInput
+    )
+    P2s = RiskImpactTable |>
+      filter(RiskImpactTable$USACE_ORGANIZATION == input$districtInput) |>
+      pull(P2_LOOKUP) |>
+      unique() |>
+      sort()
+    updateSelectInput(
+      inputId = "P2Input", 
+      choices =c("",P2s), 
+      selected = input$P2Input)
+    
+    risks = RiskImpactTable |>
+        filter(RiskImpactTable$PROJECT_NAME.x == input$projectInput)|>
         pull(RISK_NAME) |>
         unique() |>
         sort()
       updateSelectInput(
         inputId = "riskInput", 
-        choices = risks)
-      
+        choices = c("",risks)
+        )
     })
       output$reportrend <- renderUI({
         includeMarkdown(
