@@ -45,13 +45,15 @@ shinyApp(
                                       ),
                                        selectInput("riskInput", "Select a risk item", choices=sort(c(" ",RiskImpactTable$RISK_NAME)),selected = NULL,
                                                    multiple = F), 
+                                       actionButton("render", "View Report"),
                                        downloadButton("report", "Download report"),width=2),
                           
                           mainPanel(
                             tabsetPanel(id="Report Tabs",
                                         tabPanel("Risk Item Report",
                                                  htmlOutput("reportrend")),
-                                        tabPanel("Project Report"),
+                                        tabPanel("Project Report", 
+                                                 htmlOutput("ProjRend")),
                                         tabPanel("All Risk Items",
                                                  htmlOutput("AllRiskRend")),
                             )))))),
@@ -84,12 +86,15 @@ shinyApp(
         sort()
       updateSelectInput(
         inputId = "riskInput", 
-        choices = c("",risks)
+        choices = c("",risks), 
+        selected = input$riskInput
         )
     })
+    
+observeEvent(input$render,{
       output$reportrend <- renderUI({
         includeMarkdown(
-          rmarkdown::render("RiskItemReport.Rmd", params=list(projID = input$projectInput, riskID = input$riskInput)
+          rmarkdown::render("RiskItemReport.Rmd", params=list(projID = input$projectInput, riskID = input$riskInput),
          )
         )
       })
@@ -99,6 +104,13 @@ shinyApp(
           )
         )
       })
+      output$ProjRend <- renderUI({
+        includeMarkdown(
+          rmarkdown::render("ProjectAllRiskReport.Rmd", params=list(projID = input$projectInput,riskID = input$riskInput)
+          )
+        )
+      })
+}, ignoreInit=TRUE)
 
     output$report <- downloadHandler(
       # For PDF output, change this to "report.pdf"
