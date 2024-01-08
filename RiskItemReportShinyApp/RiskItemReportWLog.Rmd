@@ -37,7 +37,7 @@ risk_item_db<-data.frame(erisk_item)
 erisk_project <- read_csv("C:/workspace/e-rarr/RiskItemReportShinyApp/data/RiskProject_FullView.csv")
 risk_project_db<-data.frame(erisk_project)
 risk_treat <- read_csv("C:/workspace/e-rarr//RiskItemReportShinyApp/data/RiskTreatment_FullView.csv",col_names = TRUE)
-imagepath<-"C:/workspace/e-rarr//RiskItemReportShinyApp/images/check.png"
+imagepath<-"C:/workspace/e-rarr//RiskItemReportShinyApp/www/check.png"
 risk_transact <- read_csv("C:/workspace/e-rarr//RiskItemReportShinyApp/data/RiskTransaction_FullView.csv")
 
 
@@ -118,7 +118,7 @@ ggplot(mockdf, aes(x=factor(ID, level=c(level_order)), y=yval))+
 ##### `r risk_item$RISK_STATEMENT`
 
 ```{r , echo=FALSE, fig.align='center' }
-knitr::include_graphics("C:/workspace/e-rarr/RiskItemReportShinyApp/images/montecarlo.png")
+knitr::include_graphics("C:/workspace/e-rarr/RiskItemReportShinyApp/www/montecarlo.png")
 ```
 
 #### **Event Likelihood:** `r risk_item$LIKELIHOOD_DISC`
@@ -191,11 +191,11 @@ risk_log<-risk_log %>%
          
          
 
-risk_log_table<-risk_log %>%
+risk_log_table<-risk_log |>
   select(DATE_TIME, REASON, RISK_LOG_NOTE, TREAT_IMPLEMENT_IMG, COST_RISK_RANKING, SCHEDULE_RISK_RANKING, PERFORMANCEIMPACT_RISK_RANKING, costcolor, schedulecolor, performancecolor )
 
 risk_log_table$TREAT_IMPLEMENT_IMG = sprintf("![](%s)", risk_log_table$TREAT_IMPLEMENT_IMG)
-risk_log_table[1:10]%>%
+risk_log_table[1:10]|>
   mutate(
     COST_RISK_RANKING = cell_spec(COST_RISK_RANKING, "html", color = costcolor, align = 'c', background = costcolor),
     SCHEDULE_RISK_RANKING = cell_spec(SCHEDULE_RISK_RANKING, "html", color = schedulecolor, align = 'c', background = schedulecolor),
