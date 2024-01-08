@@ -22,7 +22,7 @@ library(formattable)
 options(scipen = 999)
 erisk_item <- read_csv("C:/workspace/e-rarr/RiskItemReportShinyApp/data/RISKLISTFULL.csv", show_col_types = FALSE)
 risk_item_db<-data.frame(erisk_item)
-erisk_project <- read_csv("C:/workspace/e-rarr/RiskItemReportShinyApp/data/RiskProject_FullView.csv", show_col_types = FALSE)
+erisk_project <- read_csv("C:/workspace/e-rarr/RiskItemReportShinyApp/data/PROJECTLIST_FULL.csv", show_col_types = FALSE)
 risk_project_db<-data.frame(erisk_project)
 
 risk_item_db<-left_join(risk_item_db, risk_project_db , by = "PROJECT_ID")|>

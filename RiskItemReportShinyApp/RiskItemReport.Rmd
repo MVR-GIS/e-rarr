@@ -2,7 +2,7 @@
 title: ""
 output: html_document
 params:
-  riskID: Cultural Resource Surveys
+  riskID: Cultural Resources Surveys
   projID: St. Augustine Back Bay CSRM
 runtime: shiny
 ---
@@ -31,18 +31,17 @@ library(DT)
 options(scipen = 999)
 
 #erisk_item_old <- read_csv("C:/workspace/e-rarr/RiskItemReportShinyApp/data/RiskItem_FullView_Update.csv")
-erisk_item <- read.csv("C:/workspace/e-rarr/RiskItemReportShinyApp/data/RISKLISTFULL.csv")
+erisk_item <- read.csv("C:/workspace/e-rarr/RiskItemReportShinyApp/data/RISKLIST_FULL.csv")
 risk_item_db<-data.frame(erisk_item)
-erisk_project <- read_csv("C:/workspace/e-rarr/RiskItemReportShinyApp/data/RiskProject_FullView.csv")
+erisk_project <- read_csv("C:/workspace/e-rarr/RiskItemReportShinyApp/data/PROJECTLIST_FULL.csv")
 risk_project_db<-data.frame(erisk_project)
-risk_treat <- read_csv("C:/workspace/e-rarr/RiskItemReportShinyApp/data/RiskTreatment_FullView.csv",col_names = TRUE)
+risk_treat <- read_csv("C:/workspace/e-rarr/RiskItemReportShinyApp/data/RISKTREATMENTLIST_FULL.csv",col_names = TRUE)
 imagepath<-"C:/workspace/e-rarr/RiskItemReportShinyApp/www/check.png"
-risk_transact <- read_csv("C:/workspace/e-rarr/RiskItemReportShinyApp/data/RiskTransaction_FullView.csv")
-
+risk_transact <- read_csv("C:/workspace/e-rarr/RiskItemReportShinyApp/data/RISKTRANSACTIONLIST_FULL.csv")
 
 erisk_ItemProj<-left_join(risk_item_db, risk_project_db, by = "PROJECT_ID")                                                                                                                          
 risk_item_filt<- risk_item_db |>
-  select(RISK_ID, PROJECT_ID, RISK_NAME)
+  select(RISK_ID, PROJECT_ID, RISK_NAME , PROJECT_NAME)
 
 
 
@@ -82,12 +81,14 @@ treat_condit <- ifelse(nrow(risk_treat_table)>0,TRUE,FALSE)
 
 # Risk Summary: `r risk_item$RISK_NAME`
 
-```{r fig.align='center', fig.height=1.75, fig.width=7, message=FALSE, warning=FALSE, milestoneplot, echo=FALSE}
+```{r milestoneplot, fig.align='center', fig.height=1.75, fig.width=7, message=FALSE, warning=FALSE, echo=FALSE}
 mockdf<- data.frame(ID = c("Project Initiation","Identify Alternatives","Tentatively Selected Plan","Agency Decision","Senior Briefing","Chief/Director's Report"),
                     yval = c(0.15,0.15,0.15,0.15,0.15,0.15),
                     xval = c(1,2,3,4,5,6))
 mockdf$xwrap = str_wrap(mockdf$ID, width=14)
 level_order<-c('Project Initiation','Identify Alternatives','Tentatively Selected Plan','Agency Decision','Senior Briefing',"Chief Report/Director's Report")
+
+
 
 
 ggplot(mockdf, aes(x=factor(ID, level=c(level_order)), y=yval))+
