@@ -8,7 +8,7 @@ runtime: shiny
 ---
 
 ```{css, echo=FALSE}
-h1 {
+h1, h2, h3, h4, h5, h6, h7, h9 {
   text-align: center;
 }
 ```
@@ -37,7 +37,7 @@ risk_item_db<-left_join(risk_item_db, risk_project_db , by = "PROJECT_ID")|>
   select(-ends_with(".y")) 
 
 RiskDeets <- risk_item_db |>
-  select("PROJECT_ID","RISK_IDENTIFIER", "PROJECT_NAME.x","RISK_NAME","RISKCATEGORY","RISK_STATEMENT" ,"LIFECYCLEPHASENAME.x","MILESTONE","LIKELIHOOD","DISCIPLINE", "PERFORMANCEIMPACT", "PERFORMANCE_RANK_DESC","COST_IMPACT_MOSTLIKELY", "COST_RANK_DESC", "SCHEDULE_IMPACT_MOSTLIKELY", "SCHEDULE_RANK_DESC", "PRIMARYMISSION", "USACE_ORGANIZATION.x")
+  select("PROJECT_ID","RISK_IDENTIFIER", "PROJECT_NAME.x","RISK_NAME","RISKCATEGORY","RISK_STATEMENT" ,"LIFECYCLEPHASENAME.x","MILESTONE","LIKELIHOOD","DISCIPLINE", "PERFORMANCEIMPACT", "PERFORMANCE_RANK_DESC", "PERFORMANCEIMPACT_RISK_RANKING","COST_IMPACT_MOSTLIKELY", "COST_RANK_DESC","COST_RISK_RANKING", "SCHEDULE_IMPACT_MOSTLIKELY", "SCHEDULE_RANK_DESC", "SCHEDULE_RISK_RANKING", "PRIMARYMISSION", "USACE_ORGANIZATION.x")
 
 
 Risk_List_Proj <-filter(RiskDeets, RiskDeets$PROJECT_NAME.x == params$projID)
@@ -48,18 +48,50 @@ Risk_List_Proj$COST_IMPACT_MOSTLIKELY <- as.character(formattable::currency(Risk
 proj_risks<-filter(Risk_List_Proj, Risk_List_Proj$PROJECT_NAME == params$projID)
 proj_risk_item<- filter(Risk_List_Proj, Risk_List_Proj$RISK_NAME == params$riskID, Risk_List_Proj$PROJECT_NAME == params$projID)
 
+proj_risks <- proj_risks %>%
+  mutate(
+    'costcolor' = case_when(
+      COST_RANK_DESC == "No Risk" ~ "#FFFFFF",
+      COST_RANK_DESC == "Opportunity" ~ 'rgb(31,120,180)',
+      COST_RANK_DESC == 'Low' ~ 'rgb(51,160,44)',
+      COST_RANK_DESC == 'Medium' ~ 'rgb(255,127,0)',
+      COST_RANK_DESC == 'High' ~ 'rgb(227,26,28)'
+    )
+  ) |>
+  mutate(
+    'schedulecolor' = case_when(
+      SCHEDULE_RANK_DESC == "No Risk" ~ "#FFFFFF",
+      SCHEDULE_RANK_DESC == "Opportunity" ~ 'rgb(31,120,180)',
+      SCHEDULE_RANK_DESC == 'Low' ~ 'rgb(51,160,44)',
+      SCHEDULE_RANK_DESC == 'Medium' ~ 'rgb(255,127,0)',
+      SCHEDULE_RANK_DESC == 'High' ~ 'rgb(227,26,28)'
+    )
+  ) |>
+  mutate(
+    'performancecolor' = case_when(
+      PERFORMANCE_RANK_DESC == "No Risk" ~ '#FFFFFF',
+      PERFORMANCE_RANK_DESC == "Opportunity" ~ 'rgb(31,120,180)',
+      PERFORMANCE_RANK_DESC == 'Low' ~
+        'rgb(51,160,44)',
+      PERFORMANCE_RANK_DESC == 'Medium' ~ 'rgb(255,127,0)',
+      PERFORMANCE_RANK_DESC == 'High' ~ 'rgb(227,26,28)'
+    )
+  )
+
+         
+
 ```
 
 
 
 
-#### Project: `r proj_risk_item$PROJECT_NAME.x`
-`r proj_risk_item$PRIMARYMISSION` `r proj_risk_item$LIFECYCLEPHASENAME.x`
-`r proj_risk_item$USACE_ORGANIZATION.x`
+## Project: `r proj_risk_item$PROJECT_NAME.x`
+##### `r proj_risk_item$PRIMARYMISSION` `r proj_risk_item$LIFECYCLEPHASENAME.x`
+##### `r proj_risk_item$USACE_ORGANIZATION.x`
 
-#### All Project Risk Impacts
+### All Project Risk Impacts
 
-```{r proj risk pies, fig.align='center', message=FALSE, warning=FALSE, echo=FALSE}
+```{r proj risk pies, fig.align='center',fig.height=3.5, fig.width=7, message=FALSE, warning=FALSE, echo=FALSE}
 ##where cost impact =yes 
 riskdf<-proj_risks
    cost_pie<- riskdf |>
@@ -140,5 +172,23 @@ riskdf<-proj_risks
                       grid=list(rows=1, columns=3),legend= list(orientation = 'h'))
   pies
 
+```
 
+``` {r proj risk log, echo = FALSE, warning=FALSE}
+
+
+risk_log_table<-proj_risks |>
+  select(RISK_IDENTIFIER, RISK_NAME, COST_RISK_RANKING, SCHEDULE_RISK_RANKING, PERFORMANCEIMPACT_RISK_RANKING, costcolor, schedulecolor, performancecolor )
+
+
+risk_log_table|>
+  mutate(
+    COST_RISK_RANKING = cell_spec(COST_RISK_RANKING, "html", color = costcolor, align = 'c', background = costcolor),
+    SCHEDULE_RISK_RANKING = cell_spec(SCHEDULE_RISK_RANKING, "html", color = schedulecolor, align = 'c', background = schedulecolor),
+    PERFORMANCEIMPACT_RISK_RANKING = cell_spec(PERFORMANCEIMPACT_RISK_RANKING, "html", color = performancecolor, align = 'c', background = performancecolor) ) |>
+  select(RISK_IDENTIFIER, RISK_NAME,COST_RISK_RANKING, SCHEDULE_RISK_RANKING, PERFORMANCEIMPACT_RISK_RANKING) |>
+  kbl(format = "html", escape = F, col.names =c("","","Cost","Schedule","Performance"), align="llccc")|>
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
+
+                                                    
 ```
