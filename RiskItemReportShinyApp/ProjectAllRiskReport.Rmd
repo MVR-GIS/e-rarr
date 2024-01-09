@@ -4,7 +4,6 @@ output: html_document
 params:
   riskID: Environmental Surveys - Wetlands
   projID: St. Augustine Back Bay CSRM
-runtime: shiny
 ---
 
 ```{css, echo=FALSE}
@@ -91,7 +90,7 @@ proj_risks <- proj_risks %>%
 
 ### All Project Risk Impacts
 
-```{r proj risk pies, fig.align='center',fig.height=3.5, fig.width=7, message=FALSE, warning=FALSE, echo=FALSE}
+```{r proj risk pies, message=FALSE, warning=FALSE, echo=FALSE}
 ##where cost impact =yes 
 riskdf<-proj_risks
    cost_pie<- riskdf |>
