@@ -11,6 +11,7 @@ library(shinythemes)
 library(shiny)
 library(bslib)
 library(stringr)
+library(markdown)
 
 erisk_item <- read_csv("C:/workspace/e-rarr/RiskItemReportShinyApp/data/RiskItem_FullView_Update.csv")
 risk_item_db<-data.frame(erisk_item)
@@ -93,20 +94,19 @@ shinyApp(
     
 observeEvent(input$render,{
       output$reportrend <- renderUI({
-        includeMarkdown(
+        includeHTML(
           rmarkdown::render("RiskItemReport.Rmd", params=list(projID = input$projectInput, riskID = input$riskInput),
          )
+        )
+      })
+      output$ProjRend <- renderUI({
+        includeHTML(
+          rmarkdown::render("ProjectAllRiskReport.Rmd", params=list(projID = input$projectInput,riskID = input$riskInput))
         )
       })
       output$AllRiskRend <- renderUI({
         includeMarkdown(
           rmarkdown::render("AllRiskDetailTable.Rmd", params=list(projID = input$projectInput)
-          )
-        )
-      })
-      output$ProjRend <- renderUI({
-        includeMarkdown(
-          rmarkdown::render("ProjectAllRiskReport.Rmd", params=list(projID = input$projectInput,riskID = input$riskInput)
           )
         )
       })
