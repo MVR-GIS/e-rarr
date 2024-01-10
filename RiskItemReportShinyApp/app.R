@@ -13,20 +13,20 @@ library(bslib)
 library(stringr)
 library(markdown)
 
-erisk_item <- read_csv("C:/workspace/e-rarr/RiskItemReportShinyApp/data/RiskItem_FullView_Update.csv")
+erisk_item <- read_csv("C:/workspace/e-rarr/RiskItemReportShinyApp/data/RISKLISTFULL.csv",show_col_types = FALSE)
 risk_item_db<-data.frame(erisk_item)
-erisk_project <- read_csv("C:/workspace/e-rarr/RiskItemReportShinyApp/data/RiskProject_FullView.csv")
+erisk_project <- read_csv("C:/workspace/e-rarr/RiskItemReportShinyApp/data/PROJECTLIST_FULL.csv",show_col_types = FALSE)
 risk_project_db<-data.frame(erisk_project)
-risk_treat <- read_csv("C:/workspace/e-rarr/RiskItemReportShinyApp/data/RiskTreatment_FullView.csv")
 
 
 
 erisk_ItemProj<-left_join(risk_item_db, risk_project_db, by = "PROJECT_ID")
 
 
-RiskImpactTable<-erisk_ItemProj[,c("PROJECT_NAME.x", "RISK_NAME", "USACE_ORGANIZATION","P2_LOOKUP")]
-
-
+RiskImpactTable<-risk_item_db[,c("PROJECT_NAME", "RISK_NAME", "USACE_ORGANIZATION","P2_NUMBER")]
+riskpies <- erisk_ItemProj |>
+  select("PROJECT_NAME.x","RISK_NAME","RISKCATEGORY","RISK_STATEMENT", 
+         "PRIMARYMISSION", "USACE_ORGANIZATION.x", "COST_RANK_DESC", "COST_RISK_RANKING")
 
 
 
@@ -50,6 +50,8 @@ shinyApp(
                           
                           mainPanel(
                             tabsetPanel(id="Report Tabs",
+                                        tabPanel("Home - District Risk Overview", plotlyOutput("pie"),
+                                                 DTOutput("overviewtab")),
                                         tabPanel("Risk Item Report",
                                                  htmlOutput("reportrend")),
                                         tabPanel("Project Report", 
@@ -58,37 +60,70 @@ shinyApp(
                                                  htmlOutput("AllRiskRend")),
                             )))))),
   server = function(input, output, session) {
-    observe({
-      projects = RiskImpactTable |>
-      filter(RiskImpactTable$USACE_ORGANIZATION == input$districtInput) |>
-      pull(PROJECT_NAME.x) |>
-      unique() |>
-      sort()
-    updateSelectInput(
-      inputId = "projectInput", 
-      choices =c("", projects),
-      selected = input$projectInput
-    )
-    P2s = RiskImpactTable |>
-      filter(RiskImpactTable$USACE_ORGANIZATION == input$districtInput) |>
-      pull(P2_LOOKUP) |>
-      unique() |>
-      sort()
-    updateSelectInput(
-      inputId = "P2Input", 
-      choices =c("",P2s), 
-      selected = input$P2Input)
     
-    risks = RiskImpactTable |>
-        filter(RiskImpactTable$PROJECT_NAME.x == input$projectInput)|>
-        pull(RISK_NAME) |>
-        unique() |>
-        sort()
+    projects <- reactive ({RiskImpactTable |>
+        filter(RiskImpactTable$USACE_ORGANIZATION == input$districtInput
+        )})
+    
+    observeEvent(projects(), {
+       choices <- sort(unique(projects()$PROJECT_NAME))
+      updateSelectInput(inputId = "projectInput", choices = c("",choices),
+                        selected = "") 
+    })
+ 
+      P2s <- reactive({RiskImpactTable |>
+          filter(RiskImpactTable$USACE_ORGANIZATION == input$districtInput)})
+      
+      observeEvent(P2s(), {
+        P2s <- sort(unique(P2s()$P2_NUMBER))
+        updateSelectInput(
+          inputId = "P2Input", 
+          choices =c("",P2s), 
+          selected = "")
+      })
+      
+    risks <-reactive({RiskImpactTable |>
+        filter(RiskImpactTable$PROJECT_NAME == input$projectInput)})
+    observeEvent(risks(),{
+        risks <- sort(unique(risks()$RISK_NAME))
       updateSelectInput(
         inputId = "riskInput", 
-        choices = c("",risks), 
-        selected = input$riskInput
+        choices = c("",risks), selected = ""
         )
+    })
+    
+    plot<-reactive({riskpies |>
+                     filter(riskpies$USACE_ORGANIZATION.x == input$districtInput)|>
+        group_by(COST_RANK_DESC) |>
+        summarize(count = n())|>
+        filter(COST_RANK_DESC != "No Risk")|>
+        mutate('color' = case_when(COST_RANK_DESC == "Opportunity" ~'rgb(31,120,180)', 
+                                   COST_RANK_DESC=='Low'~'rgb(51,160,44)', 
+                                   COST_RANK_DESC =='Medium'~ 'rgb(255,127,0)',
+                                   COST_RANK_DESC == 'High'~ 'rgb(227,26,28)' ))|>
+        plotly::arrange(factor(COST_RANK_DESC,levels=c('Opportunity', 'Low', 'Medium', 'High')))
+        })
+    
+    
+        output$pie = plotly::renderPlotly({
+          plot_ly(data = plot(),
+                  values =  ~ count,
+                  labels = ~ COST_RANK_DESC,
+                  sort = FALSE,
+                  textinfo = 'value',
+                  textfont = list(color = '#FFFFFF'),
+                  domain = list(row = 0, column = 0),
+                  marker = list(
+                    colors = ~ color,
+                    line = list(color = '#FFFFFF', width = 1.5)), type="pie")
+          })
+    
+    table<- reactive({riskpies |>
+        filter(riskpies$USACE_ORGANIZATION.x == input$districtInput)})
+  
+    output$overviewtab = DT::renderDataTable({
+      DT::datatable(table(), colnames = c("","PROJECT NAME","RISK NAME","RISKCATEGORY","RISK_STATEMENT", 
+                                          "PRIMARYMISSION", "USACE ORGANIZATION", "COST RANK DESCRIPTION", "COST RANK VALUE" ))
     })
     
       output$reportrend <- renderUI({
