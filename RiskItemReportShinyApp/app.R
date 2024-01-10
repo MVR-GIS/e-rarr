@@ -46,7 +46,6 @@ shinyApp(
                                       ),
                                        selectInput("riskInput", "Select a risk item", choices=sort(c(" ",RiskImpactTable$RISK_NAME)),selected = NULL,
                                                    multiple = F), 
-                                       actionButton("render", "View Report"),
                                        downloadButton("report", "Download report"),width=2),
                           
                           mainPanel(
@@ -92,15 +91,14 @@ shinyApp(
         )
     })
     
-observeEvent(input$render,{
       output$reportrend <- renderUI({
-        includeHTML(
+        includeMarkdown(
           rmarkdown::render("RiskItemReport.Rmd", params=list(projID = input$projectInput, riskID = input$riskInput),
          )
         )
       })
       output$ProjRend <- renderUI({
-        includeHTML(
+        includeMarkdown(
           rmarkdown::render("ProjectAllRiskReport.Rmd", params=list(projID = input$projectInput,riskID = input$riskInput))
         )
       })
@@ -110,7 +108,6 @@ observeEvent(input$render,{
           )
         )
       })
-}, ignoreInit=TRUE)
 
     output$report <- downloadHandler(
       # For PDF output, change this to "report.pdf"
