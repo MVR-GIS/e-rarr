@@ -76,7 +76,7 @@ shinyApp(
     })
  
       P2s <- reactive({RiskImpactTable |>
-          filter(RiskImpactTable$USACE_ORGANIZATION == input$districtInput || RiskImpactTable$PROJECT_NAME == input$projectInput)})
+          filter(RiskImpactTable$USACE_ORGANIZATION == input$districtInput | RiskImpactTable$PROJECT_NAME == input$projectInput)})
       
       observeEvent(P2s(), {
         P2s <- sort(unique(P2s()$P2_NUMBER))
@@ -87,7 +87,7 @@ shinyApp(
       })
       
       risks <-reactive({RiskImpactTable |>
-          filter(RiskImpactTable$P2_NUMBER == input$P2Input || RiskImpactTable$PROJECT_NAME == input$projectInput)})
+          filter(RiskImpactTable$P2_NUMBER == input$P2Input | RiskImpactTable$PROJECT_NAME == input$projectInput)})
       observeEvent(risks(),{
         risks <- sort(unique(risks()$RISK_NAME))
         updateSelectizeInput(
