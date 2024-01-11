@@ -4,6 +4,7 @@ output: html_document
 params:
   riskID: Environmental Surveys - Wetlands
   projID: St. Augustine Back Bay CSRM
+  p2ID: 479265
 ---
 
 ```{css, echo=FALSE}
@@ -36,16 +37,16 @@ risk_item_db<-left_join(risk_item_db, risk_project_db , by = "PROJECT_ID")|>
   select(-ends_with(".y")) 
 
 RiskDeets <- risk_item_db |>
-  select("PROJECT_ID","RISK_IDENTIFIER", "PROJECT_NAME.x","RISK_NAME","RISKCATEGORY","RISK_STATEMENT" ,"LIFECYCLEPHASENAME.x","MILESTONE","LIKELIHOOD","DISCIPLINE", "PERFORMANCEIMPACT", "PERFORMANCE_RANK_DESC", "PERFORMANCEIMPACT_RISK_RANKING","COST_IMPACT_MOSTLIKELY", "COST_RANK_DESC","COST_RISK_RANKING", "SCHEDULE_IMPACT_MOSTLIKELY", "SCHEDULE_RANK_DESC", "SCHEDULE_RISK_RANKING", "PRIMARYMISSION", "USACE_ORGANIZATION.x")
+  select("PROJECT_ID","P2_NUMBER.x","RISK_IDENTIFIER", "PROJECT_NAME.x","RISK_NAME","RISKCATEGORY","RISK_STATEMENT" ,"LIFECYCLEPHASENAME.x","MILESTONE","LIKELIHOOD","DISCIPLINE", "PERFORMANCEIMPACT", "PERFORMANCE_RANK_DESC", "PERFORMANCEIMPACT_RISK_RANKING","COST_IMPACT_MOSTLIKELY", "COST_RANK_DESC","COST_RISK_RANKING", "SCHEDULE_IMPACT_MOSTLIKELY", "SCHEDULE_RANK_DESC", "SCHEDULE_RISK_RANKING", "PRIMARYMISSION", "USACE_ORGANIZATION.x")
 
 
-Risk_List_Proj <-filter(RiskDeets, RiskDeets$PROJECT_NAME.x == params$projID)
+Risk_List_Proj <-filter(RiskDeets, RiskDeets$PROJECT_NAME.x == params$projID | RiskDeets$P2_NUMBER.x == params$p2ID)
 Risk_List_Proj$COST_IMPACT_MOSTLIKELY <- as.character(formattable::currency(Risk_List_Proj$COST_IMPACT_MOSTLIKELY))
 
 
 
-proj_risks<-filter(Risk_List_Proj, Risk_List_Proj$PROJECT_NAME == params$projID)
-proj_risk_item<- filter(Risk_List_Proj, Risk_List_Proj$RISK_NAME == params$riskID, Risk_List_Proj$PROJECT_NAME == params$projID)
+proj_risks<-filter(Risk_List_Proj, Risk_List_Proj$PROJECT_NAME == params$projID | Risk_List_Proj$P2_NUMBER.x == params$p2ID)
+proj_risk_item<- slice_head(Risk_List_Proj)
 
 proj_risks <- proj_risks %>%
   mutate(
@@ -90,7 +91,7 @@ proj_risks <- proj_risks %>%
 
 ### All Project Risk Impacts
 
-```{r proj risk pies, message=FALSE, warning=FALSE, echo=FALSE}
+```{r proj risk pies, message=FALSE, warning=FALSE, echo=FALSE, fig.align='center',fig.height=3, fig.width=7}
 ##where cost impact =yes 
 riskdf<-proj_risks
    cost_pie<- riskdf |>
@@ -131,6 +132,7 @@ riskdf<-proj_risks
       values =  ~ count,
       labels = ~ COST_RANK_DESC,
       sort = FALSE,
+      title="Cost",
       textinfo = 'value',
       textfont = list(color = '#FFFFFF'),
       domain = list(row = 0, column = 0),
@@ -146,6 +148,7 @@ riskdf<-proj_risks
       textinfo = 'value',
       textfont = list(color = '#FFFFFF'),
       sort = FALSE,
+      title = "Schedule",
       domain = list(row = 0, column = 1),
       marker = list(
         colors = ~ color,
@@ -157,6 +160,7 @@ riskdf<-proj_risks
       values = ~ count,
       labels = ~ PERFORMANCE_RANK_DESC,
       textinfo = 'value',
+      title = "Performance",
       textfont = list(color = '#FFFFFF'),
       sort = FALSE,
       domain = list(row = 0, column = 2),
@@ -186,8 +190,11 @@ risk_log_table|>
     SCHEDULE_RISK_RANKING = cell_spec(SCHEDULE_RISK_RANKING, "html", color = schedulecolor, align = 'c', background = schedulecolor),
     PERFORMANCEIMPACT_RISK_RANKING = cell_spec(PERFORMANCEIMPACT_RISK_RANKING, "html", color = performancecolor, align = 'c', background = performancecolor) ) |>
   select(RISK_IDENTIFIER, RISK_NAME,COST_RISK_RANKING, SCHEDULE_RISK_RANKING, PERFORMANCEIMPACT_RISK_RANKING) |>
-  kbl(format = "html", escape = F, col.names =c("","","Cost","Schedule","Performance"), align="llccc")|>
-  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))
+  separate(RISK_IDENTIFIER,c("code", "rnkorder"), sep="-", remove = FALSE) |>
+  dplyr::arrange(code,as.numeric(rnkorder))|>
+  select(RISK_IDENTIFIER, RISK_NAME,COST_RISK_RANKING, SCHEDULE_RISK_RANKING, PERFORMANCEIMPACT_RISK_RANKING) |>
+  kbl(format = "html", escape = F, col.names =c("Risk ID","Risk","Cost","Schedule","Performance"), align="ccccc", row.names = FALSE)|>
+  kable_styling(bootstrap_options = c( "hover", "condensed", "responsive"))
 
                                                     
 ```
