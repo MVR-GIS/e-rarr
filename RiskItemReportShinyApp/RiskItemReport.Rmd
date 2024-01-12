@@ -2,10 +2,10 @@
 title: ""
 output: html_document
 params:
-  riskID: Cultural Resources Surveys
-  projID: St. Augustine Back Bay CSRM
-  p2ID: 479265
-runtime: shiny
+  riskID: Arsenic Mobilization
+  projID: Lake Okeechobee Watershed
+  p2ID: ""
+  runtime: shiny
 ---
 
 ```{css, echo=FALSE}
@@ -31,14 +31,20 @@ library(leaflet)
 library(english)
 library(DT)
 options(scipen = 999)
-
+setwd("C:/workspace/e-rarr/RiskItemReportShinyApp")
+source("milestoneplot.R")
 #erisk_item_old <- read_csv("C:/workspace/e-rarr/RiskItemReportShinyApp/data/RiskItem_FullView_Update.csv")
 erisk_item <- read.csv("C:/workspace/e-rarr/RiskItemReportShinyApp/data/RISKLIST_FULL.csv")
 risk_item_db<-data.frame(erisk_item)
 erisk_project <- read_csv("C:/workspace/e-rarr/RiskItemReportShinyApp/data/PROJECTLIST_FULL.csv")
 risk_project_db<-data.frame(erisk_project)
 risk_treat <- read_csv("C:/workspace/e-rarr/RiskItemReportShinyApp/data/RISKTREATMENTLIST_FULL.csv",col_names = TRUE)
-imagepath<-"C:/workspace/e-rarr/RiskItemReportShinyApp/www/check.png"
+checkimagepath<-"C:/workspace/e-rarr/RiskItemReportShinyApp/www/check.png"
+erisk_item <- read.csv("C:/workspace/e-rarr/RiskItemReportShinyApp/data/RISKLIST_FULL.csv")
+risk_item_db<-data.frame(erisk_item)
+milestonedf<-read.csv("C:/workspace/e-rarr/RiskItemReportShinyApp/data/PHASEMILESTONE.csv")
+milestone_df<-data.frame(milestonedf)
+
 risk_transact <- read_csv("C:/workspace/e-rarr/RiskItemReportShinyApp/data/RISKTRANSACTIONLIST_FULL.csv")
 
 erisk_ItemProj<-left_join(risk_item_db, risk_project_db, by = "PROJECT_ID")                                                                                                                          
@@ -48,7 +54,7 @@ risk_item_filt<- risk_item_db |>
 
 
 RiskImpactTable<-erisk_ItemProj |>
-  select("RISK_ID","RISK_IDENTIFIER","P2_NUMBER.x", "PROJECT_ID","PROJECT_NAME.x", "RISK_NAME","RISKCATEGORY", "DISCIPLINE", "RISK_STATEMENT","LIKELIHOOD_DESC", "PROB_OCCURRENCE_EVIDENCE",  "COST_IMPACT_LOWEST", "COST_IMPACT_MOSTLIKELY", "COST_IMPACT_HIGHEST", "COST_IMPACT_EVIDENCE","SCHEDULE_IMPACT_LOWEST", "SCHEDULE_IMPACT_MOSTLIKELY", "SCHEDULE_IMPACT_HIGHEST", "SCHEDULE_IMPACT_EVIDENCE", "LIFECYCLEPHASENAME.x", "PERFORMANCEIMPACT_DESC", "PERFORMANCEIMPACT" , "MILESTONE", "RISK_MANAGER", "COST_IMPACT_DISTTYPE", "SCHEDULE_IMPACT_DISTTYPE", "NO_PERFORMANCE_IMPACT", "NO_COST_IMPACT","NO_SCHEDULE_IMPACT")
+  select("RISK_ID","RISK_IDENTIFIER","P2_NUMBER.x", "PROJECT_ID","PROJECT_NAME.x", "RISK_NAME","RISKCATEGORY", "DISCIPLINE", "RISK_STATEMENT","LIKELIHOOD_DESC", "PROB_OCCURRENCE_EVIDENCE",  "COST_IMPACT_LOWEST", "COST_IMPACT_MOSTLIKELY", "COST_IMPACT_HIGHEST", "COST_IMPACT_EVIDENCE","SCHEDULE_IMPACT_LOWEST", "SCHEDULE_IMPACT_MOSTLIKELY", "SCHEDULE_IMPACT_HIGHEST", "SCHEDULE_IMPACT_EVIDENCE", "LIFECYCLEPHASENAME.x", "PERFORMANCEIMPACT_DESC", "PERFORMANCEIMPACT" ,"PROJECTPHASEID", "MILESTONE", "RISK_MANAGER", "COST_IMPACT_DISTTYPE", "SCHEDULE_IMPACT_DISTTYPE", "NO_PERFORMANCE_IMPACT", "NO_COST_IMPACT","NO_SCHEDULE_IMPACT")
 
 risk_transact<-left_join(risk_transact, risk_item_filt, by=c("PROJECT_ID", "RISK_ID"))     
 risk_treat<-left_join(risk_treat, risk_item_filt, by=c("PROJECT_ID", "RISK_ID"))
@@ -78,7 +84,7 @@ risk_treat_table<-risk_treatment |>
   select(RISK_TREATMENT_ID,PROPOSED_RISK_TREATMENT,COST_IMPACT_RISK_TREATMENT,
          SCHEDULE_IMPACT_RISK_TREATMENT, IMPLEMENTED, RISK_NAME) |>
   mutate(IMPLEMENT_IMG = case_when(
-    IMPLEMENTED == 1 ~ imagepath,
+    IMPLEMENTED == 1 ~ checkimagepath,
     IMPLEMENTED == 0 ~ " ")) |>
   select(RISK_TREATMENT_ID,PROPOSED_RISK_TREATMENT,COST_IMPACT_RISK_TREATMENT,
          SCHEDULE_IMPACT_RISK_TREATMENT, IMPLEMENT_IMG) |>
@@ -87,7 +93,7 @@ risk_treat_table<-risk_treatment |>
 
 treat_condit <- ifelse(nrow(risk_treat_table)>0,TRUE,FALSE)
 
-    
+figcondit <- ifelse(nrow(risk_item)>0,TRUE,FALSE)    
 ```
 
 #### Project: `r risk_item$PROJECT_NAME.x`
@@ -96,32 +102,10 @@ treat_condit <- ifelse(nrow(risk_treat_table)>0,TRUE,FALSE)
 
 # Risk Summary: `r risk_item$RISK_NAME`
 
-```{r milestoneplot, fig.align='center', fig.height=1.75, fig.width=7, message=FALSE, warning=FALSE, echo=FALSE}
-mockdf<- data.frame(ID = c("Project Initiation","Identify Alternatives","Tentatively Selected Plan","Agency Decision","Senior Briefing","Chief/Director's Report"),
-                    yval = c(0.15,0.15,0.15,0.15,0.15,0.15),
-                    xval = c(1,2,3,4,5,6))
-mockdf$xwrap = str_wrap(mockdf$ID, width=14)
-level_order<-c('Project Initiation','Identify Alternatives','Tentatively Selected Plan','Agency Decision','Senior Briefing',"Chief Report/Director's Report")
 
 
-
-
-ggplot(mockdf, aes(x=factor(ID, level=c(level_order)), y=yval))+
-  geom_segment(x=1, y = 0.15, xend = 6, yend = 0.15, size=1.5, color = "grey")+
-  geom_point(size=8,color="grey", fill="snow1", shape=21, stroke=1.5)+
-  geom_point(aes(x=risk_item$MILESTONE, y=0.15), colour="#1F78B4", fill="#1F78B4", shape = 21, size =8, stroke=1.5)+
-  geom_text(aes(label=xwrap), position="nudge", vjust=1.7)+
-  scale_y_continuous(expand=c(0,0))+
-  coord_cartesian(ylim=c(0.15,0.15))+
-  theme(line = element_blank(),
-        title = element_blank(),
-        axis.text.y = element_blank(),
-        axis.text.x = element_blank(),
-        axis.ticks.length = unit(0, "pt"),
-        panel.background = element_blank(),
-        )+
-  theme(plot.margin=unit(c(0,0,0,0),"mm"))
-
+```{r milestoneplot, fig.align='center', fig.height=2, fig.width=9, message=FALSE, warning=FALSE, echo=FALSE, eval=figcondit}
+milestoneplot(riskitem=risk_item, milestonedf = milestone_df)
 
 ```
 
@@ -129,9 +113,30 @@ ggplot(mockdf, aes(x=factor(ID, level=c(level_order)), y=yval))+
 
 ##### `r risk_item$RISK_STATEMENT`
 
-```{r , echo=FALSE, fig.align='center' }
-knitr::include_graphics("C:/workspace/e-rarr/RiskItemReportShinyApp/www/montecarlo.png")
+`r if(!figcondit){"Risk treatments have not been completed for this risk item"}`
+
+```{r echo=F,fig.align= "center", fig.height=2, fig.width=8, eval = figcondit}
+monteframe<-data.frame(Opportunity=c(100), Low=c(100))
+plot_ly()|>
+  add_pie(monteframe$Opportunity, value=monteframe$Opportunity,title="Opportunity", textinfo='none',domain = list(row = 0, column = 0),hole = 0.7, marker = list(
+        colors= "#1F78B4"))|>
+  add_pie(monteframe$Opportunity, value=monteframe$Opportunity,title="Opportunity",textinfo='none',domain = list(row = 0, column = 1),hole = 0.7,marker = list(
+        colors= "#1F78B4"))|>
+  add_pie(monteframe$Low, value=monteframe$Low,title="Low",textinfo='none',domain = list(row = 0, column = 2),hole = 0.7,marker = list(
+        colors= "#33A02C")) |>
+    layout(title = "", showlegend = F,
+                      grid=list(rows=1, columns=3),
+    annotations = list(x = c(0.125,0.49, 0.9,0.12,0.485),
+                            y = c(1.2, 1.2, 1.2,-0.15, -0.15),
+                            text = c("Cost","Schedule","Performance","Mean: $0", "Mean: 0 Days"),
+                            xref = "paper",
+                            yref = "paper",
+                            showarrow = F
+                          ))
+
+
 ```
+
 
 #### **Event Likelihood:** `r risk_item$LIKELIHOOD_DISC`
 
