@@ -13,6 +13,7 @@ library(bslib)
 library(knitr)
 library(stringr)
 library(markdown)
+library(plotly)
 
 erisk_item <- read_csv("C:/workspace/e-rarr/RiskItemReportShinyApp/data/RISKLISTFULL.csv",show_col_types = FALSE)
 risk_item_db<-data.frame(erisk_item)
@@ -28,7 +29,6 @@ RiskImpactTable<-risk_item_db[,c("PROJECT_NAME", "RISK_NAME", "USACE_ORGANIZATIO
 riskpies <- erisk_ItemProj |>
   select("P2_NUMBER.x", "RISK_IDENTIFIER","PROJECT_NAME.x","RISK_NAME","RISKCATEGORY",
          "DISCIPLINE", "USACE_ORGANIZATION.x", "COST_RANK_DESC", "SCHEDULE_RANK_DESC", "PERFORMANCE_RANK_DESC")
-
 
 
 shinyApp(
