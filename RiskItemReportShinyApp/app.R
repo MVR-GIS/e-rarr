@@ -51,14 +51,14 @@ shinyApp(
                           
                           mainPanel(
                             tabsetPanel(id="Report Tabs",
-                                        tabPanel("Home - Project Risk Overview", plotlyOutput("pie"),
+                                        tabPanel("Explore Risks", plotlyOutput("pie"),
                                                  DTOutput("overviewtab")),
-                                        tabPanel("Risk Item Report",
-                                                 htmlOutput("reportrend")),
                                         tabPanel("Project Report", 
                                                  htmlOutput("ProjRend")),
                                         tabPanel("All Risk Items",
                                                  htmlOutput("AllRiskRend")),
+                                        tabPanel("Risk Item Report",
+                                                 htmlOutput("reportrend")),
                             )))))),
   
 
@@ -204,9 +204,9 @@ shinyApp(
     })
     
       output$reportrend <- renderUI({
-        includeMarkdown(
+          includeHTML(
           rmarkdown::render("RiskItemReport.Rmd", params=list(projID = input$projectInput, riskID = input$riskInput, p2ID = input$P2Input),
-         )
+        )
         )
       })
       output$ProjRend <- renderUI({
