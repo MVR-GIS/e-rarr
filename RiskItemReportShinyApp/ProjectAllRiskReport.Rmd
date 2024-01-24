@@ -26,13 +26,14 @@ library(dplyr)
 library(tidyverse)
 library(english)
 library(DT)
-libary(webshot)
-webshot::rmdshot()
+library(webshot)
 options(scipen = 999)
+source("./R/pie_prep.R")
+source("./R/pie_plots.R")
 
-erisk_item <- read.csv("C:/workspace/e-rarr/RiskItemReportShinyApp/data/RISKLISTFULL.csv")
+erisk_item <- read.csv("./data/RISKLIST_FULL.csv")
 risk_item_db<-data.frame(erisk_item)
-erisk_project <- read_csv("C:/workspace/e-rarr/RiskItemReportShinyApp/data/PROJECTLIST_FULL.csv")
+erisk_project <- read_csv("./data/PROJECTLIST_FULL.csv")
 risk_project_db<-data.frame(erisk_project)
 
 risk_item_db<-left_join(risk_item_db, risk_project_db , by = "PROJECT_ID")|>
@@ -95,87 +96,12 @@ proj_risks <- proj_risks %>%
 
 ```{r proj risk pies, message=FALSE, warning=FALSE, echo=FALSE, fig.align='center',fig.height=3, fig.width=7}
 ##where cost impact =yes 
-riskdf<-proj_risks
-   cost_pie<- riskdf |>
-    group_by(COST_RANK_DESC) |>
-    summarize(count = n())|>
-    filter(COST_RANK_DESC != "No Risk") |>
-    mutate('color' = case_when(COST_RANK_DESC == "Opportunity" ~'rgb(31,120,180)', 
-  COST_RANK_DESC=='Low'~'rgb(51,160,44)', 
-  COST_RANK_DESC =='Medium'~ 'rgb(255,127,0)',
-  COST_RANK_DESC == 'High'~ 'rgb(227,26,28)' ))|>
-  plotly::arrange(factor(COST_RANK_DESC,levels=c('Opportunity', 'Low', 'Medium', 'High')))
-  
- schedule_pie<- riskdf |>
-    group_by(SCHEDULE_RANK_DESC) |>
-    summarize(count = n())|>
-    filter(SCHEDULE_RANK_DESC != "No Risk")|>
-    mutate('color' = case_when(SCHEDULE_RANK_DESC == "Opportunity" ~ 'rgb(31,120,180)', 
-  SCHEDULE_RANK_DESC=='Low'~'rgb(51,160,44)', 
-  SCHEDULE_RANK_DESC =='Medium'~ 'rgb(255,127,0)',
-  SCHEDULE_RANK_DESC == 'High'~ 'rgb(227,26,28)' ))|>
-  plotly::arrange(factor(SCHEDULE_RANK_DESC,levels=c('Opportunity', 'Low', 'Medium', 'High')))
- 
-  perform_pie<- riskdf |>
-    group_by(PERFORMANCE_RANK_DESC) |>
-    summarize(count = n())|>
-    filter(PERFORMANCE_RANK_DESC != "No Risk")|>
-     mutate('color' = case_when(PERFORMANCE_RANK_DESC == "Opportunity" ~ 'rgb(31,120,180)', 
-  PERFORMANCE_RANK_DESC=='Low'~'rgb(51,160,44)', 
-  PERFORMANCE_RANK_DESC =='Medium'~ 'rgb(255,127,0)',
-  PERFORMANCE_RANK_DESC == 'High'~ 'rgb(227,26,28)' ))|>
-  plotly::arrange(factor(PERFORMANCE_RANK_DESC,levels=c('Opportunity', 'Low', 'Medium', 'High')))
+   cost_pie<- pieprep(proj_risks, "COST_RANK_DESC")
+   
+ schedule_pie<-pieprep(proj_risks, "SCHEDULE_RANK_DESC")
+  perform_pie<- pieprep(proj_risks, "PERFORMANCE_RANK_DESC")
 
-  
-  
-  fig <- plot_ly(textfont = list(color = '#FFFFFF')) |>
-    add_pie(
-      data = cost_pie,
-      values =  ~ count,
-      labels = ~ COST_RANK_DESC,
-      sort = FALSE,
-      title="Cost",
-      textinfo = 'value',
-      textfont = list(color = '#FFFFFF'),
-      domain = list(row = 0, column = 0),
-      marker = list(
-        colors = ~ color,
-        line = list(color = '#FFFFFF', width = 1.5)
-      )
-    ) |>
-    add_pie(
-      data = schedule_pie,
-      values = ~ count,
-      labels = ~ SCHEDULE_RANK_DESC,
-      textinfo = 'value',
-      textfont = list(color = '#FFFFFF'),
-      sort = FALSE,
-      title = "Schedule",
-      domain = list(row = 0, column = 1),
-      marker = list(
-        colors = ~ color,
-        line = list(color = '#FFFFFF', width = 1.5)
-      )
-    ) |>
-    add_pie(
-      data = perform_pie,
-      values = ~ count,
-      labels = ~ PERFORMANCE_RANK_DESC,
-      textinfo = 'value',
-      title = "Performance",
-      textfont = list(color = '#FFFFFF'),
-      sort = FALSE,
-      domain = list(row = 0, column = 2),
-      marker = list(
-        colors = ~ color,
-        line = list(color = '#FFFFFF', width = 1.5)
-      )
-    )
-  
-  pies<-fig |>
-    layout(title = "", showlegend = T,
-                      grid=list(rows=1, columns=3),legend= list(orientation = 'h'))
-  pies
+  pie_plots(cost_pie,schedule_pie,perform_pie)
 
 ```
 
