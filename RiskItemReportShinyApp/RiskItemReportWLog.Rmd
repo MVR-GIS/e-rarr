@@ -33,7 +33,7 @@ library(DT)
 options(scipen = 999)
 
 #erisk_item_old <- read_csv("C:/workspace/e-rarr/RiskItemReportShinyApp/data/RiskItem_FullView_Update.csv")
-erisk_item <- read.csv("C:/workspace/e-rarr/RiskItemReportShinyApp/data/RISKLISTFULL.csv")
+erisk_item <- read.csv("C:/workspace/e-rarr/RiskItemReportShinyApp/data/RISKLIST_FULL.csv")
 risk_item_db<-data.frame(erisk_item)
 erisk_project <- read_csv("C:/workspace/e-rarr/RiskItemReportShinyApp/data/RiskProject_FullView.csv")
 risk_project_db<-data.frame(erisk_project)
