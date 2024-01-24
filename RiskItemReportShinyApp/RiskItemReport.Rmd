@@ -5,7 +5,6 @@ params:
   riskID: Preliminary Design
   projID: Biscayne Bay Coastal Wetlands (BBCW)
   p2ID: ""
-  runtime: shiny
 ---
 
 ```{css, echo=FALSE}
@@ -30,6 +29,8 @@ library(tidyverse)
 library(leaflet)
 library(english)
 library(DT)
+library(webshot)
+webshot::install_phantomjs(force=TRUE)
 options(scipen = 999)
 setwd("C:/workspace/e-rarr/RiskItemReportShinyApp")
 source("r/milestoneplot.R")
@@ -112,25 +113,25 @@ milestoneplot(riskitem=risk_item, milestonedf = milestone_df)
 
 
 ```{r echo=F,fig.align= "center", out.width="75%"}
-# monteframe<-data.frame(Opportunity=c(100), Low=c(100))
-# plot_ly()|>
-#   add_pie(monteframe$Opportunity, value=monteframe$Opportunity,title="Opportunity", textinfo='none',domain = list(row = 0, column = 0),hole = 0.7, marker = list(
-#         colors= "#1F78B4"))|>
-#   add_pie(monteframe$Opportunity, value=monteframe$Opportunity,title="Opportunity",textinfo='none',domain = list(row = 0, column = 1),hole = 0.7,marker = list(
-#         colors= "#1F78B4"))|>
-#   add_pie(monteframe$Low, value=monteframe$Low,title="Low",textinfo='none',domain = list(row = 0, column = 2),hole = 0.7,marker = list(
-#         colors= "#33A02C")) |>
-#     layout(title = "", showlegend = F,
-#                       grid=list(rows=1, columns=3),
-#     annotations = list(x = c(0.125,0.49, 0.9,0.12,0.485),
-#                             y = c(1.2, 1.2, 1.2,-0.15, -0.15),
-#                             text = c("Cost","Schedule","Performance","Mean: $0", "Mean: 0 Days"),
-#                             xref = "paper",
-#                             yref = "paper",
-#                             showarrow = F
-#                           ))
+monteframe<-data.frame(Opportunity=c(100), Low=c(100))
+plot_ly()|>
+  add_pie(monteframe$Opportunity, value=monteframe$Opportunity,title="Opportunity", textinfo='none',domain = list(row = 0, column = 0),hole = 0.7, marker = list(
+        colors= "#1F78B4"))|>
+  add_pie(monteframe$Opportunity, value=monteframe$Opportunity,title="Opportunity",textinfo='none',domain = list(row = 0, column = 1),hole = 0.7,marker = list(
+        colors= "#1F78B4"))|>
+  add_pie(monteframe$Low, value=monteframe$Low,title="Low",textinfo='none',domain = list(row = 0, column = 2),hole = 0.7,marker = list(
+        colors= "#33A02C")) |>
+    layout(title = "", showlegend = F,
+                      grid=list(rows=1, columns=3),
+    annotations = list(x = c(0.125,0.49, 0.9,0.12,0.485),
+                            y = c(1.2, 1.2, 1.2,-0.15, -0.15),
+                            text = c("Cost","Schedule","Performance","Mean: $0", "Mean: 0 Days"),
+                            xref = "paper",
+                            yref = "paper",
+                            showarrow = F
+                          ))
 
-include_graphics("C:/workspace/e-rarr/RiskItemReportShinyApp/montecarlo.png")
+#include_graphics("C:/workspace/e-rarr/RiskItemReportShinyApp/montecarlo.png")
 
 ```
 
