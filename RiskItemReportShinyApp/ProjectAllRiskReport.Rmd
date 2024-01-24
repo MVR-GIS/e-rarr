@@ -26,6 +26,8 @@ library(dplyr)
 library(tidyverse)
 library(english)
 library(DT)
+libary(webshot)
+webshot::rmdshot()
 options(scipen = 999)
 
 erisk_item <- read.csv("C:/workspace/e-rarr/RiskItemReportShinyApp/data/RISKLISTFULL.csv")
