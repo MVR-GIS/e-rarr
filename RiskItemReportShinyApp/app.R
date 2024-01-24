@@ -15,10 +15,12 @@ library(stringr)
 library(markdown)
 library(plotly)
 
-erisk_item <- read_csv("C:/workspace/e-rarr/RiskItemReportShinyApp/data/RISKLISTFULL.csv",show_col_types = FALSE)
+erisk_item <- read_csv("./data/RISKLIST_FULL.csv",show_col_types = FALSE)
 risk_item_db<-data.frame(erisk_item)
-erisk_project <- read_csv("C:/workspace/e-rarr/RiskItemReportShinyApp/data/PROJECTLIST_FULL.csv",show_col_types = FALSE)
+erisk_project <- read_csv("./data/PROJECTLIST_FULL.csv",show_col_types = FALSE)
 risk_project_db<-data.frame(erisk_project)
+source("./R/pie_prep.R")
+source("./R/pie_plots.R")
 
 
 
@@ -98,95 +100,17 @@ shinyApp(
       
       
     
-    plot<-reactive({riskpies |>
+    piedata <-reactive({riskpies |>
         filter(
-          conditional(input$projectInput != "", riskpies$PROJECT_NAME.x == input$projectInput))|>
-        group_by(COST_RANK_DESC) |>
-        summarize(count = n())|>
-        filter(COST_RANK_DESC != "No Risk")|>
-        mutate('color' = case_when(COST_RANK_DESC == "Opportunity" ~'rgb(31,120,180)', 
-                                   COST_RANK_DESC=='Low'~'rgb(51,160,44)', 
-                                   COST_RANK_DESC =='Medium'~ 'rgb(255,127,0)',
-                                   COST_RANK_DESC == 'High'~ 'rgb(227,26,28)' ))|>
-        plotly::arrange(factor(COST_RANK_DESC,levels=c('Opportunity', 'Low', 'Medium', 'High')))
-        })
+          conditional(input$projectInput != "", riskpies$PROJECT_NAME.x == input$projectInput))})
     
-    plot2<-reactive({riskpies |>
-        filter(
-          conditional(input$projectInput != "", riskpies$PROJECT_NAME.x == input$projectInput))|>
-        group_by(SCHEDULE_RANK_DESC) |>
-        summarize(count = n())|>
-        filter(SCHEDULE_RANK_DESC != "No Risk")|>
-        mutate('color' = case_when(SCHEDULE_RANK_DESC == "Opportunity" ~'rgb(31,120,180)', 
-                                   SCHEDULE_RANK_DESC=='Low'~'rgb(51,160,44)', 
-                                   SCHEDULE_RANK_DESC =='Medium'~ 'rgb(255,127,0)',
-                                   SCHEDULE_RANK_DESC == 'High'~ 'rgb(227,26,28)' ))|>
-        plotly::arrange(factor(SCHEDULE_RANK_DESC,levels=c('Opportunity', 'Low', 'Medium', 'High')))
-    })
-    
-    plot3<-reactive({riskpies |>
-        filter(
-          conditional(input$projectInput != "", riskpies$PROJECT_NAME.x == input$projectInput))|>
-        group_by(PERFORMANCE_RANK_DESC) |>
-        summarize(count = n())|>
-        filter(PERFORMANCE_RANK_DESC != "No Risk")|>
-        mutate('color' = case_when(PERFORMANCE_RANK_DESC == "Opportunity" ~'rgb(31,120,180)', 
-                                   PERFORMANCE_RANK_DESC=='Low'~'rgb(51,160,44)', 
-                                   PERFORMANCE_RANK_DESC =='Medium'~ 'rgb(255,127,0)',
-                                   PERFORMANCE_RANK_DESC == 'High'~ 'rgb(227,26,28)' ))|>
-        plotly::arrange(factor(PERFORMANCE_RANK_DESC,levels=c('Opportunity', 'Low', 'Medium', 'High')))
-    })
-    
-        output$pie = plotly::renderPlotly({
-         fig1 <- plot_ly(textfont = list(color = '#FFFFFF')) 
-           fig1 <-fig1 |> 
-             add_pie(data = plot(),
-                  values =  ~ count,
-                  labels = ~ COST_RANK_DESC,
-                  sort = FALSE,
-                  textinfo = 'value',
-                  title = "Cost",
-                  textfont = list(color = '#FFFFFF'),
-                  domain = list(row = 0, column = 0),
-                  marker = list(
-                    colors = ~ color,
-                    line = list(color = '#FFFFFF', width = 1.5))) 
-         
-           fig1<- fig1 |>
-            add_pie(
-             data = plot2(),
-             values = ~ count,
-             labels = ~ SCHEDULE_RANK_DESC,
-             textinfo = 'value',
-             textfont = list(color = '#FFFFFF'),
-             sort = FALSE,
-             title = "Schedule",
-             domain = list(row = 0, column = 1),
-             marker = list(
-               colors = ~ color,
-               line = list(color = '#FFFFFF', width = 1.5)))
-           
-           fig1<- fig1 |>
-             add_pie(
-               data = plot3(),
-               values = ~ count,
-               labels = ~PERFORMANCE_RANK_DESC,
-               textinfo = 'value',
-               textfont = list(color = '#FFFFFF'),
-               sort = FALSE,
-               title = "Performance",
-               domain = list(row = 0, column = 2),
-               marker = list(
-                 colors = ~ color,
-                 line = list(color = '#FFFFFF', width = 1.5)))
-           
-          fig1<- fig1|>
-            layout(showlegend = T,
-                   grid=list(rows=1, columns=3),legend= list(orientation = 'h'))
-          fig1
-
-          })
-    
+      cost_pie<- reactive(pieprep(piedata(), "COST_RANK_DESC"))
+      
+      schedule_pie<-reactive(pieprep(piedata(), "SCHEDULE_RANK_DESC"))
+      perform_pie<- reactive(pieprep(piedata(), "PERFORMANCE_RANK_DESC"))
+      
+      output$pie = plotly::renderPlotly({pie_plots(cost_pie(),schedule_pie(),perform_pie())})
+      
         
     conditional <- function(condition, success){
       if (condition) success else TRUE}
@@ -197,7 +121,7 @@ shinyApp(
           conditional(input$projectInput != "", riskpies$PROJECT_NAME.x == input$projectInput))|>
         select(RISK_IDENTIFIER, USACE_ORGANIZATION.x, PROJECT_NAME.x, RISK_NAME, RISKCATEGORY, DISCIPLINE, COST_RANK_DESC, SCHEDULE_RANK_DESC, PERFORMANCE_RANK_DESC)
       })
-  
+    
     output$overviewtab = DT::renderDataTable({
       DT::datatable(table(), colnames = c("Risk Identifier","USACE Organization","Project Name","Risk Name ","Risk Category","Discipline", 
                                           "Cost Rank", "Schedule Rank", "Performance Rank" ), rownames=FALSE, filter = "top")
