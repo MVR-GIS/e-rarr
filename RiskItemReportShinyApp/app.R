@@ -33,9 +33,9 @@ riskpies <- erisk_ItemProj |>
 
 shinyApp(
   ui = fluidPage(theme = bslib::bs_theme(
-    bootswatch = "flatly"),
-    navbarPage(title="Risk Analysis Reporting System",
-               tabPanel("Project",
+    bootswatch = "cosmo"),
+    navbarPage(title=div(img(src="castle.png", height="50px", width="60px"),"Risk Analysis Reporting System"),
+               tabPanel("  Project",
                         sidebarLayout(
                           sidebarPanel(
                             selectizeInput("districtInput", "Select a District", choices=sort(c("",RiskImpactTable$USACE_ORGANIZATION)),selected = NULL,
@@ -65,7 +65,7 @@ shinyApp(
   
   server = function(input, output, session) {
     
-    projects <- reactive ({RiskImpactTable |>
+    projects <- reactive({RiskImpactTable |>
         filter(RiskImpactTable$USACE_ORGANIZATION == input$districtInput
         )})
     
@@ -204,8 +204,8 @@ shinyApp(
     })
     
       output$reportrend <- renderUI({
-          includeHTML(
-          rmarkdown::render("RiskItemReport.Rmd", params=list(projID = input$projectInput, riskID = input$riskInput, p2ID = input$P2Input),
+          includeMarkdown(
+          rmarkdown::render("RiskItemReport.Rmd", params=list(projID = input$projectInput, riskID = input$riskInput, p2ID = input$P2Input)
         )
         )
       })
