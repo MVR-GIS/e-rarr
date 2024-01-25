@@ -1,0 +1,104 @@
+---
+title: ""
+output: html_document
+params:
+  projID: St. Augustine Back Bay CSRM
+  p2ID: ""
+---
+
+```{css, echo=FALSE}
+ h2,h3, h5,h7 {
+  text-align: center;
+}
+h4 {
+font-weight: 600;
+text-align: center;
+}
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, include=FALSE}
+library(readr) 
+library(magrittr) 
+library(dplyr) 
+library(kableExtra) 
+library(rlang)
+library(plotly)
+library(ggplot2)
+library(ggrepel)
+library(dplyr)
+library(tidyverse)
+library(english)
+library(DT)
+library(webshot)
+options(scipen = 999)
+
+
+erisk_item <- read.csv("./data/RISKLIST_FULL.csv")
+risk_item_db<-data.frame(erisk_item)
+erisk_project <- read_csv("./data/PROJECTLIST_FULL.csv")
+risk_project_db<-data.frame(erisk_project)
+
+risk_item_db<-left_join(risk_item_db, risk_project_db , by = "PROJECT_ID")|>
+  select(-ends_with(".y")) 
+
+RiskDeets <- risk_item_db |>
+  select("PROJECT_ID","P2_NUMBER.x","RISK_IDENTIFIER", "PROJECT_NAME.x","RISK_NAME","RISKCATEGORY","RISK_STATEMENT" ,"LIFECYCLEPHASENAME.x","MILESTONE","LIKELIHOOD","DISCIPLINE", "PERFORMANCEIMPACT", "PERFORMANCE_RANK_DESC", "PERFORMANCEIMPACT_RISK_RANKING","COST_IMPACT_MOSTLIKELY", "COST_RANK_DESC","COST_RISK_RANKING", "SCHEDULE_IMPACT_MOSTLIKELY", "SCHEDULE_RANK_DESC", "SCHEDULE_RISK_RANKING", "PRIMARYMISSION", "USACE_ORGANIZATION.x")
+
+
+Risk_List_Proj <-filter(RiskDeets, RiskDeets$PROJECT_NAME.x == params$projID | RiskDeets$P2_NUMBER.x == params$p2ID)
+Risk_List_Proj$COST_IMPACT_MOSTLIKELY <- as.character(formattable::currency(Risk_List_Proj$COST_IMPACT_MOSTLIKELY))
+
+
+
+proj_risks<-filter(Risk_List_Proj, Risk_List_Proj$PROJECT_NAME == params$projID | Risk_List_Proj$P2_NUMBER.x == params$p2ID)
+proj_risk_item<- slice_head(Risk_List_Proj)
+```
+
+## Project: `r proj_risk_item$PROJECT_NAME.x`
+##### `r proj_risk_item$PRIMARYMISSION` (Current Phase:`r proj_risk_item$LIFECYCLEPHASENAME.x`)
+##### `r proj_risk_item$USACE_ORGANIZATION.x`
+
+### Project Risk Summary 
+<center>
+```{r proj risk pies, message=FALSE, warning=FALSE, echo=FALSE, fig.align='center',fig.height=2, fig.width=7}
+#make pie plots 
+  cost_pie<- erarr::pieprep(proj_risks, "COST_RANK_DESC")
+  schedule_pie<-erarr::pieprep(proj_risks, "SCHEDULE_RANK_DESC")
+  perform_pie<- erarr::pieprep(proj_risks, "PERFORMANCE_RANK_DESC")
+
+  erarr::pie_plots(cost_pie,schedule_pie,perform_pie)
+
+```
+</center>
+
+#### Top 3 Cost Impacts (All Phases)
+``` {r cost risk log, echo = FALSE, warning=FALSE}
+cost_log_table<-proj_risks |>
+  select(RISK_IDENTIFIER, RISK_NAME, RISKCATEGORY , MILESTONE , LIKELIHOOD, COST_IMPACT_MOSTLIKELY) |>
+  slice_max(COST_IMPACT_MOSTLIKELY, n=4)|>
+  kbl(format = "html", escape = F, col.names =c("Risk ID","Risk Name","Risk Category","Project Milestone","Likelihood", "Cost Impact"), align="clcccc", row.names = FALSE)|>
+  kable_styling(bootstrap_options = c( "hover", "condensed", "responsive"))
+
+cost_log_table
+```
+
+#### Top 3 Schedule Impacts (All Phases)
+``` {r schedule risk log, echo = FALSE, warning=FALSE}
+schedule_log_table<-proj_risks |>
+  select(RISK_IDENTIFIER, RISK_NAME, RISKCATEGORY , MILESTONE , LIKELIHOOD, SCHEDULE_IMPACT_MOSTLIKELY) |>
+  slice_max(SCHEDULE_IMPACT_MOSTLIKELY, n=4)|>
+  kbl(format = "html", escape = F, col.names =c("Risk ID","Risk Name","Risk Category","Project Milestone","Likelihood", "Schedule Impact (Days)"), align="clcccc", row.names = FALSE)|>
+  kable_styling(bootstrap_options = c( "hover", "condensed", "responsive"))
+schedule_log_table
+```
+
+#### Top 3 Performance Impacts (All Phases)
+``` {r perform risk log, echo = FALSE, warning=FALSE}
+perform_log_table<-proj_risks |>
+  select(RISK_IDENTIFIER, RISK_NAME, RISKCATEGORY , MILESTONE , LIKELIHOOD, PERFORMANCE_RANK_DESC) |>
+  arrange(factor(PERFORMANCE_RANK_DESC, levels = c ("High","Medium","Low","Opportunity"))) |>
+  slice_head(n=4)|>
+  kbl(format = "html", escape = F, col.names =c("Risk ID","Risk Name","Risk Category","Project Milestone","Likelihood", "Performance Impact"), align="clcccc", row.names = FALSE)|>
+  kable_styling(bootstrap_options = c( "hover", "condensed", "responsive"))
+perform_log_table
+```
