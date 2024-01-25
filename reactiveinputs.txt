@@ -19,3 +19,12 @@
       updateSelectInput(
         inputId = "P2Input", 
         choices = P2s
+        
+        
+        
+        
+         ```{r echo=FALSE, eval = params$p2ID != ""}
+#risk_item<-filter(RiskImpactTable, RiskImpactTable$RISK_NAME == params$riskID, RiskImpactTable$P2_NUMBER == params$p2ID)
+#risk_treatment<-filter(risk_treat, risk_treat$PROJECT_NAME == params$projID, risk_treat$RISK_NAME == params$riskID)
+
+ ```
