@@ -1,10 +1,10 @@
 Package: erarr
-Title: What the Package Does (One Line, Title Case)
+Title: A package to support the Enterprise Risk Analysis Reporting Application
 Version: 0.0.0.9000
 Authors@R: 
-    person("First", "Last", , "first.last@example.com", role = c("aut", "cre"),
+    person("Barrie", "Chileen Martinez", , "barrie.chileen@gmail.com", role = c("aut", "cre"),
            comment = c(ORCID = "YOUR-ORCID-ID"))
-Description: What the package does (one paragraph).
+Description: This package provides functions to support the Risk Analysis Reporting Application for USACE. This package neatly containerizes the RARR Shiny Application to support parametrized risk reporting in R.
 License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
     license
 Encoding: UTF-8
