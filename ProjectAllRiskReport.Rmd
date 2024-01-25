@@ -2,13 +2,12 @@
 title: ""
 output: html_document
 params:
-  riskID: Environmental Surveys - Wetlands
   projID: St. Augustine Back Bay CSRM
   p2ID: 479265
 ---
 
 ```{css, echo=FALSE}
-h1, h2, h3, h4, h5, h6, h7, h9 {
+h2,h3,h5 {
   text-align: center;
 }
 ```
@@ -28,8 +27,7 @@ library(english)
 library(DT)
 library(webshot)
 options(scipen = 999)
-source("./R/pie_prep.R")
-source("./R/pie_plots.R")
+
 
 erisk_item <- read.csv("./data/RISKLIST_FULL.csv")
 risk_item_db<-data.frame(erisk_item)
@@ -93,18 +91,18 @@ proj_risks <- proj_risks %>%
 ##### `r proj_risk_item$USACE_ORGANIZATION.x`
 
 ### All Project Risk Impacts
-
-```{r proj risk pies, message=FALSE, warning=FALSE, echo=FALSE, fig.align='center',fig.height=3, fig.width=7}
+<center>
+```{r proj risk pies, message=FALSE, warning=FALSE, echo=FALSE,fig.height=2, fig.width=7}
 #make pie plots 
-   cost_pie<- pieprep(proj_risks, "COST_RANK_DESC")
+   cost_pie<- erarr::pieprep(proj_risks, "COST_RANK_DESC")
    
- schedule_pie<-pieprep(proj_risks, "SCHEDULE_RANK_DESC")
-  perform_pie<- pieprep(proj_risks, "PERFORMANCE_RANK_DESC")
+ schedule_pie<-erarr::pieprep(proj_risks, "SCHEDULE_RANK_DESC")
+  perform_pie<- erarr::pieprep(proj_risks, "PERFORMANCE_RANK_DESC")
 
-  pie_plots(cost_pie,schedule_pie,perform_pie)
+  erarr::pie_plots(cost_pie,schedule_pie,perform_pie)
 
 ```
-
+</center>
 ``` {r proj risk log, echo = FALSE, warning=FALSE}
 
 
