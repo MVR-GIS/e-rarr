@@ -1,11 +1,17 @@
 ---
-title: "Risk Item Report"
-output:
-  html_document: default
+title: ""
+output: html_document
 params:
-  riskID: 2
-  projID: 2307
+  riskID: Preliminary Design
+  projID: Biscayne Bay Coastal Wetlands (BBCW)
+  p2ID: ""
 ---
+
+```{css, echo=FALSE}
+h1 {
+  text-align: center;
+}
+```
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, include=FALSE}
 library(readr) 
@@ -17,73 +23,83 @@ library(plotly)
 library(ggplot2)
 library(ggrepel)
 library(dplyr)
+library(knitr)
 library(crosstalk)
 library(tidyverse)
 library(leaflet)
+library(english)
 library(DT)
-erisk_item <- read_csv("C:/workspace/e-rarr/data/RiskItem_FullView_Update.csv")
+library(webshot)
+webshot::install_phantomjs(force=TRUE)
+options(scipen = 999)
+source("R/milestoneplot.R")
+erisk_item <- read.csv("./data/RISKLIST_FULL.csv")
 risk_item_db<-data.frame(erisk_item)
-erisk_project <- read_csv("C:/workspace/e-rarr/data/RiskProject_FullView.csv")
+erisk_project <- read_csv("./data/PROJECTLIST_FULL.csv")
 risk_project_db<-data.frame(erisk_project)
-risk_treat <- read_csv("C:/workspace/e-rarr/data/RiskTreatment_FullView.csv")
-imagepath<-"C:/workspace/e-rarr/images/check.png"
-risk_transact <- read_csv("C:/workspace/e-rarr/data/RiskTransaction_FullView.csv")
+risk_treat <- read_csv("./data/RISKTREATMENTLIST_FULL.csv",col_names = TRUE)
+checkimagepath<-"./www/check.png"
+erisk_item <- read.csv("./data/RISKLIST_FULL.csv")
+risk_item_db<-data.frame(erisk_item)
+milestonedf<-read.csv("./data/PHASEMILESTONE.csv")
+milestone_df<-data.frame(milestonedf)
+
+risk_transact <- read_csv("./data/RISKTRANSACTIONLIST_FULL.csv")
+
+erisk_ItemProj<-left_join(risk_item_db, risk_project_db, by = "PROJECT_ID")                                                                                                                          
+risk_item_filt<- risk_item_db |>
+  select(RISK_ID, PROJECT_ID, RISK_NAME , PROJECT_NAME, P2_NUMBER)
 
 
-erisk_ItemProj<-left_join(risk_item_db, risk_project_db, by = "PROJECT_ID")
 
-erisk_testing<-erisk_ItemProj[,c(3,5,6,8,22,27,32,40,51,56,64,65)]
+RiskImpactTable<-erisk_ItemProj |>
+  select("RISK_ID","RISK_IDENTIFIER","P2_NUMBER.x", "PROJECT_ID","PROJECT_NAME.x", "RISK_NAME","RISKCATEGORY", "DISCIPLINE", "RISK_STATEMENT","LIKELIHOOD_DESC", "PROB_OCCURRENCE_EVIDENCE",  "COST_IMPACT_LOWEST", "COST_IMPACT_MOSTLIKELY", "COST_IMPACT_HIGHEST", "COST_IMPACT_EVIDENCE","SCHEDULE_IMPACT_LOWEST", "SCHEDULE_IMPACT_MOSTLIKELY", "SCHEDULE_IMPACT_HIGHEST", "SCHEDULE_IMPACT_EVIDENCE", "LIFECYCLEPHASENAME.x", "PERFORMANCEIMPACT_DESC", "PERFORMANCEIMPACT" ,"PROJECTPHASEID", "MILESTONE", "RISK_MANAGER", "COST_IMPACT_DISTTYPE", "SCHEDULE_IMPACT_DISTTYPE", "NO_PERFORMANCE_IMPACT", "NO_COST_IMPACT","NO_SCHEDULE_IMPACT")
 
-RiskImpactTable<-erisk_ItemProj[,c(1,2,3,6,17,9,12,13,26,27,28,29,30,31,32,33,23,22,42,48,49,50,51,52)]
-
-
-risk_item<-filter(RiskImpactTable, RiskImpactTable$RISK_ID == params$riskID, RiskImpactTable$PROJECT_ID == params$projID)
-risk_treatment<-filter(risk_treat, risk_treat$PROJECT_ID == params$projID, risk_treat$RISK_ID == params$riskID)
-
-risk_item_table<- risk_item %>%
-  select(COST_IMPACT_LOWEST,COST_IMPACT_HIGHEST, COST_IMPACT_EVIDENCE,SCHEDULE_IMPACT_LOWEST, SCHEDULE_IMPACT_HIGHEST, SCHEDULE_IMPACT_EVIDENCE,PERFORMANCEIMPACT_DESC, PERFORMANCEIMPACTTYPE, PERFORMANCEIMPACT_DESC, SCHEDULE_IMPACT_DISTTYPE)
+risk_transact<-left_join(risk_transact, risk_item_filt, by=c("PROJECT_ID", "RISK_ID"))     
+risk_treat<-left_join(risk_treat, risk_item_filt, by=c("PROJECT_ID", "RISK_ID"))
 
 
-risk_treat_table<-risk_treatment %>%
+
+```
+
+```{r echo=FALSE, eval = params$projID != ""}
+risk_item<-filter(RiskImpactTable, RiskImpactTable$RISK_NAME == params$riskID, RiskImpactTable$PROJECT_NAME.x == params$projID)
+risk_treatment<-filter(risk_treat, risk_treat$PROJECT_NAME == params$projID, risk_treat$RISK_NAME == params$riskID)
+
+```
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+risk_item_table<- risk_item |>
+  select(COST_IMPACT_LOWEST,COST_IMPACT_HIGHEST, COST_IMPACT_EVIDENCE,SCHEDULE_IMPACT_LOWEST, SCHEDULE_IMPACT_HIGHEST, SCHEDULE_IMPACT_EVIDENCE,PERFORMANCEIMPACT_DESC, PERFORMANCEIMPACT, PERFORMANCEIMPACT_DESC, SCHEDULE_IMPACT_DISTTYPE)
+
+
+risk_treat_table<-risk_treatment |>
   select(RISK_TREATMENT_ID,PROPOSED_RISK_TREATMENT,COST_IMPACT_RISK_TREATMENT,
-         SCHEDULE_IMPACT_RISK_TREATMENT, IMPLEMENTED) %>%
+         SCHEDULE_IMPACT_RISK_TREATMENT, IMPLEMENTED, RISK_NAME) |>
   mutate(IMPLEMENT_IMG = case_when(
-    IMPLEMENTED == 1 ~ imagepath,
-    IMPLEMENTED == 0 ~ "")) %>%
+    IMPLEMENTED == 1 ~ checkimagepath,
+    IMPLEMENTED == 0 ~ " ")) |>
   select(RISK_TREATMENT_ID,PROPOSED_RISK_TREATMENT,COST_IMPACT_RISK_TREATMENT,
-         SCHEDULE_IMPACT_RISK_TREATMENT, IMPLEMENT_IMG)
+         SCHEDULE_IMPACT_RISK_TREATMENT, IMPLEMENT_IMG) |>
+  mutate(PROPOSED_RISK_TREATMENT = paste0(( "Measure "), str_to_title(english::english(RISK_TREATMENT_ID)),": ",PROPOSED_RISK_TREATMENT )) |>
+  mutate(SCHEDULE_IMPACT_RISK_TREATMENT = paste(SCHEDULE_IMPACT_RISK_TREATMENT, "Days"))
 
 treat_condit <- ifelse(nrow(risk_treat_table)>0,TRUE,FALSE)
 
-    
+  
 ```
+
+#### Project: `r risk_item$PROJECT_NAME.x`
+
+#### Risk Phase: `r risk_item$LIFECYCLEPHASENAME`, Category: `r risk_item$RISKCATEGORY`
 
 # Risk Summary: `r risk_item$RISK_NAME`
 
-```{r fig.align='center', fig.height=1.75, fig.width=7, message=FALSE, warning=FALSE, milestoneplot, echo=FALSE}
-mockdf<- data.frame(ID = c("Project Initiation","Identify Alternatives","Tentatively Selected Plan","Agency Decision","Senior Briefing","Chief/Director's Report"),
-                    yval = c(0.15,0.15,0.15,0.15,0.15,0.15),
-                    xval = c(1,2,3,4,5,6))
-mockdf$xwrap = str_wrap(mockdf$ID, width=14)
-level_order<-c('Project Initiation','Identify Alternatives','Tentatively Selected Plan','Agency Decision','Senior Briefing',"Chief Report/Director's Report")
 
 
-ggplot(mockdf, aes(x=factor(ID, level=c(level_order)), y=yval))+
-  geom_segment(x=1, y = 0.15, xend = 6, yend = 0.15, size=1.5, color = "grey")+
-  geom_point(size=8,color="grey", fill="snow1", shape=21, stroke=1.5)+
-  geom_point(aes(x=risk_item$MILESTONE, y=0.15), colour="deepskyblue2", fill="deepskyblue2", shape = 21, size =8, stroke=1.5)+
-  geom_text(aes(label=xwrap), position="nudge", vjust=1.7)+
-  scale_y_continuous(expand=c(0,0))+
-  coord_cartesian(ylim=c(0.15,0.15))+
-  theme(line = element_blank(),
-        title = element_blank(),
-        axis.text.y = element_blank(),
-        axis.text.x = element_blank(),
-        axis.ticks.length = unit(0, "pt"),
-        panel.background = element_blank(),
-        )+
-  theme(plot.margin=unit(c(0,0,0,0),"mm"))
-
+```{r milestoneplot, fig.align='center', fig.height=2, fig.width=9, echo=FALSE}
+milestoneplot(riskitem=risk_item, milestonedf = milestone_df)
 
 ```
 
@@ -91,86 +107,76 @@ ggplot(mockdf, aes(x=factor(ID, level=c(level_order)), y=yval))+
 
 ##### `r risk_item$RISK_STATEMENT`
 
-```{r , echo=FALSE, fig.align='center' }
-knitr::include_graphics("C:/workspace/e-rarr/images/montecarlo.png")
+
+
+```{r echo=F,fig.align= "center", out.width="75%"}
+monteframe<-data.frame(Opportunity=c(100), Low=c(100))
+plot_ly()|>
+  add_pie(monteframe$Opportunity, value=monteframe$Opportunity,title="Opportunity", textinfo='none',domain = list(row = 0, column = 0),hole = 0.7, marker = list(
+        colors= "#1F78B4"))|>
+  add_pie(monteframe$Opportunity, value=monteframe$Opportunity,title="Opportunity",textinfo='none',domain = list(row = 0, column = 1),hole = 0.7,marker = list(
+        colors= "#1F78B4"))|>
+  add_pie(monteframe$Low, value=monteframe$Low,title="Low",textinfo='none',domain = list(row = 0, column = 2),hole = 0.7,marker = list(
+        colors= "#33A02C")) |>
+    layout(title = "", showlegend = F,
+                      grid=list(rows=1, columns=3),
+    annotations = list(x = c(0.125,0.49, 0.9,0.12,0.485),
+                            y = c(1.2, 1.2, 1.2,-0.15, -0.15),
+                            text = c("Cost","Schedule","Performance","Mean: $0", "Mean: 0 Days"),
+                            xref = "paper",
+                            yref = "paper",
+                            showarrow = F
+                          ))
+
+#include_graphics("C:/workspace/e-rarr/RiskItemReportShinyApp/montecarlo.png")
+
 ```
+
 
 #### **Event Likelihood:** `r risk_item$LIKELIHOOD_DISC`
 
 #### `r risk_item$PROB_OCCURRENCE_EVIDENCE`
 
-#### No Impact
+
+#### **No Impact**
 
 | Cost Impact                 | Schedule Impact                   | Performance Impact                   |
 |---------------------|-------------------------|---------------------------|
 | No Cost Impact anticipated. | No Schedule Impact is Anticipated | No Performance Impact is anticipated |
 
-#### Uniform Example
+#### **Uniform Example**
 
 | Cost Impact                                   | Schedule Impact                                      | Performance Impact                                                 |
 |--------------------|-----------------------|-----------------------------|
 | *Lowest* \$`r risk_item$COST_IMPACT_LOWEST`   | *Lowest* `r risk_item$SCHEDULE_IMPACT_LOWEST` days   | ***Performance Impact:*** `r risk_item$PERFORMANCEIMPACT_DESC`     |
-| *Highest* \$`r risk_item$COST_IMPACT_HIGHEST` | *Highest* `r risk_item$SCHEDULE_IMPACT_HIGHEST` days | ***Performance Impact Type:*** `r risk_item$PERFORMANCEIMPACTTYPE` |
+| *Highest* \$`r risk_item$COST_IMPACT_HIGHEST` | *Highest* `r risk_item$SCHEDULE_IMPACT_HIGHEST` days | ***Performance Impact Type:*** `r risk_item$PERFORMANCEIMPACT` |
 | `r risk_item$COST_IMPACT_EVIDENCE`            | `r risk_item$SCHEDULE_IMPACT_EVIDENCE`               | `r risk_item$PERFORMANCEIMPACT_DESC`                               |
 
 | Cost Impact                                 | Schedule Impact                                    | Performance Impact                                             |
-|---------------------|------------------------|----------------------------|
+|---------------------|------------------------|---------------------------|
 | *Lowest* \$`r risk_item$COST_IMPACT_LOWEST` | *Lowest* `r risk_item$SCHEDULE_IMPACT_LOWEST` days | ***Performance Impact:*** `r risk_item$PERFORMANCEIMPACT_DESC` |
 
-#### Point Estimate Example
+#### **Point Estimate Example**
 
 | Cost Impact                                      | Schedule Impact                                      | Performance Impact                                                                                                         |
-|------------------|------------------|------------------------------------|
+|-------------------|-------------------|-----------------------------------|
 | Most Likely `r risk_item$COST_IMPACT_MOSTLIKELY` | Most Likely `r risk_item$SCHEDULE_IMPACT_MOSTLIKELY` | ***Performance Impact:*** `r risk_item$PERFORMANCEIMPACT_DESC` Performance Impact Type: `r risk_item$PERFORMANCIMPACTTYPE` |
 | `r risk_item$COST_IMPACT_EVIDENCE`               | `r risk_item$SCHEDULE_IMPACT_EVIDENCE`               | `r risk_item$PERFORMANCEIMPACT_DESC`                                                                                       |
 
-## Risk Treatments
+#### Risk Treatments:
+
 `r if(!treat_condit){"Risk treatments have not been completed for this risk item"}`
 
 ```{r echo=FALSE, message=FALSE, eval = treat_condit}
 risk_treat_table$IMPLEMENT_IMG = sprintf("![    ](%s)", risk_treat_table$IMPLEMENT_IMG)
-kbl(risk_treat_table,"html",col.names = NULL, align= "llccc") %>%
+
+
+kbl(risk_treat_table,format = "html",col.names = NULL, align= "llccc") |>
+  kable_styling() |>
   add_header_above(c("Measures"=2, "Impacts" = 2,"Implemented" = 1))
 
 
 ```
 
-```{r echo=FALSE, message=FALSE, warning=FALSE, include=FALSE, eval = treat_condit}
-risk_log<-data.frame(risk_transact)
-risk_log<-risk_log %>%
-  mutate('costcolor' = case_when(COST_RISK_RANKING == 0 ~ 'deepskyblue',
-  COST_RISK_RANKING ==1 ~'green', 
-  COST_RISK_RANKING == 2 ~'orange',
-  COST_RISK_RANKING ==  3 ~ 'red')) %>%
-  mutate('schedulecolor' = case_when(SCHEDULE_RISK_RANKING == 0 ~ 'deepskyblue',
-  SCHEDULE_RISK_RANKING ==1 ~'green', 
-  SCHEDULE_RISK_RANKING == 2 ~'orange',
-  SCHEDULE_RISK_RANKING ==  3 ~ 'red')) %>%
-  mutate('performancecolor' = case_when(PERFORMANCEIMPACT_RISK_RANKING == 0 ~ 'deepskyblue',
-  PERFORMANCEIMPACT_RISK_RANKING ==1 ~'green', 
-  PERFORMANCEIMPACT_RISK_RANKING == 2 ~'orange',
-  PERFORMANCEIMPACT_RISK_RANKING ==  3 ~ 'red'))%>%
-  mutate(TREAT_IMPLEMENT_IMG = if_else(is.na(TREATMENTS_IMPLEMENTED), NA, imagepath))
-         
-         
-risk_item_log<-filter(risk_log, RISK_ID == 7, PROJECT_ID == 3069)
-risk_log_table<-risk_item_log %>%
-  select(DATE_TIME, REASON, RISK_LOG_NOTE, TREAT_IMPLEMENT_IMG, COST_RISK_RANKING, SCHEDULE_RISK_RANKING, PERFORMANCEIMPACT_RISK_RANKING, costcolor, schedulecolor, performancecolor )
-```
-
-## Risk Log:
-
-`r if(!treat_condit){"Risk transactions have not been completed for this risk item"}`
-
-```{r log table, echo=FALSE, message=FALSE, eval = treat_condit}
-risk_log_table$TREAT_IMPLEMENT_IMG = sprintf("![](%s)", risk_log_table$TREAT_IMPLEMENT_IMG)
-risk_log_table[1:7]%>%
-kbl("html", col.names =c("Edit Date", "Reason for Change", "Risk Log Note",  "Measures Implemented", "Cost","Schedule","Performance"), align="lllcccc") %>%
-  kable_styling(bootstrap_options = c("striped", "hover", "condensed", "responsive"))%>%
-  column_spec(5,color="black", background=risk_log_table$costcolor)%>%
-  column_spec(6,color="black", background=risk_log_table$schedulecolor)%>%
-  column_spec(7,color="black", background=risk_log_table$performancecolor)%>%
-  column_spec (5:7,border_left = T, border_right = T)
-
-                                                    
-```
+                                                
+##### Risk Manager: `r risk_item$RISK_MANAGER` 
