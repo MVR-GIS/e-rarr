@@ -5,6 +5,7 @@ output:
 params:
   projID: City of Boston Coastal Storm Risk
 runtime: shiny
+classoption: landscape
 ---
 ```{css, echo=FALSE}
 h1, h2,h3,h4,h5 {
@@ -20,9 +21,9 @@ library(kableExtra)
 library(tidyverse)
 library(formattable)
 options(scipen = 999)
-erisk_item <- read_csv("C:/workspace/e-rarr/RiskItemReportShinyApp/data/RISKLIST_FULL.csv", show_col_types = FALSE)
+erisk_item <- read_csv("./data/RISKLIST_FULL.csv", show_col_types = FALSE)
 risk_item_db<-data.frame(erisk_item)
-erisk_project <- read_csv("C:/workspace/e-rarr/RiskItemReportShinyApp/data/PROJECTLIST_FULL.csv", show_col_types = FALSE)
+erisk_project <- read_csv("./data/PROJECTLIST_FULL.csv", show_col_types = FALSE)
 risk_project_db<-data.frame(erisk_project)
 
 risk_item_db<-left_join(risk_item_db, risk_project_db , by = "PROJECT_ID")|>
@@ -59,7 +60,9 @@ RiskDeetsTable<-Risk_List_Proj |>
 
 ##### `r unique(Risk_List_Proj$USACE_ORGANIZATION)`
 
+
 ### ALL PROJECT RISK IMPACTS
+<left>
 ```{r,  echo = FALSE, warning=FALSE, results='asis'}
 RiskDeetsTable |>
 kableExtra::kbl("html",align = 'ccclcccccc') |>
@@ -70,4 +73,4 @@ kableExtra::kbl("html",align = 'ccclcccccc') |>
    column_spec(4, width_min = '2.5in')
 
 ```
-
+</left>
