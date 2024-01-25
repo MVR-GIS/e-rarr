@@ -15,26 +15,18 @@ library(stringr)
 library(markdown)
 library(plotly)
 
-erisk_item <- read_csv("./data/RISKLIST_FULL.csv",show_col_types = FALSE)
-risk_item_db<-data.frame(erisk_item)
-erisk_project <- read_csv("./data/PROJECTLIST_FULL.csv",show_col_types = FALSE)
-risk_project_db<-data.frame(erisk_project)
-source("./R/pie_prep.R")
-source("./R/pie_plots.R")
-
-
-
-erisk_ItemProj<-left_join(risk_item_db, risk_project_db, by = "PROJECT_ID")
-
-
-RiskImpactTable<-risk_item_db[,c("PROJECT_NAME", "RISK_NAME", "USACE_ORGANIZATION","P2_NUMBER")]
-riskpies <- erisk_ItemProj |>
-  select("P2_NUMBER.x", "RISK_IDENTIFIER","PROJECT_NAME.x","RISK_NAME","RISKCATEGORY",
-         "DISCIPLINE", "USACE_ORGANIZATION.x", "COST_RANK_DESC", "SCHEDULE_RANK_DESC", "PERFORMANCE_RANK_DESC")
-
-
-shinyApp(
-  ui = fluidPage(theme = bslib::bs_theme(
+RiskApp<- function(...){
+  erisk_item <- read_csv("./data/RISKLIST_FULL.csv",show_col_types = FALSE)
+  risk_item_db<-data.frame(erisk_item)
+  erisk_project <- read_csv("./data/PROJECTLIST_FULL.csv",show_col_types = FALSE)
+  risk_project_db<-data.frame(erisk_project)
+  erisk_ItemProj<-left_join(risk_item_db, risk_project_db, by = "PROJECT_ID")
+  RiskImpactTable<-risk_item_db[,c("PROJECT_NAME", "RISK_NAME", "USACE_ORGANIZATION","P2_NUMBER")]
+  riskpies <- erisk_ItemProj |>
+    select("P2_NUMBER.x", "RISK_IDENTIFIER","PROJECT_NAME.x","RISK_NAME","RISKCATEGORY",
+           "DISCIPLINE", "USACE_ORGANIZATION.x", "COST_RANK_DESC", "SCHEDULE_RANK_DESC", "PERFORMANCE_RANK_DESC")
+  
+  ui <- fluidPage(theme = bslib::bs_theme(
     bootswatch = "cosmo"),
     navbarPage(title=div(img(src="castle.png", height="50px", width="60px"),"Risk Analysis Reporting System"),
                tabPanel("  Project",
@@ -59,13 +51,12 @@ shinyApp(
                                                  htmlOutput("ProjRend")),
                                         tabPanel("All Risk Items",
                                                  htmlOutput("AllRiskRend")),
+                                        tabPanel("Top 4 Risks",
+                                                 htmlOutput("Top4s")),
                                         tabPanel("Risk Item Report",
                                                  htmlOutput("reportrend")),
-                            )))))),
-  
-
-  
-  server = function(input, output, session) {
+                            ))))))
+  server <- function(input, output, session) {
     
     projects <- reactive({RiskImpactTable |>
         filter(RiskImpactTable$USACE_ORGANIZATION == input$districtInput
@@ -135,12 +126,19 @@ shinyApp(
       })
       output$ProjRend <- renderUI({
         includeMarkdown(
-          rmarkdown::render("ProjectAllRiskReport.Rmd", params=list(projID = input$projectInput,riskID = input$riskInput, p2ID = input$P2Input))
+          rmarkdown::render("ProjectAllRiskReport.Rmd", params=list(projID = input$projectInput, p2ID = input$P2Input))
         )
       })
       output$AllRiskRend <- renderUI({
         includeMarkdown(
           rmarkdown::render("AllRiskDetailTable.Rmd", params=list(projID = input$projectInput)
+          )
+        )
+      })
+      
+      output$Top4s <- renderUI({
+        includeMarkdown(
+          rmarkdown::render("ProjectTop4s.Rmd", params=list(projID = input$projectInput)
           )
         )
       })
@@ -167,6 +165,6 @@ shinyApp(
                           params = params,
                           envir = new.env(parent = globalenv()))
       })
-  },
-  #options=list(height=1500, width=2000)
-)
+  }
+  shinyApp(ui,server,...)
+}
