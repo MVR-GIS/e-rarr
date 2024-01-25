@@ -1,0 +1,73 @@
+---
+title: '&#32;'
+output:
+  html_document: 
+params:
+  projID: City of Boston Coastal Storm Risk
+runtime: shiny
+---
+```{css, echo=FALSE}
+h1, h2,h3,h4,h5 {
+  text-align: center;
+}
+```
+
+```{r data crunch, warning=FALSE, include=FALSE}
+library(readr) 
+library(magrittr) 
+library(dplyr) 
+library(kableExtra) 
+library(tidyverse)
+library(formattable)
+options(scipen = 999)
+erisk_item <- read_csv("C:/workspace/e-rarr/RiskItemReportShinyApp/data/RISKLIST_FULL.csv", show_col_types = FALSE)
+risk_item_db<-data.frame(erisk_item)
+erisk_project <- read_csv("C:/workspace/e-rarr/RiskItemReportShinyApp/data/PROJECTLIST_FULL.csv", show_col_types = FALSE)
+risk_project_db<-data.frame(erisk_project)
+
+risk_item_db<-left_join(risk_item_db, risk_project_db , by = "PROJECT_ID")|>
+  select(-ends_with(".y")) 
+
+RiskDeets <- risk_item_db |>
+  select("PROJECT_ID","RISK_IDENTIFIER", "PROJECT_NAME.x","RISK_NAME","RISKCATEGORY","RISK_STATEMENT" ,"LIFECYCLEPHASENAME.x","MILESTONE","LIKELIHOOD","DISCIPLINE", "PERFORMANCEIMPACT", "PERFORMANCE_RANK_DESC","COST_IMPACT_MOSTLIKELY", "COST_RANK_DESC", "SCHEDULE_IMPACT_MOSTLIKELY", "SCHEDULE_RANK_DESC", "PRIMARYMISSION", "USACE_ORGANIZATION.x")
+
+
+Risk_List_Proj <-filter(RiskDeets, RiskDeets$PROJECT_NAME.x == params$projID)
+Risk_List_Proj$COST_IMPACT_MOSTLIKELY <- as.character(formattable::currency(Risk_List_Proj$COST_IMPACT_MOSTLIKELY))
+
+RiskDeetsTable<-Risk_List_Proj |>
+  select("RISK_IDENTIFIER","RISK_NAME","RISKCATEGORY","RISK_STATEMENT" ,"LIFECYCLEPHASENAME.x","MILESTONE","LIKELIHOOD","DISCIPLINE", "PERFORMANCEIMPACT",  "PERFORMANCE_RANK_DESC", "COST_IMPACT_MOSTLIKELY","COST_RANK_DESC", "SCHEDULE_IMPACT_MOSTLIKELY", "SCHEDULE_RANK_DESC")|>
+    rename("RISK" = RISK_IDENTIFIER,
+         "RISK NAME" = RISK_NAME,
+         "RISK CATEGORY" = RISKCATEGORY,
+         "RISK STATEMENT" = RISK_STATEMENT,
+         "PHASE" = LIFECYCLEPHASENAME.x,
+         "PERFORMANCE IMPACT TYPE" = PERFORMANCEIMPACT,
+         "PERFORMANCE RANKING" = PERFORMANCE_RANK_DESC,
+         "COST IMPACT" = COST_IMPACT_MOSTLIKELY,
+         "COST RANKING" = COST_RANK_DESC,
+         "SCHEDULE IMPACT (DAYS)" = SCHEDULE_IMPACT_MOSTLIKELY,
+         "SCHEDULE RANKING" = SCHEDULE_RANK_DESC)
+  
+
+
+```
+
+# `r unique(Risk_List_Proj$PROJECT_NAME.x)`
+
+#### `r unique(Risk_List_Proj$PRIMARYMISSION)`
+
+##### `r unique(Risk_List_Proj$USACE_ORGANIZATION)`
+
+### ALL PROJECT RISK IMPACTS
+```{r,  echo = FALSE, warning=FALSE, results='asis'}
+RiskDeetsTable |>
+kableExtra::kbl("html",align = 'ccclcccccc') |>
+    kable_styling(bootstrap_options = c( "condensed"),
+                  full_width = F,
+                  position = "float_left",
+                  font_size=12, latex_options = 'scale_down')|>
+   column_spec(4, width_min = '2.5in')
+
+```
+
