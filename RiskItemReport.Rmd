@@ -30,9 +30,8 @@ library(leaflet)
 library(english)
 library(DT)
 library(webshot)
-webshot::install_phantomjs(force=TRUE)
+library(erarr)
 options(scipen = 999)
-source("R/milestoneplot.R")
 erisk_item <- read.csv("./data/RISKLIST_FULL.csv")
 risk_item_db<-data.frame(erisk_item)
 erisk_project <- read_csv("./data/PROJECTLIST_FULL.csv")
@@ -99,7 +98,7 @@ treat_condit <- ifelse(nrow(risk_treat_table)>0,TRUE,FALSE)
 
 
 ```{r milestoneplot, fig.align='center', fig.height=2, fig.width=9, echo=FALSE}
-milestoneplot(riskitem=risk_item, milestonedf = milestone_df)
+erarr::milestoneplot(riskitem=risk_item, milestonedf = milestone_df)
 
 ```
 
@@ -108,8 +107,8 @@ milestoneplot(riskitem=risk_item, milestonedf = milestone_df)
 ##### `r risk_item$RISK_STATEMENT`
 
 
-
-```{r echo=F,fig.align= "center", out.width="75%"}
+<center>
+```{r echo=F, out.width="75%", fig.height=2}
 monteframe<-data.frame(Opportunity=c(100), Low=c(100))
 plot_ly()|>
   add_pie(monteframe$Opportunity, value=monteframe$Opportunity,title="Opportunity", textinfo='none',domain = list(row = 0, column = 0),hole = 0.7, marker = list(
@@ -131,7 +130,7 @@ plot_ly()|>
 #include_graphics("C:/workspace/e-rarr/RiskItemReportShinyApp/montecarlo.png")
 
 ```
-
+</center>
 
 #### **Event Likelihood:** `r risk_item$LIKELIHOOD_DISC`
 
