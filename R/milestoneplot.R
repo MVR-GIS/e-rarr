@@ -17,7 +17,6 @@
 #' #example
 #' milestone_plot<-milestoneplot(riskitem=risk_item, milestonedf = milestone_df)
 #'
-#' @importFrom magrittr |>
 #' @importFrom dplyr mutate select arrange
 #' @importFrom rlang .data
 #' @export

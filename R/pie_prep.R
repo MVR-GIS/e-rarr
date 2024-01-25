@@ -28,7 +28,6 @@
 #' #example
 #' milestone_plot<-pieplot_prep(riskdf=risk_item, rankcol)
 #'
-#' @importFrom magrittr |>
 #' @importFrom dplyr mutate select arrange
 #' @importFrom rlang .data
 #' @export
