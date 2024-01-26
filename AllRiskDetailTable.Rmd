@@ -4,6 +4,7 @@ output:
   html_document: 
 params:
   projID: City of Boston Coastal Storm Risk
+  shinyrend: FALSE
 runtime: shiny
 classoption: landscape
 ---
@@ -55,6 +56,13 @@ RiskDeetsTable<-Risk_List_Proj |>
 
 ```
 
+
+```{r echo=FALSE}
+if (params$shinyrend)
+  shiny::setProgress(0.5)  # set progress to 50%
+```
+
+
 # `r unique(Risk_List_Proj$PROJECT_NAME)`
 
 #### `r unique(Risk_List_Proj$PRIMARYMISSION)`
@@ -75,3 +83,8 @@ kableExtra::kbl("html",align = 'ccclcccccc') |>
 
 ```
 </left>
+
+```{r echo=FALSE}
+if (params$shinyrend)
+  shiny::setProgress(1)  # set progress to 100%
+```
