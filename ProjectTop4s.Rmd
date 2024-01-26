@@ -4,6 +4,8 @@ output: html_document
 params:
   projID: St. Augustine Back Bay CSRM
   p2ID: ""
+  shinyrend: FALSE
+  runtime: shiny
 ---
 
 ```{css, echo=FALSE}
@@ -72,6 +74,12 @@ proj_risk_item<- slice_head(Risk_List_Proj)
   erarr::pie_plots(cost_pie,schedule_pie,perform_pie)
 
 ```
+
+```{r echo=FALSE}
+if (params$shinyrend)
+  shiny::setProgress(0.5)  # set progress to 50%
+```
+
 </center>
 
 #### Top 3 Cost Impacts (All Phases)
@@ -95,6 +103,11 @@ schedule_log_table<-proj_risks |>
 schedule_log_table
 ```
 
+```{r echo=FALSE}
+if (params$shinyrend)
+  shiny::setProgress(0.75)  # set progress to 75%
+```
+
 #### Top 3 Performance Impacts (All Phases)
 ``` {r perform risk log, echo = FALSE, warning=FALSE}
 perform_log_table<-proj_risks |>
@@ -106,4 +119,7 @@ perform_log_table<-proj_risks |>
 perform_log_table
 ```
 
-
+```{r echo=FALSE}
+if (params$shinyrend)
+  shiny::setProgress(1)  # set progress to 100%
+```
