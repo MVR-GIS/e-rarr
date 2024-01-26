@@ -34,19 +34,20 @@ risk_item_db<-data.frame(erisk_item)
 erisk_project <- read_csv("./data/PROJECTLIST_FULL.csv")
 risk_project_db<-data.frame(erisk_project)
 
-risk_item_db<-left_join(risk_item_db, risk_project_db , by = "PROJECT_ID")|>
-  select(-ends_with(".y")) 
+risk_item_db<-risk_item_db |>
+  left_join(risk_project_db|>
+              select(PROJECT_ID, PRIMARYMISSION))
 
 RiskDeets <- risk_item_db |>
-  select("PROJECT_ID","P2_NUMBER.x","RISK_IDENTIFIER", "PROJECT_NAME.x","RISK_NAME","RISKCATEGORY","RISK_STATEMENT" ,"LIFECYCLEPHASENAME.x","MILESTONE","LIKELIHOOD","DISCIPLINE", "PERFORMANCEIMPACT", "PERFORMANCE_RANK_DESC", "PERFORMANCEIMPACT_RISK_RANKING","COST_IMPACT_MOSTLIKELY", "COST_RANK_DESC","COST_RISK_RANKING", "SCHEDULE_IMPACT_MOSTLIKELY", "SCHEDULE_RANK_DESC", "SCHEDULE_RISK_RANKING", "PRIMARYMISSION", "USACE_ORGANIZATION.x")
+  select("PROJECT_ID","P2_NUMBER","RISK_IDENTIFIER", "PROJECT_NAME","RISK_NAME","RISKCATEGORY","RISK_STATEMENT" ,"LIFECYCLEPHASENAME","MILESTONE","LIKELIHOOD","DISCIPLINE", "PERFORMANCEIMPACT", "PERFORMANCE_RANK_DESC", "PERFORMANCEIMPACT_RISK_RANKING","COST_IMPACT_MOSTLIKELY", "COST_RANK_DESC","COST_RISK_RANKING", "SCHEDULE_IMPACT_MOSTLIKELY", "SCHEDULE_RANK_DESC", "SCHEDULE_RISK_RANKING", "PRIMARYMISSION", "USACE_ORGANIZATION")
 
 
-Risk_List_Proj <-filter(RiskDeets, RiskDeets$PROJECT_NAME.x == params$projID | RiskDeets$P2_NUMBER.x == params$p2ID)
+Risk_List_Proj <-filter(RiskDeets, RiskDeets$PROJECT_NAME == params$projID | RiskDeets$P2_NUMBER == params$p2ID)
 Risk_List_Proj$COST_IMPACT_MOSTLIKELY <- as.character(formattable::currency(Risk_List_Proj$COST_IMPACT_MOSTLIKELY))
 
 
 
-proj_risks<-filter(Risk_List_Proj, Risk_List_Proj$PROJECT_NAME == params$projID | Risk_List_Proj$P2_NUMBER.x == params$p2ID)
+proj_risks<-filter(Risk_List_Proj, Risk_List_Proj$PROJECT_NAME == params$projID | Risk_List_Proj$P2_NUMBER == params$p2ID)
 proj_risk_item<- slice_head(Risk_List_Proj)
 
 proj_risks <- proj_risks %>%
@@ -86,9 +87,9 @@ proj_risks <- proj_risks %>%
 
 
 
-## Project: `r proj_risk_item$PROJECT_NAME.x`
-##### `r proj_risk_item$PRIMARYMISSION` `r proj_risk_item$LIFECYCLEPHASENAME.x`
-##### `r proj_risk_item$USACE_ORGANIZATION.x`
+## Project: `r proj_risk_item$PROJECT_NAME`
+##### `r proj_risk_item$PRIMARYMISSION` `r proj_risk_item$LIFECYCLEPHASENAME`
+##### `r proj_risk_item$USACE_ORGANIZATION`
 
 ### All Project Risk Impacts
 <center>
