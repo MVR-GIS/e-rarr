@@ -29,7 +29,7 @@ RiskApp<- function(...){
   ui <- fluidPage(theme = bslib::bs_theme(
     bootswatch = "cosmo"),
     navbarPage(title=div(img(src="castle.png", height="50px", width="60px"),"Risk Analysis Reporting System"),
-               tabPanel("  Project",
+               tabPanel("Project",
                         sidebarLayout(
                           sidebarPanel(
                             selectizeInput("districtInput", "Select a District", choices=sort(c("",RiskImpactTable$USACE_ORGANIZATION)),selected = NULL,
@@ -44,17 +44,17 @@ RiskApp<- function(...){
                                        downloadButton("report", "Download report"),width=2),
                           
                           mainPanel(
-                            tabsetPanel(id="Report Tabs",
+                            tabsetPanel(id="reporttabs",
                                         tabPanel("Explore Risks", plotlyOutput("pie"),
                                                  DTOutput("overviewtab")),
                                         tabPanel("Project Report", 
-                                                 htmlOutput("ProjRend")),
+                                                 htmlOutput("ProjRend"), value="Project"),
                                         tabPanel("All Risk Items",
-                                                 htmlOutput("AllRiskRend")),
+                                                 htmlOutput("AllRiskRend"), value="AllRisk"),
                                         tabPanel("Top 4 Risks",
-                                                 htmlOutput("Top4s")),
+                                                 htmlOutput("Top4s"), value="Top4"),
                                         tabPanel("Risk Item Report",
-                                                 htmlOutput("reportrend")),
+                                                 htmlOutput("reportrend"), value="RiskItem"),
                             ))))))
   server <- function(input, output, session) {
     
@@ -119,17 +119,20 @@ RiskApp<- function(...){
     })
     
       output$reportrend <- renderUI({
+        req(input$projectInput, input$riskInput)
           includeMarkdown(
           rmarkdown::render("RiskItemReport.Rmd", params=list(projID = input$projectInput, riskID = input$riskInput, p2ID = input$P2Input)
         )
         )
       })
       output$ProjRend <- renderUI({
+        req(input$projectInput)
         includeMarkdown(
           rmarkdown::render("ProjectAllRiskReport.Rmd", params=list(projID = input$projectInput, p2ID = input$P2Input))
         )
       })
       output$AllRiskRend <- renderUI({
+        req(input$projectInput)
         includeMarkdown(
           rmarkdown::render("AllRiskDetailTable.Rmd", params=list(projID = input$projectInput)
           )
@@ -137,33 +140,35 @@ RiskApp<- function(...){
       })
       
       output$Top4s <- renderUI({
+        req(input$projectInput)
         includeMarkdown(
           rmarkdown::render("ProjectTop4s.Rmd", params=list(projID = input$projectInput)
           )
         )
       })
 
+      filnm<- reactive({
+       if (input$reporttabs == "Project"){
+        "ProjectAllRiskReport"
+      } 
+        else if (input$reporttabs == "AllRisk"){
+          "AllRiskDetailTable"
+        } 
+        else if (input$reporttabs == "Top4"){
+          "ProjectTop4s"
+        }
+        })
+      
     output$report <- downloadHandler(
       # For PDF output, change this to "report.pdf"
       filename = function(){
-        paste0(input$projectInput," - ",input$riskInput,"RiskItemReport",".html")
+        paste0(input$projectInput," - ",filnm(),".html")
       },
       content = function(file) {
-        # Copy the report file to a temporary directory before processing it, in
-        # case we don't have write permissions to the current working dir (which
-        # can happen when deployed).
-        tempReport <- file.path(tempdir(), "RiskItemReport.Rmd")
-        file.copy("RiskItemReport.Rmd", tempReport, overwrite = TRUE)
-        
-        # Set up parameters to pass to Rmd document
-        params <- list( projID = input$projectInput, riskID= input$riskInput)
-        
-        # Knit the document, passing in the `params` list, and eval it in a
-        # child of the global environment (this isolates the code in the document
-        # from the code in this app).
-        rmarkdown::render(tempReport, output_file = file,
-                          params = params,
-                          envir = new.env(parent = globalenv()))
+        rmarkdown::render(paste0(filnm(),".Rmd"), output_file = file,
+                          params =list(projID = input$projectInput),
+                          envir = new.env(),
+                          intermediates_dir = tempdir())
       })
   }
   shinyApp(ui,server,...)
