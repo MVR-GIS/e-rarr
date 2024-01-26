@@ -14,20 +14,22 @@ library(knitr)
 library(stringr)
 library(markdown)
 library(plotly)
-
+library(shinycssloaders)
 RiskApp<- function(...){
   erisk_item <- read_csv("./data/RISKLIST_FULL.csv",show_col_types = FALSE)
   risk_item_db<-data.frame(erisk_item)
   erisk_project <- read_csv("./data/PROJECTLIST_FULL.csv",show_col_types = FALSE)
   risk_project_db<-data.frame(erisk_project)
-  erisk_ItemProj<-left_join(risk_item_db, risk_project_db, by = "PROJECT_ID")
+  
+ 
   RiskImpactTable<-risk_item_db[,c("PROJECT_NAME", "RISK_NAME", "USACE_ORGANIZATION","P2_NUMBER")]
-  riskpies <- erisk_ItemProj |>
-    select("P2_NUMBER.x", "RISK_IDENTIFIER","PROJECT_NAME.x","RISK_NAME","RISKCATEGORY",
-           "DISCIPLINE", "USACE_ORGANIZATION.x", "COST_RANK_DESC", "SCHEDULE_RANK_DESC", "PERFORMANCE_RANK_DESC")
+  riskpies <- risk_item_db |>
+    select("P2_NUMBER", "RISK_IDENTIFIER","PROJECT_NAME","RISK_NAME","RISKCATEGORY",
+           "DISCIPLINE", "USACE_ORGANIZATION", "COST_RANK_DESC", "SCHEDULE_RANK_DESC", "PERFORMANCE_RANK_DESC")
   
   ui <- fluidPage(theme = bslib::bs_theme(
     bootswatch = "cosmo"),
+    waiter::use_waiter(),
     navbarPage(title=div(img(src="castle.png", height="50px", width="60px"),"Risk Analysis Reporting System"),
                tabPanel("Project",
                         sidebarLayout(
@@ -57,6 +59,7 @@ RiskApp<- function(...){
                                                  htmlOutput("reportrend"), value="RiskItem"),
                             ))))))
   server <- function(input, output, session) {
+
     
     projects <- reactive({RiskImpactTable |>
         filter(RiskImpactTable$USACE_ORGANIZATION == input$districtInput
@@ -93,7 +96,7 @@ RiskApp<- function(...){
     
     piedata <-reactive({riskpies |>
         filter(
-          conditional(input$projectInput != "", riskpies$PROJECT_NAME.x == input$projectInput))})
+          conditional(input$projectInput != "", riskpies$PROJECT_NAME == input$projectInput))})
     
       cost_pie<- reactive(pieprep(piedata(), "COST_RANK_DESC"))
       
@@ -109,8 +112,8 @@ RiskApp<- function(...){
         
     table<- reactive({riskpies |>
         filter(
-          conditional(input$projectInput != "", riskpies$PROJECT_NAME.x == input$projectInput))|>
-        select(RISK_IDENTIFIER, USACE_ORGANIZATION.x, PROJECT_NAME.x, RISK_NAME, RISKCATEGORY, DISCIPLINE, COST_RANK_DESC, SCHEDULE_RANK_DESC, PERFORMANCE_RANK_DESC)
+          conditional(input$projectInput != "", riskpies$PROJECT_NAME == input$projectInput))|>
+        select(RISK_IDENTIFIER, USACE_ORGANIZATION, PROJECT_NAME, RISK_NAME, RISKCATEGORY, DISCIPLINE, COST_RANK_DESC, SCHEDULE_RANK_DESC, PERFORMANCE_RANK_DESC)
       })
     
     output$overviewtab = DT::renderDataTable({
@@ -139,12 +142,13 @@ RiskApp<- function(...){
         )
       })
       
-      output$Top4s <- renderUI({
+      output$Top4s <-renderUI({
         req(input$projectInput)
+        waiter::Waiter$new(id="Top4s")$show()
+        Sys.sleep(3)
         includeMarkdown(
           rmarkdown::render("ProjectTop4s.Rmd", params=list(projID = input$projectInput)
-          )
-        )
+          ))
       })
 
       filnm<- reactive({
