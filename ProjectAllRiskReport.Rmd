@@ -4,6 +4,7 @@ output: html_document
 params:
   projID: St. Augustine Back Bay CSRM
   p2ID: 479265
+  shinyrend: FALSE
 ---
 
 ```{css, echo=FALSE}
@@ -50,6 +51,16 @@ Risk_List_Proj$COST_IMPACT_MOSTLIKELY <- as.character(formattable::currency(Risk
 proj_risks<-filter(Risk_List_Proj, Risk_List_Proj$PROJECT_NAME == params$projID | Risk_List_Proj$P2_NUMBER == params$p2ID)
 proj_risk_item<- slice_head(Risk_List_Proj)
 
+
+```
+
+```{r echo=FALSE}
+if (params$shinyrend)
+  shiny::setProgress(0.25)  # set progress to 25%
+```
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, include=FALSE}
 proj_risks <- proj_risks %>%
   mutate(
     'costcolor' = case_when(
@@ -85,6 +96,10 @@ proj_risks <- proj_risks %>%
 ```
 
 
+```{r echo=FALSE}
+if (params$shinyrend)
+  shiny::setProgress(0.5)  # set progress to 50%
+```
 
 
 ## Project: `r proj_risk_item$PROJECT_NAME`
@@ -104,6 +119,11 @@ proj_risks <- proj_risks %>%
 
 ```
 </center>
+```{r echo=FALSE}
+if (params$shinyrend)
+  shiny::setProgress(0.75)  # set progress to 75%
+```
+
 ``` {r proj risk log, echo = FALSE, warning=FALSE}
 
 
@@ -124,4 +144,9 @@ risk_log_table|>
   kable_styling(bootstrap_options = c( "hover", "condensed", "responsive"))
 
                                                     
+```
+
+```{r echo=FALSE}
+if (params$shinyrend)
+  shiny::setProgress(1)  # set progress to 100%
 ```
