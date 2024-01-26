@@ -5,6 +5,7 @@ params:
   riskID: Preliminary Design
   projID: Biscayne Bay Coastal Wetlands (BBCW)
   p2ID: ""
+  shinyrend: FALSE
 ---
 
 ```{css, echo=FALSE}
@@ -61,6 +62,11 @@ risk_treat<-left_join(risk_treat, risk_item_filt, by=c("PROJECT_ID", "RISK_ID"))
 
 ```
 
+```{r echo=FALSE}
+if (params$shinyrend)
+  shiny::setProgress(0.25)  # set progress to 25%
+```
+
 ```{r echo=FALSE, eval = params$projID != ""}
 risk_item<-filter(RiskImpactTable, RiskImpactTable$RISK_NAME == params$riskID, RiskImpactTable$PROJECT_NAME.x == params$projID)
 risk_treatment<-filter(risk_treat, risk_treat$PROJECT_NAME == params$projID, risk_treat$RISK_NAME == params$riskID)
@@ -89,6 +95,7 @@ treat_condit <- ifelse(nrow(risk_treat_table)>0,TRUE,FALSE)
   
 ```
 
+
 #### Project: `r risk_item$PROJECT_NAME.x`
 
 #### Risk Phase: `r risk_item$LIFECYCLEPHASENAME`, Category: `r risk_item$RISKCATEGORY`
@@ -101,6 +108,12 @@ treat_condit <- ifelse(nrow(risk_treat_table)>0,TRUE,FALSE)
 erarr::milestoneplot(riskitem=risk_item, milestonedf = milestone_df)
 
 ```
+
+```{r echo=FALSE}
+if (params$shinyrend)
+  shiny::setProgress(0.50)  # set progress to 50%
+```
+
 
 ##### **Lead Discipline:** `r risk_item$DISCIPLINE`
 
@@ -131,6 +144,13 @@ plot_ly()|>
 
 ```
 </center>
+
+```{r echo=FALSE}
+if (params$shinyrend)
+  shiny::setProgress(0.75)  # set progress to 75%
+```
+
+
 
 #### **Event Likelihood:** `r risk_item$LIKELIHOOD_DISC`
 
@@ -179,3 +199,9 @@ kbl(risk_treat_table,format = "html",col.names = NULL, align= "llccc") |>
 
                                                 
 ##### Risk Manager: `r risk_item$RISK_MANAGER` 
+
+```{r echo=FALSE}
+if (params$shinyrend)
+  shiny::setProgress(1)  # set progress to 100%
+```
+
