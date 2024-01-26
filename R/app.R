@@ -29,6 +29,8 @@ RiskApp<- function(...){
   
   ui <- fluidPage(theme = bslib::bs_theme(
     bootswatch = "cosmo"),
+    tags$head(tags$style(
+      HTML(".shiny-notification {position:fixed;top: 30%;left: 35%;right: 35%;}"))),
     waiter::use_waiter(),
     navbarPage(title=div(img(src="castle.png", height="50px", width="60px"),"Risk Analysis Reporting System"),
                tabPanel("Project",
@@ -123,35 +125,38 @@ RiskApp<- function(...){
     
       output$reportrend <- renderUI({
         req(input$projectInput, input$riskInput)
+        withProgress(message = 'Rendering',{
           includeMarkdown(
-          rmarkdown::render("RiskItemReport.Rmd", params=list(projID = input$projectInput, riskID = input$riskInput, p2ID = input$P2Input)
+          rmarkdown::render("RiskItemReport.Rmd", params=list(projID = input$projectInput, riskID = input$riskInput, p2ID = input$P2Input,shinyrend = TRUE)
         )
-        )
+        )})
       })
       output$ProjRend <- renderUI({
         req(input$projectInput)
+        withProgress(message = 'Rendering',{
         includeMarkdown(
-          rmarkdown::render("ProjectAllRiskReport.Rmd", params=list(projID = input$projectInput, p2ID = input$P2Input))
+          rmarkdown::render("ProjectAllRiskReport.Rmd", params=list(projID = input$projectInput, p2ID = input$P2Input,shinyrend = TRUE))
         )
+      })
       })
       output$AllRiskRend <- renderUI({
         req(input$projectInput)
+        withProgress(message = 'Rendering',{
         includeMarkdown(
-          rmarkdown::render("AllRiskDetailTable.Rmd", params=list(projID = input$projectInput)
+          rmarkdown::render("AllRiskDetailTable.Rmd", params=list(projID = input$projectInput,shinyrend = TRUE)
           )
         )
+      })
       })
       
       output$Top4s <-renderUI({
         req(input$projectInput)
-        waiter::Waiter$new(id="Top4s")$show()
-        Sys.sleep(3)
+        withProgress(message = 'Rendering',{
         includeMarkdown(
-          rmarkdown::render("ProjectTop4s.Rmd", params=list(projID = input$projectInput)
-          ))
-      })
+          rmarkdown::render("ProjectTop4s.Rmd", params=list(projID = input$projectInput,shinyrend = TRUE)
+          ))})})
 
-      filnm<- reactive({
+      filnm<-reactive({
        if (input$reporttabs == "Project"){
         "ProjectAllRiskReport"
       } 
