@@ -20,7 +20,7 @@ RiskApp<- function(...){
   risk_item_db<-data.frame(erisk_item)
   erisk_project <- read_csv("./data/PROJECTLIST_FULL.csv",show_col_types = FALSE)
   risk_project_db<-data.frame(erisk_project)
-  
+   addResourcePath(prefix = "www", directoryPath = "./www")
  
   RiskImpactTable<-risk_item_db[,c("PROJECT_NAME", "RISK_NAME", "USACE_ORGANIZATION","P2_NUMBER")]
   riskpies <- risk_item_db |>
@@ -32,7 +32,7 @@ RiskApp<- function(...){
     tags$head(tags$style(
       HTML(".shiny-notification {position:fixed;top: 30%;left: 35%;right: 35%;}"))),
     waiter::use_waiter(),
-    navbarPage(title=div(img(src="castle.png", height="50px", width="60px"),"Risk Analysis Reporting System"),
+    navbarPage(title=div(img(src="www/castle.png", height="50px", width="60px"),"Risk Analysis Reporting System"),
                tabPanel("Project",
                         sidebarLayout(
                           sidebarPanel(
