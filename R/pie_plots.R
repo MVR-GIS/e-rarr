@@ -31,12 +31,13 @@
 #'
 #' @importFrom dplyr mutate select arrange
 #' @importFrom rlang .data
+#' @importFrom plotly add_pie plot_ly layout
 #' @export
 #'
 #'
 pie_plots<- function(cost_pie,schedule_pie,perform_pie){
-fig <- plot_ly(textfont = list(color = '#FFFFFF')) |>
-  add_pie(
+fig <- plotly::plot_ly(textfont = list(color = '#FFFFFF')) |>
+  plotly::add_pie(
     data = cost_pie,
     values =  ~ .data$count,
     labels = ~ .data$COST_RANK_DESC,
@@ -50,7 +51,7 @@ fig <- plot_ly(textfont = list(color = '#FFFFFF')) |>
       line = list(color = '#FFFFFF', width = 1.5)
     )
   ) |>
-  add_pie(
+  plotly::add_pie(
     data = schedule_pie,
     values = ~ .data$count,
     labels = ~ .data$SCHEDULE_RANK_DESC,
@@ -64,7 +65,7 @@ fig <- plot_ly(textfont = list(color = '#FFFFFF')) |>
       line = list(color = '#FFFFFF', width = 1.5)
     )
   ) |>
-  add_pie(
+  plotly::add_pie(
     data = perform_pie,
     values = ~ .data$count,
     labels = ~ .data$PERFORMANCE_RANK_DESC,
@@ -80,7 +81,7 @@ fig <- plot_ly(textfont = list(color = '#FFFFFF')) |>
   )
 
 pies<-fig |>
-  layout(title = "", showlegend = T,
+  plotly::layout(title = "", showlegend = T,
          grid=list(rows=1, columns=3),legend= list(orientation = 'h'))
 return(pies)
 }
