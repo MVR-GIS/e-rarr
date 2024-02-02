@@ -124,7 +124,8 @@ RiskApp<- function(...){
     })
     
       output$reportrend <- renderUI({
-        req(input$projectInput, input$riskInput)
+        req(isTruthy(input$riskInput),
+          isTruthy(input$projectInput) || isTruthy(input$P2Input))
         withProgress(message = 'Rendering',{
           includeMarkdown(
           rmarkdown::render("RiskItemReport.Rmd", params=list(projID = input$projectInput, riskID = input$riskInput, p2ID = input$P2Input,shinyrend = TRUE)
@@ -132,7 +133,7 @@ RiskApp<- function(...){
         )})
       })
       output$ProjRend <- renderUI({
-        req(input$projectInput)
+        req( isTruthy(input$projectInput) || isTruthy(input$P2Input))
         withProgress(message = 'Rendering',{
         includeMarkdown(
           rmarkdown::render("ProjectAllRiskReport.Rmd", params=list(projID = input$projectInput, p2ID = input$P2Input,shinyrend = TRUE))
@@ -140,20 +141,20 @@ RiskApp<- function(...){
       })
       })
       output$AllRiskRend <- renderUI({
-        req(input$projectInput)
+        req( isTruthy(input$projectInput) || isTruthy(input$P2Input))
         withProgress(message = 'Rendering',{
         includeMarkdown(
-          rmarkdown::render("AllRiskDetailTable.Rmd", params=list(projID = input$projectInput,shinyrend = TRUE)
+          rmarkdown::render("AllRiskDetailTable.Rmd", params=list(projID = input$projectInput,p2ID = input$P2Input,shinyrend = TRUE)
           )
         )
       })
       })
       
       output$Top4s <-renderUI({
-        req(input$projectInput)
+        req(isTruthy(input$projectInput) || isTruthy(input$P2Input))
         withProgress(message = 'Rendering',{
         includeMarkdown(
-          rmarkdown::render("ProjectTop4s.Rmd", params=list(projID = input$projectInput,shinyrend = TRUE)
+          rmarkdown::render("ProjectTop4s.Rmd", params=list(projID = input$projectInput,p2ID = input$P2Input,shinyrend = TRUE)
           ))})})
 
       filnm<-reactive({

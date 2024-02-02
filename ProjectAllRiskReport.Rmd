@@ -41,18 +41,28 @@ risk_item_db<-risk_item_db |>
 
 RiskDeets <- risk_item_db |>
   select("PROJECT_ID","P2_NUMBER","RISK_IDENTIFIER", "PROJECT_NAME","RISK_NAME","RISKCATEGORY","RISK_STATEMENT" ,"LIFECYCLEPHASENAME","MILESTONE","LIKELIHOOD","DISCIPLINE", "PERFORMANCEIMPACT", "PERFORMANCE_RANK_DESC", "PERFORMANCEIMPACT_RISK_RANKING","COST_IMPACT_MOSTLIKELY", "COST_RANK_DESC","COST_RISK_RANKING", "SCHEDULE_IMPACT_MOSTLIKELY", "SCHEDULE_RANK_DESC", "SCHEDULE_RISK_RANKING", "PRIMARYMISSION", "USACE_ORGANIZATION")
+```
 
-
-Risk_List_Proj <-filter(RiskDeets, RiskDeets$PROJECT_NAME == params$projID | RiskDeets$P2_NUMBER == params$p2ID)
+```{r echo=FALSE, eval = params$projID != ""}
+Risk_List_Proj <-filter(RiskDeets, RiskDeets$PROJECT_NAME == params$projID)
 Risk_List_Proj$COST_IMPACT_MOSTLIKELY <- as.character(formattable::currency(Risk_List_Proj$COST_IMPACT_MOSTLIKELY))
 
-
-
-proj_risks<-filter(Risk_List_Proj, Risk_List_Proj$PROJECT_NAME == params$projID | Risk_List_Proj$P2_NUMBER == params$p2ID)
+proj_risks<-filter(Risk_List_Proj, Risk_List_Proj$PROJECT_NAME == params$projID)
 proj_risk_item<- slice_head(Risk_List_Proj)
 
+```
+
+```{r echo=FALSE, eval = params$p2ID != ""}
+Risk_List_Proj <-filter(RiskDeets, RiskDeets$P2_NUMBER == params$p2ID)
+Risk_List_Proj$COST_IMPACT_MOSTLIKELY <- as.character(formattable::currency(Risk_List_Proj$COST_IMPACT_MOSTLIKELY))
+
+proj_risks<-filter(Risk_List_Proj, Risk_List_Proj$P2_NUMBER == params$p2ID)
+proj_risk_item<- slice_head(Risk_List_Proj)
 
 ```
+
+
+
 
 ```{r echo=FALSE}
 if (params$shinyrend)
@@ -148,5 +158,5 @@ risk_log_table|>
 
 ```{r echo=FALSE}
 if (params$shinyrend)
-  shiny::setProgress(1)  # set progress to 100%
+  shiny::setProgress(.95)  # set progress to 95%
 ```

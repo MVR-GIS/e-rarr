@@ -5,6 +5,7 @@ output:
 params:
   projID: City of Boston Coastal Storm Risk
   shinyrend: FALSE
+  p2ID: 479265
 runtime: shiny
 classoption: landscape
 ---
@@ -32,12 +33,20 @@ risk_item_db<-risk_item_db |>
               select(PROJECT_ID, PRIMARYMISSION))
 
 RiskDeets <- risk_item_db |>
-  select("PROJECT_ID","RISK_IDENTIFIER", "PROJECT_NAME","RISK_NAME","RISKCATEGORY","RISK_STATEMENT" ,"LIFECYCLEPHASENAME","MILESTONE","LIKELIHOOD","DISCIPLINE", "PERFORMANCEIMPACT", "PERFORMANCE_RANK_DESC","COST_IMPACT_MOSTLIKELY", "COST_RANK_DESC", "SCHEDULE_IMPACT_MOSTLIKELY", "SCHEDULE_RANK_DESC", "PRIMARYMISSION", "USACE_ORGANIZATION")
+  select("PROJECT_ID","RISK_IDENTIFIER", "PROJECT_NAME","P2_NUMBER","RISK_NAME","RISKCATEGORY","RISK_STATEMENT" ,"LIFECYCLEPHASENAME","MILESTONE","LIKELIHOOD","DISCIPLINE", "PERFORMANCEIMPACT", "PERFORMANCE_RANK_DESC","COST_IMPACT_MOSTLIKELY", "COST_RANK_DESC", "SCHEDULE_IMPACT_MOSTLIKELY", "SCHEDULE_RANK_DESC", "PRIMARYMISSION", "USACE_ORGANIZATION")
+```
 
-
+```{r echo=FALSE, eval = params$projID != ""}
 Risk_List_Proj <-filter(RiskDeets, RiskDeets$PROJECT_NAME == params$projID)
 Risk_List_Proj$COST_IMPACT_MOSTLIKELY <- as.character(formattable::currency(Risk_List_Proj$COST_IMPACT_MOSTLIKELY))
+```
 
+```{r echo=FALSE, eval = params$p2ID != ""}
+Risk_List_Proj <-filter(RiskDeets, RiskDeets$P2_NUMBER == params$p2ID)
+Risk_List_Proj$COST_IMPACT_MOSTLIKELY <- as.character(formattable::currency(Risk_List_Proj$COST_IMPACT_MOSTLIKELY))
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, include=FALSE}
 RiskDeetsTable<-Risk_List_Proj |>
   select("RISK_IDENTIFIER","RISK_NAME","RISKCATEGORY","RISK_STATEMENT" ,"LIFECYCLEPHASENAME","MILESTONE","LIKELIHOOD","DISCIPLINE", "PERFORMANCEIMPACT",  "PERFORMANCE_RANK_DESC", "COST_IMPACT_MOSTLIKELY","COST_RANK_DESC", "SCHEDULE_IMPACT_MOSTLIKELY", "SCHEDULE_RANK_DESC")|>
     rename("RISK" = RISK_IDENTIFIER,
@@ -86,5 +95,5 @@ kableExtra::kbl("html",align = 'ccclcccccc') |>
 
 ```{r echo=FALSE}
 if (params$shinyrend)
-  shiny::setProgress(1)  # set progress to 100%
+  shiny::setProgress(.95)  # set progress to 95%
 ```

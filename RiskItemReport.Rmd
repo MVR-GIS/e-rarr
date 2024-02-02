@@ -4,7 +4,7 @@ output: html_document
 params:
   riskID: Preliminary Design
   projID: Biscayne Bay Coastal Wetlands (BBCW)
-  p2ID: ""
+  p2ID: 	113846
   shinyrend: FALSE
 ---
 
@@ -27,19 +27,18 @@ library(dplyr)
 library(knitr)
 library(crosstalk)
 library(tidyverse)
-library(leaflet)
 library(english)
 library(DT)
 library(webshot)
 library(erarr)
 options(scipen = 999)
-erisk_item <- read.csv("./data/RISKLIST_FULL.csv")
+erisk_item <- readr::read_csv("./data/RISKLIST_FULL.csv")
 risk_item_db<-data.frame(erisk_item)
-erisk_project <- read_csv("./data/PROJECTLIST_FULL.csv")
+erisk_project <- readr::read_csv("./data/PROJECTLIST_FULL.csv")
 risk_project_db<-data.frame(erisk_project)
-risk_treat <- read_csv("./data/RISKTREATMENTLIST_FULL.csv",col_names = TRUE)
+risk_treat <- readr::read_csv("./data/RISKTREATMENTLIST_FULL.csv",col_names = TRUE)
 checkimagepath<-"./www/check.png"
-erisk_item <- read.csv("./data/RISKLIST_FULL.csv")
+erisk_item <- readr::read_csv("./data/RISKLIST_FULL.csv")
 risk_item_db<-data.frame(erisk_item)
 milestonedf<-read.csv("./data/PHASEMILESTONE.csv")
 milestone_df<-data.frame(milestonedf)
@@ -69,6 +68,13 @@ if (params$shinyrend)
 
 ```{r echo=FALSE, eval = params$projID != ""}
 risk_item<-filter(RiskImpactTable, RiskImpactTable$RISK_NAME == params$riskID, RiskImpactTable$PROJECT_NAME.x == params$projID)
+risk_treatment<-filter(risk_treat, risk_treat$PROJECT_NAME == params$projID, risk_treat$RISK_NAME == params$riskID)
+
+```
+
+      
+```{r echo=FALSE, eval = params$p2ID != ""}
+risk_item<-filter(RiskImpactTable, RiskImpactTable$RISK_NAME == params$riskID, RiskImpactTable$P2_NUMBER == params$p2ID)
 risk_treatment<-filter(risk_treat, risk_treat$PROJECT_NAME == params$projID, risk_treat$RISK_NAME == params$riskID)
 
 ```
@@ -202,6 +208,6 @@ kbl(risk_treat_table,format = "html",col.names = NULL, align= "llccc") |>
 
 ```{r echo=FALSE}
 if (params$shinyrend)
-  shiny::setProgress(1)  # set progress to 100%
+  shiny::setProgress(.95)  # set progress to 95%
 ```
 
