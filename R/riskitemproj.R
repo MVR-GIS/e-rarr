@@ -2,8 +2,8 @@
 #'
 #' @description Creates the Risk Item Project table used to develop project level reports
 #'
-#' @param riskitem   data frame; A data frame of all risk items.
-#' @param riskproject data frame; A data frame of risks and their associated projects.
+#' @param riskdf   data frame; A data frame of all risk items.
+#' @param proj data frame; A data frame of all projects.
 #'
 #' @return A ggplot of current milestone on timeline of all project milestones.
 #'
