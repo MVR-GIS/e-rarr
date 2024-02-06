@@ -1,7 +1,7 @@
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 <!-- rmarkdown::render(input="README.Rmd", output_file = "README.md", output_format = "md_document") -->
 
-# erarr <a> <img src="www/erarr.png" height="120" align="right"/></a>
+# erarr <a> <img src="www/erarr.png" height="140" align="right"/></a>
 
 Enterprise Risk Analysis Reporting in R: A Shiny Application for
 producing Risk Analysis Reports in `R`
