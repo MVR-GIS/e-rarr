@@ -1,7 +1,7 @@
 <!-- README.md is generated from README.Rmd. Please edit that file -->
 <!-- rmarkdown::render(input="README.Rmd", output_file = "README.md", output_format = "md_document") -->
 
-# erarr <a> <img src="www/erarr.png" height="140" align="right"/></a>
+# erarr <img src="www/erarr.png" align="right" width="180"/>
 
 Enterprise Risk Analysis Reporting in R: A Shiny Application for
 producing Risk Analysis Reports in `R`
@@ -13,7 +13,7 @@ producing Risk Analysis Reports in `R`
 has not yet been a stable, usable release suitable for the
 public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)
 [![packageversion](https://img.shields.io/badge/Package%20version-0.0.1-orange.svg?style=flat-square)](commits/master)
-[![Last-changedate](https://img.shields.io/badge/last%20change-2024--02--06-yellowgreen.svg)](/commits/master)
+[![Last-changedate](https://img.shields.io/badge/last%20change-%60r%20gsub('-',%20'--',%20Sys.Date())%60-yellowgreen.svg)](/commits/master)
 [![Licence](https://img.shields.io/badge/licence-CC0-blue.svg)](http://choosealicense.com/licenses/cc0-1.0/)
 
 ## Description
@@ -45,8 +45,9 @@ Check out the [News](news/index.html) for details on the latest updates.
 -   [Barrie Chileen
     Martinez](mailto:barrie.v.chileenmartinez@usace.army.mil),
     Geographer, Rock Island District, U.S. Army Corps of Engineers
+
     <a itemprop="sameAs" content="https://orcid.org/0000-0002-6960-8167" href="https://0000-0002-6960-8167" target="orcid.widget" rel="me noopener noreferrer" style="vertical-align:top;">
-    <img src="https://orcid.org/sites/default/files/images/orcid_16x16.png" style="width:1em;margin-right:.5em;" alt="ORCID iD icon">https://orcid.org/0000-0002-6960-8167</a>
+    <img src="https://orcid.org/sites/default/files/images/orcid_16x16.png" alt="ORCID iD icon" style="width:1em;margin-right:.5em;"/>https://orcid.org/0000-0002-6960-8167</a>
 
 ------------------------------------------------------------------------
 
