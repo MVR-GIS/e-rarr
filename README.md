@@ -9,30 +9,20 @@ producing Risk Analysis Reports in `R`
 ## Package Status
 
 [![Maturing](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://www.tidyverse.org/lifecycle)
-[![Project Status: Active The project has reached a stable, usable state
-and is being actively
-developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active)
-[![packageversion](https://img.shields.io/badge/Package%20version-0.1.2-orange.svg?style=flat-square)](commits/master)
-[![Last-changedate](https://img.shields.io/badge/last%20change-2024--02--05-yellowgreen.svg)](/commits/master)
+[![Project Status: WIP – Initial development is in progress, but there
+has not yet been a stable, usable release suitable for the
+public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)
+[![packageversion](https://img.shields.io/badge/Package%20version-0.0.1-orange.svg?style=flat-square)](commits/master)
+[![Last-changedate](https://img.shields.io/badge/last%20change-2024--02--06-yellowgreen.svg)](/commits/master)
 [![Licence](https://img.shields.io/badge/licence-CC0-blue.svg)](http://choosealicense.com/licenses/cc0-1.0/)
 
 ## Description
 
-This package contains a set of functions that are used to help produce a
-Risk Analysis Report. These functions help automate and standardize
-report production using the [`bookdown`
-package](https://bookdown.org/yihui/bookdown/). These functions can be
-grouped into three broad categories.
-
--   Access Data - These functions are used to extract data from USACE
-    enterprise databases where the data is being entered and maintained
-    by risk managers.
--   Format Pages - These functions are used to programmatically create
-    report links and headers.
--   Produce Figures - These functions are used to create figures needed
-    for risk reporting.
-
-<img src="man/figures/HDQLO-03_h120.jpg" width=125 align="right" />
+This package contains a set of functions to create a
+[`shiny`](https://shiny.posit.co/) application that produces a variety
+of Risk Analysis Reports. These functions help automate and standardize
+report production using the [`rmarkdown`
+package](https://rmarkdown.rstudio.com/lesson-1.html).
 
 ## Funding
 
