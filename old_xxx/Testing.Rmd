@@ -9,26 +9,32 @@ library(dplyr)
 library(crosstalk)
 library(tidyverse)
 library(leaflet)
-erisk_item <- read_csv("data/RiskItem_FullView.csv")
+setwd('C:/workspace/erarr/old_xxx')
+erisk_item <- read_csv("C:/workspace/erarr/old_xxx/data/RiskItem_FullView.csv")
+erisk_item <- read_csv("./data/RiskItem_FullView.csv")
 risk_item_db<-data.frame(erisk_item)
 erisk_project <- read_csv("data/RiskProject_FullView.csv")
 risk_project_db<-data.frame(erisk_project)
-risk_db <- read_csv("data/risk_db.csv")
-risk <- rarr::wrangle_risk(risk_db)
+
 
 #cast numeric to string
-risk_item_db$riskIDCode<-paste(risk_item_db$RISK_ID+"-"+risk_item_db$DISCIPLINE_ACRONYM)
+#risk_item_db$riskIDCode<-paste(risk_item_db$RISK_ID+"-"+risk_item_db$DISCIPLINE_ACRONYM)
 
 erisk_ItemProj<-left_join(risk_item_db, risk_project_db, by = "PROJECT_ID")
 erisk_testing<-erisk_ItemProj[,c(3,5,6,8,22,27,32,40,55,63,64)]
 
 
-risk_table<-rarr::risk_register_table(risk)
-
 ```
 
 ```{r leaflet map, echo=FALSE}
 shared_proj<-SharedData$new(erisk_testing)
+
+filter_select(
+  id = "dst",
+  label = "District",
+  sharedData = shared_proj,
+  group = ~USACE_ORGANIZATION
+)
 
 filter_select(
   id = "prj",
@@ -37,12 +43,7 @@ filter_select(
   group = ~PROJECT_NAME.x
 )
 
-filter_select(
-  id = "dst",
-  label = "District",
-  sharedData = shared_proj,
-  group = ~USACE_ORGANIZATION
-)
+
 
 shared_proj %>%
   DT::datatable(filter = "top",
