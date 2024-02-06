@@ -2,6 +2,7 @@
 <!-- rmarkdown::render(input="README.Rmd", output_file = "README.md", output_format = "md_document") -->
 
 # erarr
+<img src="www/erarr.png" width=90 align="right" />
 
 Enterprise Risk Analysis Reporting in R: A Shiny Application for
 producing Risk Analysis Reports in `R`
@@ -16,7 +17,7 @@ public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostat
 [![Last-changedate](https://img.shields.io/badge/last%20change-2024--02--06-yellowgreen.svg)](/commits/master)
 [![Licence](https://img.shields.io/badge/licence-CC0-blue.svg)](http://choosealicense.com/licenses/cc0-1.0/)
 
-<img src="www/erarr.png" width=75 align="left" />
+
 
 
 ## Description
