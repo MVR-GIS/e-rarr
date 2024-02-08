@@ -53,7 +53,7 @@ remotes::install_github(repo = "MVR-GIS/erarr")
 
 ## Run the application
 To run the Risk Analysis and Reporting application, use the following function:
-```{r install, eval=FALSE}
+```{r runapp, eval=FALSE}
 erarr::run_app()
 ```
 

@@ -14,7 +14,7 @@ has not yet been a stable, usable release suitable for the
 public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostatus.org/#wip)
 [![packageversion](https://img.shields.io/badge/Package%20version-0.0.1-orange.svg?style=flat-square)](commits/master)
 [![Last-changedate](https://img.shields.io/badge/last%20change-2024--02--08-yellowgreen.svg)](/commits/master)
-[![License](https://img.shields.io/badge/licence-CC0-blue.svg)](http://choosealicense.com/licenses/cc0-1.0/)
+[![Licence](https://img.shields.io/badge/licence-CC0-blue.svg)](http://choosealicense.com/licenses/cc0-1.0/)
 
 ## Description
 
@@ -57,6 +57,13 @@ To install the `erarr` package, install from GitHub using the `remotes`
 package:
 
     remotes::install_github(repo = "MVR-GIS/erarr")
+
+## Run the application
+
+To run the Risk Analysis and Reporting application, use the following
+function:
+
+    erarr::run_app()
 
 ## Bug Reports
 
