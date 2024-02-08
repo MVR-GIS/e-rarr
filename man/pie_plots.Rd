@@ -20,9 +20,9 @@ A plotly plot of pie charts for cost, schedule, and performance risk.
 Creates a pie plots from wrangled risk table data
 }
 \examples{
-erisk_item <- read_csv("C:/workspace/e-rarr/RiskItemReportShinyApp/data/RISKLIST_FULL.csv",show_col_types = FALSE)
+erisk_item <- read_csv("inst/app/data/RISKLIST_FULL.csv",show_col_types = FALSE)
 risk_item_db<-data.frame(erisk_item)
-erisk_project <- read_csv("C:/workspace/e-rarr/RiskItemReportShinyApp/data/PROJECTLIST_FULL.csv",show_col_types = FALSE)
+erisk_project <- read_csv("inst/app/data/PROJECTLIST_FULL.csv",show_col_types = FALSE)
 risk_project_db<-data.frame(erisk_project)
 
 

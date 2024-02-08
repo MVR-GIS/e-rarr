@@ -1,6 +1,6 @@
 #' @title Milestone Plot
 #'
-#' @description Creates a milestone chart 
+#' @description Creates a milestone chart
 #'
 #' @param riskitem   data frame; A data frame of a filtered risk item.
 #' @param milestonedf data frame; A data frame of phase-milestone pairings
@@ -9,10 +9,10 @@
 #'
 #' @examples
 #' #Get milestone data and risk item
-#' milestonedf<-read.csv("C:/workspace/e-rarr/RiskItemReportShinyApp/data/PHASEMILESTONE.csv")
+#' milestonedf<-read.csv("inst/app/data/PHASEMILESTONE.csv")
 #' milestone_df<-data.frame(milestonedf)
-#' 
-#' 
+#'
+#'
 #'
 #' #example
 #' milestone_plot<-milestoneplot(riskitem=risk_item, milestonedf = milestone_df)
@@ -29,7 +29,7 @@ projphases<- milestonedf |>
   dplyr::filter(PHASEID == riskitem$PROJECTPHASEID)|>
   dplyr::mutate('yval' = rep(0.15))|>
   dplyr::arrange(ORDERBY)
-  
+
 projphases$xwrap = str_wrap(projphases$MILESTONE, width=15)
 
 

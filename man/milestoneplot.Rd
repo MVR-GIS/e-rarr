@@ -19,7 +19,7 @@ Creates a milestone chart
 }
 \examples{
 #Get milestone data and risk item
-milestonedf<-read.csv("C:/workspace/e-rarr/RiskItemReportShinyApp/data/PHASEMILESTONE.csv")
+milestonedf<-read.csv("inst/app/data/PHASEMILESTONE.csv")
 milestone_df<-data.frame(milestonedf)
 
 

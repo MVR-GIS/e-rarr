@@ -1,0 +1,161 @@
+---
+title: ""
+output: html_document
+params:
+  projID: St. Augustine Back Bay CSRM
+  p2ID: 479265
+  shinyrend: FALSE
+---
+
+```{css, echo=FALSE}
+h2,h3,h5 {
+  text-align: center;
+}
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, include=FALSE}
+library(readr) 
+library(magrittr) 
+library(dplyr) 
+library(kableExtra) 
+library(rlang)
+# library(plotly)
+library(ggplot2)
+library(ggrepel)
+library(dplyr)
+library(tidyverse)
+library(english)
+library(DT)
+library(webshot)
+options(scipen = 999)
+
+erisk_item <- read.csv("../data/RISKLIST_FULL.csv")
+risk_item_db<-data.frame(erisk_item)
+erisk_project <- read_csv("../data/PROJECTLIST_FULL.csv")
+risk_project_db<-data.frame(erisk_project)
+
+risk_item_db<-risk_item_db |>
+  left_join(risk_project_db|>
+              select(PROJECT_ID, PRIMARYMISSION))
+
+RiskDeets <- risk_item_db |>
+  select("PROJECT_ID","P2_NUMBER","RISK_IDENTIFIER", "PROJECT_NAME","RISK_NAME","RISKCATEGORY","RISK_STATEMENT" ,"LIFECYCLEPHASENAME","MILESTONE","LIKELIHOOD","DISCIPLINE", "PERFORMANCEIMPACT", "PERFORMANCE_RANK_DESC", "PERFORMANCEIMPACT_RISK_RANKING","COST_IMPACT_MOSTLIKELY", "COST_RANK_DESC","COST_RISK_RANKING", "SCHEDULE_IMPACT_MOSTLIKELY", "SCHEDULE_RANK_DESC", "SCHEDULE_RISK_RANKING", "PRIMARYMISSION", "USACE_ORGANIZATION")
+```
+
+```{r echo=FALSE, eval = params$projID != ""}
+Risk_List_Proj <-filter(RiskDeets, RiskDeets$PROJECT_NAME == params$projID)
+Risk_List_Proj$COST_IMPACT_MOSTLIKELY <- as.character(formattable::currency(Risk_List_Proj$COST_IMPACT_MOSTLIKELY))
+
+proj_risks<-filter(Risk_List_Proj, Risk_List_Proj$PROJECT_NAME == params$projID)
+proj_risk_item<- slice_head(Risk_List_Proj)
+
+```
+
+```{r echo=FALSE, eval = params$p2ID != ""}
+Risk_List_Proj <-filter(RiskDeets, RiskDeets$P2_NUMBER == params$p2ID)
+Risk_List_Proj$COST_IMPACT_MOSTLIKELY <- as.character(formattable::currency(Risk_List_Proj$COST_IMPACT_MOSTLIKELY))
+
+proj_risks<-filter(Risk_List_Proj, Risk_List_Proj$P2_NUMBER == params$p2ID)
+proj_risk_item<- slice_head(Risk_List_Proj)
+
+```
+
+
+
+
+```{r echo=FALSE}
+if (params$shinyrend)
+  shiny::setProgress(0.25)  # set progress to 25%
+```
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, include=FALSE}
+proj_risks <- proj_risks %>%
+  mutate(
+    'costcolor' = case_when(
+      COST_RANK_DESC == "No Risk" ~ "#FFFFFF",
+      COST_RANK_DESC == "Opportunity" ~ 'rgb(31,120,180)',
+      COST_RANK_DESC == 'Low' ~ 'rgb(51,160,44)',
+      COST_RANK_DESC == 'Medium' ~ 'rgb(255,127,0)',
+      COST_RANK_DESC == 'High' ~ 'rgb(227,26,28)'
+    )
+  ) |>
+  mutate(
+    'schedulecolor' = case_when(
+      SCHEDULE_RANK_DESC == "No Risk" ~ "#FFFFFF",
+      SCHEDULE_RANK_DESC == "Opportunity" ~ 'rgb(31,120,180)',
+      SCHEDULE_RANK_DESC == 'Low' ~ 'rgb(51,160,44)',
+      SCHEDULE_RANK_DESC == 'Medium' ~ 'rgb(255,127,0)',
+      SCHEDULE_RANK_DESC == 'High' ~ 'rgb(227,26,28)'
+    )
+  ) |>
+  mutate(
+    'performancecolor' = case_when(
+      PERFORMANCE_RANK_DESC == "No Risk" ~ '#FFFFFF',
+      PERFORMANCE_RANK_DESC == "Opportunity" ~ 'rgb(31,120,180)',
+      PERFORMANCE_RANK_DESC == 'Low' ~
+        'rgb(51,160,44)',
+      PERFORMANCE_RANK_DESC == 'Medium' ~ 'rgb(255,127,0)',
+      PERFORMANCE_RANK_DESC == 'High' ~ 'rgb(227,26,28)'
+    )
+  )
+
+         
+
+```
+
+
+```{r echo=FALSE}
+if (params$shinyrend)
+  shiny::setProgress(0.5)  # set progress to 50%
+```
+
+
+## Project: `r proj_risk_item$PROJECT_NAME`
+##### `r proj_risk_item$PRIMARYMISSION` `r proj_risk_item$LIFECYCLEPHASENAME`
+##### `r proj_risk_item$USACE_ORGANIZATION`
+
+### All Project Risk Impacts
+<center>
+```{r proj risk pies, message=FALSE, warning=FALSE, echo=FALSE,fig.height=2, fig.width=7}
+#make pie plots 
+   cost_pie<- erarr::pieprep(proj_risks, "COST_RANK_DESC")
+   
+ schedule_pie<-erarr::pieprep(proj_risks, "SCHEDULE_RANK_DESC")
+  perform_pie<- erarr::pieprep(proj_risks, "PERFORMANCE_RANK_DESC")
+
+  erarr::pie_plots(cost_pie,schedule_pie,perform_pie)
+
+```
+</center>
+```{r echo=FALSE}
+if (params$shinyrend)
+  shiny::setProgress(0.75)  # set progress to 75%
+```
+
+``` {r proj risk log, echo = FALSE, warning=FALSE}
+
+
+risk_log_table<-proj_risks |>
+  select(RISK_IDENTIFIER, RISK_NAME, COST_RISK_RANKING, SCHEDULE_RISK_RANKING, PERFORMANCEIMPACT_RISK_RANKING, costcolor, schedulecolor, performancecolor )
+
+
+risk_log_table|>
+  mutate(
+    COST_RISK_RANKING = cell_spec(COST_RISK_RANKING, "html", color = costcolor, align = 'c', background = costcolor),
+    SCHEDULE_RISK_RANKING = cell_spec(SCHEDULE_RISK_RANKING, "html", color = schedulecolor, align = 'c', background = schedulecolor),
+    PERFORMANCEIMPACT_RISK_RANKING = cell_spec(PERFORMANCEIMPACT_RISK_RANKING, "html", color = performancecolor, align = 'c', background = performancecolor) ) |>
+  select(RISK_IDENTIFIER, RISK_NAME,COST_RISK_RANKING, SCHEDULE_RISK_RANKING, PERFORMANCEIMPACT_RISK_RANKING) |>
+  separate(RISK_IDENTIFIER,c("code", "rnkorder"), sep="-", remove = FALSE) |>
+  dplyr::arrange(code,as.numeric(rnkorder))|>
+  select(RISK_IDENTIFIER, RISK_NAME,COST_RISK_RANKING, SCHEDULE_RISK_RANKING, PERFORMANCEIMPACT_RISK_RANKING) |>
+  kbl(format = "html", escape = F, col.names =c("Risk ID","Risk","Cost","Schedule","Performance"), align="ccccc", row.names = FALSE)|>
+  kable_styling(bootstrap_options = c( "hover", "condensed", "responsive"))
+
+                                                    
+```
+
+```{r echo=FALSE}
+if (params$shinyrend)
+  shiny::setProgress(.95)  # set progress to 95%
+```
