@@ -51,6 +51,14 @@ To install the `erarr` package, install from GitHub using the `remotes` package:
 remotes::install_github(repo = "MVR-GIS/erarr")
 ```
 
+## Run the application
+To run the Risk Analysis and Reporting application, use the following function:
+```{r install, eval=FALSE}
+erarr::run_app()
+```
+
+
+
 ## Bug Reports
 
 If you find any bugs using `erarr`, please open an [issue](https://github.com/MVR-GIS/erarr/issues).
