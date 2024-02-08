@@ -50,7 +50,7 @@ app_ui <- function(request) {
                             mainPanel(
                               tabsetPanel(id="reporttabs",
                                           tabPanel("Explore Risks", plotly::plotlyOutput("pie"),
-                                                   DT::DTOutput("overviewtab")),
+                                                   DTOutput("overviewtab")),
                                           tabPanel("Project Report",
                                                    htmlOutput("ProjRend"), value="Project"),
                                           tabPanel("All Risk Items",
