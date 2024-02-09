@@ -81,10 +81,6 @@ risk_treatment<-filter(risk_treat, risk_treat$PROJECT_NAME == params$projID, ris
 
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
-risk_item_table<- risk_item |>
-  select(COST_IMPACT_LOWEST,COST_IMPACT_HIGHEST, COST_IMPACT_EVIDENCE,SCHEDULE_IMPACT_LOWEST, SCHEDULE_IMPACT_HIGHEST, SCHEDULE_IMPACT_EVIDENCE,PERFORMANCEIMPACT_DESC, PERFORMANCEIMPACT, PERFORMANCEIMPACT_DESC, SCHEDULE_IMPACT_DISTTYPE)
-
-
 risk_treat_table<-risk_treatment |>
   select(RISK_TREATMENT_ID,PROPOSED_RISK_TREATMENT,COST_IMPACT_RISK_TREATMENT,
          SCHEDULE_IMPACT_RISK_TREATMENT, IMPLEMENTED, RISK_NAME) |>
@@ -160,6 +156,36 @@ if (params$shinyrend)
 #### **Event Likelihood:** `r risk_item$LIKELIHOOD_DISC`
 
 #### `r risk_item$PROB_OCCURRENCE_EVIDENCE`
+
+```{r echo=FALSE}
+risk_item_table<- risk_item |>
+  select(NO_COST_IMPACT,NO_SCHEDULE_IMPACT,NO_PERFORMANCE_IMPACT,
+         COST_IMPACT_LOWEST,COST_IMPACT_HIGHEST, COST_IMPACT_EVIDENCE,SCHEDULE_IMPACT_LOWEST, SCHEDULE_IMPACT_HIGHEST, SCHEDULE_IMPACT_EVIDENCE,PERFORMANCEIMPACT_DESC, PERFORMANCEIMPACT, PERFORMANCEIMPACT_DESC, SCHEDULE_IMPACT_DISTTYPE)
+
+
+  filnm<-if (risk_item_table$NO_COST_IMPACT == 1 &
+              risk_item_table$NO_SCHEDULE_IMPACT =="1" &
+              risk_item_table$NO_PERFORMANCE_IMPACT == "1" {
+      "NoImpact"
+    }
+    else if (input$reporttabs == "AllRisk"){
+      "AllRiskDetaiTable"
+    }
+    else if (input$reporttabs == "Top4"){
+      "ProjectTop4s"
+    }
+  )
+```
+
+```{r echo=FALSE eval=noimpact}
+
+#Schedule impact point, schedule impact uniform schedule impact no impact
+#Cost impact point, cost impact uniform, cost impact no impact 
+
+
+```
+
+
 
 
 #### **No Impact**

@@ -25,7 +25,6 @@ riskpies <- risk_item_db |>
 
 app_server <- function(input, output, session) {
 
-
   projects <- reactive({RiskImpactTable |>
       filter(RiskImpactTable$USACE_ORGANIZATION == input$districtInput
       )})
