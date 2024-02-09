@@ -21,7 +21,6 @@ riskpies <- risk_item_db |>
          "DISCIPLINE", "USACE_ORGANIZATION", "COST_RANK_DESC", "SCHEDULE_RANK_DESC", "PERFORMANCE_RANK_DESC")
 
 
-
 app_ui <- function(request) {
   tagList(
     # Leave this function for adding external resources
@@ -50,7 +49,7 @@ app_ui <- function(request) {
                             mainPanel(
                               tabsetPanel(id="reporttabs",
                                           tabPanel("Explore Risks", plotly::plotlyOutput("pie"),
-                                                   DTOutput("overviewtab")),
+                                                   DT::DTOutput("overviewtab")),
                                           tabPanel("Project Report",
                                                    htmlOutput("ProjRend"), value="Project"),
                                           tabPanel("All Risk Items",

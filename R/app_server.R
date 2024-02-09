@@ -81,7 +81,7 @@ app_server <- function(input, output, session) {
       select(RISK_IDENTIFIER, USACE_ORGANIZATION, PROJECT_NAME, RISK_NAME, RISKCATEGORY, DISCIPLINE, COST_RANK_DESC, SCHEDULE_RANK_DESC, PERFORMANCE_RANK_DESC)
   })
 
-output$overviewtab = shiny::renderDataTable({
+output$overviewtab = DT::renderDT({
     DT::datatable(table(), colnames = c("Risk Identifier","USACE Organization","Project Name","Risk Name ","Risk Category","Discipline",
                                         "Cost Rank", "Schedule Rank", "Performance Rank" ), rownames=FALSE, filter = "top")
   })
