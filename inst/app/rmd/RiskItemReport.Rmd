@@ -159,42 +159,67 @@ if (params$shinyrend)
 
 ```{r echo=FALSE}
 risk_item_table<- risk_item |>
-  select(NO_COST_IMPACT,NO_SCHEDULE_IMPACT,NO_PERFORMANCE_IMPACT,
-         COST_IMPACT_LOWEST,COST_IMPACT_HIGHEST, COST_IMPACT_EVIDENCE,SCHEDULE_IMPACT_LOWEST, SCHEDULE_IMPACT_HIGHEST, SCHEDULE_IMPACT_EVIDENCE,PERFORMANCEIMPACT_DESC, PERFORMANCEIMPACT, PERFORMANCEIMPACT_DESC, SCHEDULE_IMPACT_DISTTYPE)
+  select(NO_COST_IMPACT,NO_SCHEDULE_IMPACT,NO_PERFORMANCE_IMPACT,COST_IMPACT_MOSTLIKELY, SCHEDULE_IMPACT_MOSTLIKELY,
+         COST_IMPACT_LOWEST,COST_IMPACT_HIGHEST, COST_IMPACT_EVIDENCE,SCHEDULE_IMPACT_LOWEST, SCHEDULE_IMPACT_HIGHEST, SCHEDULE_IMPACT_EVIDENCE,PERFORMANCEIMPACT_DESC, PERFORMANCEIMPACT, PERFORMANCEIMPACT_DESC, SCHEDULE_IMPACT_DISTTYPE, COST_IMPACT_DISTTYPE)
 
 
-  filnm<-if (risk_item_table$NO_COST_IMPACT == 1 &
-              risk_item_table$NO_SCHEDULE_IMPACT =="1" &
-              risk_item_table$NO_PERFORMANCE_IMPACT == "1" {
-      "NoImpact"
-    }
-    else if (input$reporttabs == "AllRisk"){
-      "AllRiskDetaiTable"
-    }
-    else if (input$reporttabs == "Top4"){
-      "ProjectTop4s"
-    }
-  )
+tabletype <- if (risk_item_table$NO_COST_IMPACT == 1 &&
+             risk_item_table$NO_SCHEDULE_IMPACT == 1 &&
+             risk_item_table$NO_PERFORMANCE_IMPACT == 1) {
+  "NoImpact"
+} else if (risk_item_table$COST_IMPACT_DISTTYPE == 299 &
+           risk_item_table$SCHEDULE_IMPACT_DISTTYPE == 299) {
+  "PointImpact"
+} else if (risk_item_table$COST_IMPACT_DISTTYPE == 306 &
+           risk_item_table$SCHEDULE_IMPACT_DISTTYPE == 306) {
+  "Uniform"
+} else if (risk_item_table$COST_IMPACT_DISTTYPE == 302 &
+           risk_item_table$SCHEDULE_IMPACT_DISTTYPE == 302) {
+  "Triangle"
+} 
 ```
-
-```{r echo=FALSE eval=noimpact}
-
-#Schedule impact point, schedule impact uniform schedule impact no impact
-#Cost impact point, cost impact uniform, cost impact no impact 
-
-
-```
-
-
 
 
 #### **No Impact**
+```{r echo=FALSE, eval= tabletype == "NoImpact"}
+kbl(risk_item_table)
+
+
+```
 
 | Cost Impact                 | Schedule Impact                   | Performance Impact                   |
 |---------------------|-------------------------|---------------------------|
 | No Cost Impact anticipated. | No Schedule Impact is Anticipated | No Performance Impact is anticipated |
 
+
+
+#### **Point Estimate**
+```{r echo=FALSE, eval= tabletype == "PointImpact"}
+PointTable<- risk_item_table |>
+  select(COST_IMPACT_MOSTLIKELY,SCHEDULE_IMPACT_MOSTLIKELY,PERFORMANCEIMPACT)
+
+kbl(PointTable)
+
+
+
+```
+
+
+| Cost Impact                                      | Schedule Impact                                      | Performance Impact                                                                                                         |
+|-------------------|-------------------|-----------------------------------|
+| Most Likely `r risk_item$COST_IMPACT_MOSTLIKELY` | Most Likely `r risk_item$SCHEDULE_IMPACT_MOSTLIKELY` | ***Performance Impact:*** `r risk_item$PERFORMANCEIMPACT_DESC` Performance Impact Type: `r risk_item$PERFORMANCIMPACTTYPE` |
+| `r risk_item$COST_IMPACT_EVIDENCE`               | `r risk_item$SCHEDULE_IMPACT_EVIDENCE`               | `r risk_item$PERFORMANCEIMPACT_DESC`                                                                                       |
+
+
+
+
+
 #### **Uniform Example**
+```{r echo=FALSE, eval= tabletype == "Uniform"}
+kbl(risk_item_table)
+
+
+```
 
 | Cost Impact                                   | Schedule Impact                                      | Performance Impact                                                 |
 |--------------------|-----------------------|-----------------------------|
@@ -202,16 +227,16 @@ risk_item_table<- risk_item |>
 | *Highest* \$`r risk_item$COST_IMPACT_HIGHEST` | *Highest* `r risk_item$SCHEDULE_IMPACT_HIGHEST` days | ***Performance Impact Type:*** `r risk_item$PERFORMANCEIMPACT` |
 | `r risk_item$COST_IMPACT_EVIDENCE`            | `r risk_item$SCHEDULE_IMPACT_EVIDENCE`               | `r risk_item$PERFORMANCEIMPACT_DESC`                               |
 
+```{r echo=FALSE, eval= tabletype == "Triangle"}
+kbl(risk_item_table)
+
+
+```
+
 | Cost Impact                                 | Schedule Impact                                    | Performance Impact                                             |
 |---------------------|------------------------|---------------------------|
 | *Lowest* \$`r risk_item$COST_IMPACT_LOWEST` | *Lowest* `r risk_item$SCHEDULE_IMPACT_LOWEST` days | ***Performance Impact:*** `r risk_item$PERFORMANCEIMPACT_DESC` |
 
-#### **Point Estimate Example**
-
-| Cost Impact                                      | Schedule Impact                                      | Performance Impact                                                                                                         |
-|-------------------|-------------------|-----------------------------------|
-| Most Likely `r risk_item$COST_IMPACT_MOSTLIKELY` | Most Likely `r risk_item$SCHEDULE_IMPACT_MOSTLIKELY` | ***Performance Impact:*** `r risk_item$PERFORMANCEIMPACT_DESC` Performance Impact Type: `r risk_item$PERFORMANCIMPACTTYPE` |
-| `r risk_item$COST_IMPACT_EVIDENCE`               | `r risk_item$SCHEDULE_IMPACT_EVIDENCE`               | `r risk_item$PERFORMANCEIMPACT_DESC`                                                                                       |
 
 #### Risk Treatments:
 
