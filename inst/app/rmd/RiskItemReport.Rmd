@@ -12,7 +12,12 @@ params:
 h1 {
   text-align: center;
 }
+
+th, td {
+    vertical-align: top;
+}
 ```
+
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, include=FALSE}
 library(readr) 
@@ -36,12 +41,14 @@ erisk_item <- readr::read_csv("../data/RISKLIST_FULL.csv")
 risk_item_db<-data.frame(erisk_item)
 erisk_project <- readr::read_csv("../data/PROJECTLIST_FULL.csv")
 risk_project_db<-data.frame(erisk_project)
-risk_treat <- readr::read_csv("../data/RISKTREATMENTLIST_FULL.csv",col_names = TRUE)
+risk_treat <- readr::read_csv("../data/RISKTREATMENTLIST_FULL.csv",
+                              col_names = TRUE)
 checkimagepath<-"../www/check.png"
 erisk_item <- readr::read_csv("../data/RISKLIST_FULL.csv")
 risk_item_db<-data.frame(erisk_item)
 milestonedf<-read.csv("../data/PHASEMILESTONE.csv")
 milestone_df<-data.frame(milestonedf)
+headers<-c("Cost Impact", "Schedule Impact","Performance Impact")
 
 risk_transact <- read_csv("../data/RISKTRANSACTIONLIST_FULL.csv")
 
@@ -52,9 +59,20 @@ risk_item_filt<- risk_item_db |>
 
 
 RiskImpactTable<-erisk_ItemProj |>
-  select("RISK_ID","RISK_IDENTIFIER","P2_NUMBER.x", "PROJECT_ID","PROJECT_NAME.x", "RISK_NAME","RISKCATEGORY", "DISCIPLINE", "RISK_STATEMENT","LIKELIHOOD_DESC", "PROB_OCCURRENCE_EVIDENCE",  "COST_IMPACT_LOWEST", "COST_IMPACT_MOSTLIKELY", "COST_IMPACT_HIGHEST", "COST_IMPACT_EVIDENCE","SCHEDULE_IMPACT_LOWEST", "SCHEDULE_IMPACT_MOSTLIKELY", "SCHEDULE_IMPACT_HIGHEST", "SCHEDULE_IMPACT_EVIDENCE", "LIFECYCLEPHASENAME.x", "PERFORMANCEIMPACT_DESC", "PERFORMANCEIMPACT" ,"PROJECTPHASEID", "MILESTONE", "RISK_MANAGER", "COST_IMPACT_DISTTYPE", "SCHEDULE_IMPACT_DISTTYPE", "NO_PERFORMANCE_IMPACT", "NO_COST_IMPACT","NO_SCHEDULE_IMPACT")
+  select("RISK_ID","RISK_IDENTIFIER","P2_NUMBER.x", "PROJECT_ID",
+         "PROJECT_NAME.x", "RISK_NAME","RISKCATEGORY", "DISCIPLINE", 
+         "RISK_STATEMENT","LIKELIHOOD_DESC", "PROB_OCCURRENCE_EVIDENCE",  
+         "COST_IMPACT_LOWEST", "COST_IMPACT_MOSTLIKELY", "COST_IMPACT_HIGHEST",
+         "COST_IMPACT_EVIDENCE","SCHEDULE_IMPACT_LOWEST", 
+         "SCHEDULE_IMPACT_MOSTLIKELY", "SCHEDULE_IMPACT_HIGHEST", 
+         "SCHEDULE_IMPACT_EVIDENCE", "LIFECYCLEPHASENAME.x", 
+         "PERFORMANCEIMPACT_DESC", "PERFORMANCEIMPACT" ,"PROJECTPHASEID", 
+         "MILESTONE", "RISK_MANAGER", "COST_IMPACT_DISTTYPE", 
+         "SCHEDULE_IMPACT_DISTTYPE", "NO_PERFORMANCE_IMPACT", "NO_COST_IMPACT",
+         "NO_SCHEDULE_IMPACT")
 
-risk_transact<-left_join(risk_transact, risk_item_filt, by=c("PROJECT_ID", "RISK_ID"))     
+risk_transact<-left_join(risk_transact, risk_item_filt, by=c("PROJECT_ID", 
+                                                             "RISK_ID"))     
 risk_treat<-left_join(risk_treat, risk_item_filt, by=c("PROJECT_ID", "RISK_ID"))
 
 
@@ -67,18 +85,20 @@ if (params$shinyrend)
 ```
 
 ```{r echo=FALSE, eval = params$projID != ""}
-risk_item<-filter(RiskImpactTable, RiskImpactTable$RISK_NAME == params$riskID, RiskImpactTable$PROJECT_NAME.x == params$projID)
-risk_treatment<-filter(risk_treat, risk_treat$PROJECT_NAME == params$projID, risk_treat$RISK_NAME == params$riskID)
+risk_item<-filter(RiskImpactTable, RiskImpactTable$RISK_NAME == params$riskID,
+                  RiskImpactTable$PROJECT_NAME.x == params$projID)
+risk_treatment<-filter(risk_treat, risk_treat$PROJECT_NAME == params$projID, 
+                       risk_treat$RISK_NAME == params$riskID)
 
 ```
 
-      
 ```{r echo=FALSE, eval = params$p2ID != ""}
-risk_item<-filter(RiskImpactTable, RiskImpactTable$RISK_NAME == params$riskID, RiskImpactTable$P2_NUMBER == params$p2ID)
-risk_treatment<-filter(risk_treat, risk_treat$PROJECT_NAME == params$projID, risk_treat$RISK_NAME == params$riskID)
+risk_item<-filter(RiskImpactTable, RiskImpactTable$RISK_NAME == params$riskID, 
+                  RiskImpactTable$P2_NUMBER == params$p2ID)
+risk_treatment<-filter(risk_treat, risk_treat$PROJECT_NAME == params$projID, 
+                       risk_treat$RISK_NAME == params$riskID)
 
 ```
-
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 risk_treat_table<-risk_treatment |>
@@ -89,22 +109,25 @@ risk_treat_table<-risk_treatment |>
     IMPLEMENTED == 0 ~ " ")) |>
   select(RISK_TREATMENT_ID,PROPOSED_RISK_TREATMENT,COST_IMPACT_RISK_TREATMENT,
          SCHEDULE_IMPACT_RISK_TREATMENT, IMPLEMENT_IMG) |>
-  mutate(PROPOSED_RISK_TREATMENT = paste0(( "Measure "), str_to_title(english::english(RISK_TREATMENT_ID)),": ",PROPOSED_RISK_TREATMENT )) |>
-  mutate(SCHEDULE_IMPACT_RISK_TREATMENT = paste(SCHEDULE_IMPACT_RISK_TREATMENT, "Days"))
+  mutate(PROPOSED_RISK_TREATMENT = paste0(( "Measure "), 
+                                          str_to_title(english::english(
+                                            RISK_TREATMENT_ID)),": ",
+                                          PROPOSED_RISK_TREATMENT )) |>
+  mutate(SCHEDULE_IMPACT_RISK_TREATMENT = 
+           paste(SCHEDULE_IMPACT_RISK_TREATMENT, "Days"))
 
 treat_condit <- ifelse(nrow(risk_treat_table)>0,TRUE,FALSE)
 
   
 ```
 
-
 #### Project: `r risk_item$PROJECT_NAME.x`
 
-#### Risk Phase: `r risk_item$LIFECYCLEPHASENAME`, Category: `r risk_item$RISKCATEGORY`
+#### Risk Phase: `r risk_item$LIFECYCLEPHASENAME`, Category:
+
+`r risk_item$RISKCATEGORY`
 
 # Risk Summary: `r risk_item$RISK_NAME`
-
-
 
 ```{r milestoneplot, fig.align='center', fig.height=2, fig.width=9, echo=FALSE}
 erarr::milestoneplot(riskitem=risk_item, milestonedf = milestone_df)
@@ -116,34 +139,60 @@ if (params$shinyrend)
   shiny::setProgress(0.50)  # set progress to 50%
 ```
 
-
 ##### **Lead Discipline:** `r risk_item$DISCIPLINE`
 
 ##### `r risk_item$RISK_STATEMENT`
 
-
 <center>
+
 ```{r echo=F, out.width="75%", fig.height=2}
-monteframe<-data.frame(Opportunity=c(100), Low=c(100))
-plot_ly()|>
-  add_pie(monteframe$Opportunity, value=monteframe$Opportunity,title="Opportunity", textinfo='none',domain = list(row = 0, column = 0),hole = 0.7, marker = list(
-        colors= "#1F78B4"))|>
-  add_pie(monteframe$Opportunity, value=monteframe$Opportunity,title="Opportunity",textinfo='none',domain = list(row = 0, column = 1),hole = 0.7,marker = list(
-        colors= "#1F78B4"))|>
-  add_pie(monteframe$Low, value=monteframe$Low,title="Low",textinfo='none',domain = list(row = 0, column = 2),hole = 0.7,marker = list(
-        colors= "#33A02C")) |>
-    layout(title = "", showlegend = F,
-                      grid=list(rows=1, columns=3),
-    annotations = list(x = c(0.125,0.49, 0.9,0.12,0.485),
-                            y = c(1.2, 1.2, 1.2,-0.15, -0.15),
-                            text = c("Cost","Schedule","Performance","Mean: $0", "Mean: 0 Days"),
-                            xref = "paper",
-                            yref = "paper",
-                            showarrow = F
-                          ))
+monteframe <- data.frame(Opportunity = c(100), Low = c(100))
+plot_ly() |>
+  add_pie(
+    monteframe$Opportunity,
+    value = monteframe$Opportunity,
+    title = "Opportunity",
+    textinfo = 'none',
+    domain = list(row = 0, column = 0),
+    hole = 0.7,
+    marker = list(colors = "#1F78B4")
+  ) |>
+  add_pie(
+    monteframe$Opportunity,
+    value = monteframe$Opportunity,
+    title = "Opportunity",
+    textinfo = 'none',
+    domain = list(row = 0, column = 1),
+    hole = 0.7,
+    marker = list(colors = "#1F78B4")
+  ) |>
+  add_pie(
+    monteframe$Low,
+    value = monteframe$Low,
+    title = "Low",
+    textinfo = 'none',
+    domain = list(row = 0, column = 2),
+    hole = 0.7,
+    marker = list(colors = "#33A02C")
+  ) |>
+  layout(
+    title = "",
+    showlegend = F,
+    grid = list(rows = 1, columns = 3),
+    annotations = list(
+      x = c(0.125, 0.49, 0.9, 0.12, 0.485),
+      y = c(1.2, 1.2, 1.2, -0.15,-0.15),
+      text = c("Cost", "Schedule", "Performance", "Mean: $0",
+               "Mean: 0 Days"),
+      xref = "paper",
+      yref = "paper",
+      showarrow = F
+    )
+  )
 
 
 ```
+
 </center>
 
 ```{r echo=FALSE}
@@ -151,99 +200,115 @@ if (params$shinyrend)
   shiny::setProgress(0.75)  # set progress to 75%
 ```
 
-
-
 #### **Event Likelihood:** `r risk_item$LIKELIHOOD_DISC`
 
 #### `r risk_item$PROB_OCCURRENCE_EVIDENCE`
 
 ```{r echo=FALSE}
-risk_item_table<- risk_item |>
-  select(NO_COST_IMPACT,NO_SCHEDULE_IMPACT,NO_PERFORMANCE_IMPACT,COST_IMPACT_MOSTLIKELY, SCHEDULE_IMPACT_MOSTLIKELY,
-         COST_IMPACT_LOWEST,COST_IMPACT_HIGHEST, COST_IMPACT_EVIDENCE,SCHEDULE_IMPACT_LOWEST, SCHEDULE_IMPACT_HIGHEST, SCHEDULE_IMPACT_EVIDENCE,PERFORMANCEIMPACT_DESC, PERFORMANCEIMPACT, PERFORMANCEIMPACT_DESC, SCHEDULE_IMPACT_DISTTYPE, COST_IMPACT_DISTTYPE)
+risk_item_table <- risk_item |>
+  select(
+    NO_COST_IMPACT,
+    NO_SCHEDULE_IMPACT,
+    NO_PERFORMANCE_IMPACT,
+    COST_IMPACT_MOSTLIKELY,
+    SCHEDULE_IMPACT_MOSTLIKELY,
+    COST_IMPACT_LOWEST,
+    COST_IMPACT_HIGHEST,
+    COST_IMPACT_EVIDENCE,
+    SCHEDULE_IMPACT_LOWEST,
+    SCHEDULE_IMPACT_HIGHEST,
+    SCHEDULE_IMPACT_EVIDENCE,
+    PERFORMANCEIMPACT_DESC,
+    PERFORMANCEIMPACT,
+    PERFORMANCEIMPACT_DESC,
+    SCHEDULE_IMPACT_DISTTYPE,
+    COST_IMPACT_DISTTYPE
+  )
+
+####Modularize assess for each cost schedule and performance build function 
+
+costcolumn <-
+  if (risk_item_table$NO_COST_IMPACT == 1) {
+    "No cost impact is anticipated"
+  } else if (risk_item_table$COST_IMPACT_DISTTYPE == 299) {
+    risk_item_table$COST_IMPACT_MOSTLIKELY
+  } else if (risk_item_table$COST_IMPACT_DISTTYPE == 306) {
+    c(
+      risk_item_table$COST_IMPACT_LOWEST,
+      risk_item_table$COST_IMPACT_HIGHEST,
+      risk_item_table$COST_IMPACT_EVIDENCE
+    )
+  } else if (risk_item_table$COST_IMPACT_DISTTYPE == 302) {
+    c(
+      risk_item_table$COST_IMPACT_LOWEST,
+      risk_item_table$COST_IMPACT_MOSTLIKELY,
+      risk_item_table$COST_IMPACT_HIGHEST,
+      risk_item_table$COST_IMPACT_EVIDENCE
+    )
+  }
+
+schedulecolumn <-   if (risk_item_table$NO_PERFORMANCE_IMPACT == 1) {
+    "No performance impact is anticipated"
+  } else if (risk_item_table$SCHEDULE_IMPACT_DISTTYPE == 299) {
+    risk_item_table$SCHEDULE_IMPACT_MOSTLIKELY
+  } else if (risk_item_table$SCHEDULE_IMPACT_DISTTYPE == 306) {
+    c(
+      risk_item_table$SCHEDULE_IMPACT_LOWEST,
+      risk_item_table$SCHEDULE_IMPACT_HIGHEST,
+      risk_item_table$SCHEDULE_IMPACT_EVIDENCE
+    )
+  } else if (risk_item_table$SCHEDULE_IMPACT_DISTTYPE == 302) {
+    c(
+      risk_item_table$SCHEDULE_IMPACT_LOWEST,
+      risk_item_table$SCHEDULE_IMPACT_MOSTLIKELY,
+      risk_item_table$SCHEDULE_IMPACT_HIGHEST,
+      risk_item_table$SCHEDULE_IMPACT_EVIDENCE
+    )
+  }
+
+performancecolumn <- if (risk_item_table$NO_PERFORMANCE_IMPACT == 1) {
+    "No performance impact is anticipated"
+  } else {
+    c(risk_item_table$PERFORMANCEIMPACT_DESC, risk_item_table$PERFORMANCEIMPACT,
+      risk_item_table$PERFORMANCEIMPACT_DESC)
+  }
 
 
-tabletype <- if (risk_item_table$NO_COST_IMPACT == 1 &&
-             risk_item_table$NO_SCHEDULE_IMPACT == 1 &&
-             risk_item_table$NO_PERFORMANCE_IMPACT == 1) {
-  "NoImpact"
-} else if (risk_item_table$COST_IMPACT_DISTTYPE == 299 &
-           risk_item_table$SCHEDULE_IMPACT_DISTTYPE == 299) {
-  "PointImpact"
-} else if (risk_item_table$COST_IMPACT_DISTTYPE == 306 &
-           risk_item_table$SCHEDULE_IMPACT_DISTTYPE == 306) {
-  "Uniform"
-} else if (risk_item_table$COST_IMPACT_DISTTYPE == 302 &
-           risk_item_table$SCHEDULE_IMPACT_DISTTYPE == 302) {
-  "Triangle"
-} 
+knitr::kables(
+  list(
+    knitr::kable(
+      costcolumn,
+      format = "html",
+      col.names = "Cost Impact"
+    )|>
+      kable_styling(), 
+    knitr::kable(
+      schedulecolumn,
+      format = "html",
+      col.names = "Schedule Impact"
+    )|>
+      kable_styling(),
+    knitr::kable(
+      performancecolumn,
+      format = "html",
+      col.names = "Performance Impact"
+    )|>
+      kable_styling()
+  )
+)
+
+
+
+
 ```
-
-
-#### **No Impact**
-```{r echo=FALSE, eval= tabletype == "NoImpact"}
-kbl(risk_item_table)
-
-
-```
-
-| Cost Impact                 | Schedule Impact                   | Performance Impact                   |
-|---------------------|-------------------------|---------------------------|
-| No Cost Impact anticipated. | No Schedule Impact is Anticipated | No Performance Impact is anticipated |
-
-
-
-#### **Point Estimate**
-```{r echo=FALSE, eval= tabletype == "PointImpact"}
-PointTable<- risk_item_table |>
-  select(COST_IMPACT_MOSTLIKELY,SCHEDULE_IMPACT_MOSTLIKELY,PERFORMANCEIMPACT)
-
-kbl(PointTable)
-
-
-
-```
-
-
-| Cost Impact                                      | Schedule Impact                                      | Performance Impact                                                                                                         |
-|-------------------|-------------------|-----------------------------------|
-| Most Likely `r risk_item$COST_IMPACT_MOSTLIKELY` | Most Likely `r risk_item$SCHEDULE_IMPACT_MOSTLIKELY` | ***Performance Impact:*** `r risk_item$PERFORMANCEIMPACT_DESC` Performance Impact Type: `r risk_item$PERFORMANCIMPACTTYPE` |
-| `r risk_item$COST_IMPACT_EVIDENCE`               | `r risk_item$SCHEDULE_IMPACT_EVIDENCE`               | `r risk_item$PERFORMANCEIMPACT_DESC`                                                                                       |
-
-
-
-
-
-#### **Uniform Example**
-```{r echo=FALSE, eval= tabletype == "Uniform"}
-kbl(risk_item_table)
-
-
-```
-
-| Cost Impact                                   | Schedule Impact                                      | Performance Impact                                                 |
-|--------------------|-----------------------|-----------------------------|
-| *Lowest* \$`r risk_item$COST_IMPACT_LOWEST`   | *Lowest* `r risk_item$SCHEDULE_IMPACT_LOWEST` days   | ***Performance Impact:*** `r risk_item$PERFORMANCEIMPACT_DESC`     |
-| *Highest* \$`r risk_item$COST_IMPACT_HIGHEST` | *Highest* `r risk_item$SCHEDULE_IMPACT_HIGHEST` days | ***Performance Impact Type:*** `r risk_item$PERFORMANCEIMPACT` |
-| `r risk_item$COST_IMPACT_EVIDENCE`            | `r risk_item$SCHEDULE_IMPACT_EVIDENCE`               | `r risk_item$PERFORMANCEIMPACT_DESC`                               |
-
-```{r echo=FALSE, eval= tabletype == "Triangle"}
-kbl(risk_item_table)
-
-
-```
-
-| Cost Impact                                 | Schedule Impact                                    | Performance Impact                                             |
-|---------------------|------------------------|---------------------------|
-| *Lowest* \$`r risk_item$COST_IMPACT_LOWEST` | *Lowest* `r risk_item$SCHEDULE_IMPACT_LOWEST` days | ***Performance Impact:*** `r risk_item$PERFORMANCEIMPACT_DESC` |
-
 
 #### Risk Treatments:
 
 `r if(!treat_condit){"Risk treatments have not been completed for this risk item"}`
 
 ```{r echo=FALSE, message=FALSE, eval = treat_condit}
-risk_treat_table$IMPLEMENT_IMG = sprintf("![    ](%s)", risk_treat_table$IMPLEMENT_IMG)
+risk_treat_table$IMPLEMENT_IMG = sprintf("![    ](%s)", 
+                                         risk_treat_table$IMPLEMENT_IMG)
 
 
 kbl(risk_treat_table,format = "html",col.names = NULL, align= "llccc") |>
@@ -253,11 +318,9 @@ kbl(risk_treat_table,format = "html",col.names = NULL, align= "llccc") |>
 
 ```
 
-                                                
-##### Risk Manager: `r risk_item$RISK_MANAGER` 
+##### Risk Manager: `r risk_item$RISK_MANAGER`
 
 ```{r echo=FALSE}
 if (params$shinyrend)
   shiny::setProgress(.95)  # set progress to 95%
 ```
-
