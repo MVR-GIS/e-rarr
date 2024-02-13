@@ -14,13 +14,13 @@ Imports:
     bslib,
     config,
     dplyr,
-    DT,
     golem,
+    shiny,
+    DT,
     plotly,
     readr,
     rlang,
     rmarkdown,
-    shiny,
     waiter
 Suggests: 
     knitr,
