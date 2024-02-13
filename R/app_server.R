@@ -87,8 +87,6 @@ app_server <- function(input, output, session) {
     )
   })
   
-  
-  
   piedata <- reactive({
     riskpies |>
       filter(
@@ -96,8 +94,22 @@ app_server <- function(input, output, session) {
           input$projectInput != "",
           riskpies$PROJECT_NAME == input$projectInput
         )
+      )|>
+      select(
+        RISK_IDENTIFIER,
+        USACE_ORGANIZATION,
+        PROJECT_NAME,
+        RISK_NAME,
+        RISKCATEGORY,
+        DISCIPLINE,
+        COST_RANK_DESC,
+        SCHEDULE_RANK_DESC,
+        PERFORMANCE_RANK_DESC
       )
   })
+  
+
+  
   
   cost_pie <- reactive(pieprep(piedata(), "COST_RANK_DESC"))
   
@@ -116,32 +128,11 @@ app_server <- function(input, output, session) {
     else
       TRUE
   }
-  
-  
-  table <- reactive({
-    riskpies |>
-      filter(
-        conditional(
-          input$projectInput != "",
-          riskpies$PROJECT_NAME == input$projectInput
-        )
-      ) |>
-      select(
-        RISK_IDENTIFIER,
-        USACE_ORGANIZATION,
-        PROJECT_NAME,
-        RISK_NAME,
-        RISKCATEGORY,
-        DISCIPLINE,
-        COST_RANK_DESC,
-        SCHEDULE_RANK_DESC,
-        PERFORMANCE_RANK_DESC
-      )
-  })
+
   
   output$overviewtab = DT::renderDT({
     DT::datatable(
-      table(),
+      piedata(),
       colnames = c(
         "Risk Identifier",
         "USACE Organization",
@@ -156,7 +147,10 @@ app_server <- function(input, output, session) {
       rownames = FALSE,
       filter = "top"
     )
-  })
+  }, server = FALSE)
+  
+  inreactpies<-reactiveVal(riskpies)
+
   
   output$reportrend <- renderUI({
     req(
