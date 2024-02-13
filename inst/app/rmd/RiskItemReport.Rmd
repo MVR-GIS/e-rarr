@@ -13,12 +13,15 @@ h1 {
   text-align: center;
 }
 
-th {
-    vertical-align: top;
+th {    vertical-align: top;    
+    white-space: nowrap;
+    padding: 10px;
+    
 }
 
-td {
-vertical-align: top;
+td {    vertical-align: top;
+  padding: 10px;
+}
 }
 ```
 
@@ -230,27 +233,27 @@ risk_item_table <- risk_item |>
   mutate(
     COST_IMPACT_LOWEST = paste0("<p style = 
                                 'font-family: Arial Narrow;font-size:8pt'>",
-                                "Lowest ","</p>", 
+                                "Lowest","</p>", 
                                 formattable::currency(COST_IMPACT_LOWEST)),
     COST_IMPACT_HIGHEST = paste0("<p style = 
                                 'font-family: Arial Narrow;font-size:8pt'>",
-                                "Highest ", "</p>",
+                                "Highest","</p>",
                                  formattable::currency(COST_IMPACT_HIGHEST)),
     COST_IMPACT_MOSTLIKELY = paste0("<p style = 
                                     'font-family: Arial Narrow;font-size:8pt'>",
-                                    "Most Likely ","</p>", 
+                                    "Most Likely","</p>", 
                                     formattable::currency(COST_IMPACT_MOSTLIKELY)),
     SCHEDULE_IMPACT_HIGHEST = paste0("<p style = 
                                      'font-family: Arial Narrow;font-size:8pt'>",
-                                     "Highest ", "</p>",
+                                     "Highest","</p>",
                                      SCHEDULE_IMPACT_HIGHEST, " days"),
     SCHEDULE_IMPACT_LOWEST = paste0("<p style = 
                                     'font-family: Arial Narrow;font-size:8pt'>",
-                                    "Lowest ", "</p>",
+                                    "Lowest","</p>",
                                     SCHEDULE_IMPACT_LOWEST, " days"),
     SCHEDULE_IMPACT_MOSTLIKELY = paste0("<p style = 
                                         'font-family: Arial Narrow;font-size:8pt'>",
-                                        "Most Likely ", "</p>",
+                                        "Most Likely","</p>",
                                         SCHEDULE_IMPACT_MOSTLIKELY, " days")
   )
 
@@ -316,23 +319,21 @@ knitr::kables(
   list(
     knitr::kable(costcolumn,
                  format = "html",
-                 col.names = "Cost Impact",escape=FALSE,valign = 't') |>
-      kable_styling(full_width = T),
+                 col.names = "Cost Impact",escape=FALSE) |>
+       kable_styling(),
     knitr::kable(schedulecolumn,
                  format = "html",
-                 col.names = "Schedule Impact",escape=FALSE,valign = 't') |>
-      kable_styling(full_width = T),
+                 col.names = "Schedule Impact",escape=FALSE) |>
+       kable_styling(),
 
     knitr::kable(performancecolumn,
                  format = "html",
-                 col.names = "Performance Impact",escape=FALSE,valign = 't'
-                 ) |>
-      kable_styling(full_width = T)
+                 col.names = "Performance Impact",escape=FALSE) |>
+       kable_styling()
   )
 )
 
 
-#table.attr = "style='width:90%;'"
 ```
 
 #### Risk Treatments:
