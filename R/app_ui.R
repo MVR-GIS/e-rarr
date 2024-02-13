@@ -4,7 +4,6 @@
 #'     DO NOT REMOVE.
 #' @import shiny
 #' @import plotly
-#' @import DT
 #' @noRd
 
 
