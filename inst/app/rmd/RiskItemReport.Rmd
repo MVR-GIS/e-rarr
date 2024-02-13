@@ -13,11 +13,14 @@ h1 {
   text-align: center;
 }
 
-th, td {
+th {
     vertical-align: top;
 }
-```
 
+td {
+vertical-align: top;
+}
+```
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, include=FALSE}
 library(readr) 
@@ -204,7 +207,7 @@ if (params$shinyrend)
 
 #### `r risk_item$PROB_OCCURRENCE_EVIDENCE`
 
-```{r echo=FALSE}
+```{r echo=FALSE, results='asis'}
 risk_item_table <- risk_item |>
   select(
     NO_COST_IMPACT,
@@ -223,9 +226,35 @@ risk_item_table <- risk_item |>
     PERFORMANCEIMPACT_DESC,
     SCHEDULE_IMPACT_DISTTYPE,
     COST_IMPACT_DISTTYPE
+  ) |>
+  mutate(
+    COST_IMPACT_LOWEST = paste0("<p style = 
+                                'font-family: Arial Narrow;font-size:8pt'>",
+                                "Lowest ","</p>", 
+                                formattable::currency(COST_IMPACT_LOWEST)),
+    COST_IMPACT_HIGHEST = paste0("<p style = 
+                                'font-family: Arial Narrow;font-size:8pt'>",
+                                "Highest ", "</p>",
+                                 formattable::currency(COST_IMPACT_HIGHEST)),
+    COST_IMPACT_MOSTLIKELY = paste0("<p style = 
+                                    'font-family: Arial Narrow;font-size:8pt'>",
+                                    "Most Likely ","</p>", 
+                                    formattable::currency(COST_IMPACT_MOSTLIKELY)),
+    SCHEDULE_IMPACT_HIGHEST = paste0("<p style = 
+                                     'font-family: Arial Narrow;font-size:8pt'>",
+                                     "Highest ", "</p>",
+                                     SCHEDULE_IMPACT_HIGHEST, " days"),
+    SCHEDULE_IMPACT_LOWEST = paste0("<p style = 
+                                    'font-family: Arial Narrow;font-size:8pt'>",
+                                    "Lowest ", "</p>",
+                                    SCHEDULE_IMPACT_LOWEST, " days"),
+    SCHEDULE_IMPACT_MOSTLIKELY = paste0("<p style = 
+                                        'font-family: Arial Narrow;font-size:8pt'>",
+                                        "Most Likely ", "</p>",
+                                        SCHEDULE_IMPACT_MOSTLIKELY, " days")
   )
 
-####Modularize assess for each cost schedule and performance build function 
+####Modularize assess for each cost schedule and performance build function
 
 costcolumn <-
   if (risk_item_table$NO_COST_IMPACT == 1) {
@@ -247,7 +276,8 @@ costcolumn <-
     )
   }
 
-schedulecolumn <-   if (risk_item_table$NO_PERFORMANCE_IMPACT == 1) {
+schedulecolumn <-
+  if (risk_item_table$NO_PERFORMANCE_IMPACT == 1) {
     "No performance impact is anticipated"
   } else if (risk_item_table$SCHEDULE_IMPACT_DISTTYPE == 299) {
     risk_item_table$SCHEDULE_IMPACT_MOSTLIKELY
@@ -266,61 +296,73 @@ schedulecolumn <-   if (risk_item_table$NO_PERFORMANCE_IMPACT == 1) {
     )
   }
 
-performancecolumn <- if (risk_item_table$NO_PERFORMANCE_IMPACT == 1) {
+performancecolumn <-
+  if (risk_item_table$NO_PERFORMANCE_IMPACT == 1) {
     "No performance impact is anticipated"
   } else {
-    c(risk_item_table$PERFORMANCEIMPACT_DESC, risk_item_table$PERFORMANCEIMPACT,
-      risk_item_table$PERFORMANCEIMPACT_DESC)
+    c(
+      risk_item_table$PERFORMANCEIMPACT_DESC,
+      risk_item_table$PERFORMANCEIMPACT,
+      risk_item_table$PERFORMANCEIMPACT_DESC
+    )
   }
+
+
+
+
 
 
 knitr::kables(
   list(
-    knitr::kable(
-      costcolumn,
-      format = "html",
-      col.names = "Cost Impact"
-    )|>
-      kable_styling(), 
-    knitr::kable(
-      schedulecolumn,
-      format = "html",
-      col.names = "Schedule Impact"
-    )|>
-      kable_styling(),
-    knitr::kable(
-      performancecolumn,
-      format = "html",
-      col.names = "Performance Impact"
-    )|>
-      kable_styling()
+    knitr::kable(costcolumn,
+                 format = "html",
+                 col.names = "Cost Impact",escape=FALSE,valign = 't') |>
+      kable_styling(full_width = T),
+    knitr::kable(schedulecolumn,
+                 format = "html",
+                 col.names = "Schedule Impact",escape=FALSE,valign = 't') |>
+      kable_styling(full_width = T),
+
+    knitr::kable(performancecolumn,
+                 format = "html",
+                 col.names = "Performance Impact",escape=FALSE,valign = 't'
+                 ) |>
+      kable_styling(full_width = T)
   )
 )
 
 
-
-
+#table.attr = "style='width:90%;'"
 ```
 
 #### Risk Treatments:
 
 `r if(!treat_condit){"Risk treatments have not been completed for this risk item"}`
 
-```{r echo=FALSE, message=FALSE, eval = treat_condit}
-risk_treat_table$IMPLEMENT_IMG = sprintf("![    ](%s)", 
-                                         risk_treat_table$IMPLEMENT_IMG)
+```{r echo = FALSE, message = FALSE, eval = treat_condit}
+risk_treat_table$IMPLEMENT_IMG = sprintf("![    ](%s)",
+risk_treat_table$IMPLEMENT_IMG)
 
 
-kbl(risk_treat_table,format = "html",col.names = NULL, align= "llccc") |>
-  kable_styling() |>
-  add_header_above(c("Measures"=2, "Impacts" = 2,"Implemented" = 1))
+kbl(
+risk_treat_table,
+format = "html",
+col.names = NULL,
+align = "llccc"
+) |>
+kable_styling() |>
+add_header_above(c(
+"Measures" = 2,
+"Impacts" = 2,
+"Implemented" = 1
+))
 
 
 ```
 
 ##### Risk Manager: `r risk_item$RISK_MANAGER`
 
-```{r echo=FALSE}
+```{r echo = FALSE}
 if (params$shinyrend)
-  shiny::setProgress(.95)  # set progress to 95%
+shiny::setProgress(.95)  # set progress to 95%
 ```
