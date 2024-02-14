@@ -22,20 +22,7 @@ RiskImpactTable <-
                    "RISK_NAME",
                    "USACE_ORGANIZATION",
                    "P2_NUMBER")]
-riskpies <- risk_item_db |>
-  select(
-    "P2_NUMBER",
-    "RISK_IDENTIFIER",
-    "PROJECT_NAME",
-    "RISK_NAME",
-    "RISKCATEGORY",
-    "DISCIPLINE",
-    "USACE_ORGANIZATION",
-    "COST_RANK_DESC",
-    "SCHEDULE_RANK_DESC",
-    "PERFORMANCE_RANK_DESC"
-  )
-###Crosstalk/reactive between table and pie charts
+
 
 app_ui <- function(request) {
   tagList(
@@ -64,30 +51,35 @@ app_ui <- function(request) {
                  sidebarLayout(
                    sidebarPanel(
                      selectizeInput(
-                       "districtInput",
-                       "Select a District",
-                       choices = sort(c(
-                         "", RiskImpactTable$USACE_ORGANIZATION
-                       )),
+                       'districtInput',
+                       "District",
+                       choices = NULL,
                        selected = NULL,
-                       multiple = F
+                       multiple = F,
+                       options=list(placeholder = 'Select a District', maxOptions = 40)
                      ),
-                     selectizeInput("projectInput", "Select a project", choices =
-                                      NULL),
+                     selectizeInput("projectInput", 
+                                    "Project", 
+                                    choices = NULL,
+                                    selected = NULL,
+                                    multiple = F,
+                                    options=list(placeholder = 'Select a Project')),
                      h6("or"),
                      selectizeInput(
                        "P2Input",
-                       "Enter a P2 Number",
+                       "P2 Number",
                        choices = NULL,
                        selected = NULL,
-                       multiple = F
+                       multiple = F,
+                       options=list(placeholder = 'Enter P2 Number')
                      ),
                      selectizeInput(
                        "riskInput",
-                       "Select a risk item",
+                       "Risk",
                        choices = NULL ,
                        selected = NULL,
-                       multiple = F
+                       multiple = F,
+                       options=list(placeholder = 'Select a Risk Item')
                      ),
                      downloadButton("report", "Download report"),
                      width = 2

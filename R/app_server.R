@@ -39,11 +39,31 @@ riskpies <- risk_item_db |>
 
 
 
+
+
 app_server <- function(input, output, session) {
+ 
+  num <- reactive({
+    data = RiskImpactTable$USACE_ORGANIZATION
+    return(data)
+  })
+  
+  observe({
+    updateSelectizeInput(session,'districtInput',
+                         choices =c("", sort(unique(num()))), 
+                         options=list(maxOptions = 40
+                         ,server = TRUE,placeholder = 'Select a District' ))
+  })
+  
+  
   projects <- reactive({
     RiskImpactTable |>
       filter(RiskImpactTable$USACE_ORGANIZATION == input$districtInput)
   })
+  
+  
+
+  
   
   observeEvent(projects(), {
     choices <- sort(unique(projects()$PROJECT_NAME))
@@ -86,15 +106,20 @@ app_server <- function(input, output, session) {
       selected = ""
     )
   })
+
+  conditional <- function(condition, success) {
+    if (condition)
+      success
+    else
+      TRUE
+  }
   
-  piedata <- reactive({
-    riskpies |>
-      filter(
-        conditional(
-          input$projectInput != "",
-          riskpies$PROJECT_NAME == input$projectInput
-        )
-      )|>
+  in_react_frame<-reactive({riskpies |>
+                                filter(
+                                  conditional(
+                                    input$projectInput != "",
+                                    riskpies$PROJECT_NAME == input$projectInput
+                                  ))|>
       select(
         RISK_IDENTIFIER,
         USACE_ORGANIZATION,
@@ -105,34 +130,11 @@ app_server <- function(input, output, session) {
         COST_RANK_DESC,
         SCHEDULE_RANK_DESC,
         PERFORMANCE_RANK_DESC
-      )
-  })
-  
-
-  
-  
-  cost_pie <- reactive(pieprep(piedata(), "COST_RANK_DESC"))
-  
-  schedule_pie <- reactive(pieprep(piedata(), "SCHEDULE_RANK_DESC"))
-  perform_pie <-
-    reactive(pieprep(piedata(), "PERFORMANCE_RANK_DESC"))
-  
-  output$pie = plotly::renderPlotly({
-    pie_plots(cost_pie(), schedule_pie(), perform_pie())
-  })
-  
-  
-  conditional <- function(condition, success) {
-    if (condition)
-      success
-    else
-      TRUE
-  }
-
+      )})
   
   output$overviewtab = DT::renderDT({
     DT::datatable(
-      piedata(),
+      in_react_frame(),
       colnames = c(
         "Risk Identifier",
         "USACE Organization",
@@ -147,9 +149,26 @@ app_server <- function(input, output, session) {
       rownames = FALSE,
       filter = "top"
     )
-  }, server = FALSE)
+  })
   
-  inreactpies<-reactiveVal(riskpies)
+  
+  filtered_frame<-reactive({
+    frame<-req(in_react_frame())
+    indexes <- req(input$table_rows_all)
+    frame[indexes,]
+  })
+  
+  
+  cost_pie <- reactive(pieprep(in_react_frame(), "COST_RANK_DESC"))
+  
+  schedule_pie <- reactive(pieprep(in_react_frame(), "SCHEDULE_RANK_DESC"))
+  perform_pie <-
+    reactive(pieprep(in_react_frame(), "PERFORMANCE_RANK_DESC"))
+  
+  
+  output$pie = plotly::renderPlotly({
+    pie_plots(cost_pie(), schedule_pie(), perform_pie())
+  })
 
   
   output$reportrend <- renderUI({
