@@ -46,7 +46,7 @@ usethis::use_test("app")
 # Documentation
 
 ## Vignette ----
-usethis::use_vignette("erisk")
+usethis::use_vignette("erarr")
 devtools::build_vignettes()
 
 ## Code Coverage----

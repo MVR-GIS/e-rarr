@@ -1,8 +1,8 @@
 ---
-title: "erisk"
+title: "erarr"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{erisk}
+  %\VignetteIndexEntry{erarr}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
