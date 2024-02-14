@@ -114,12 +114,17 @@ app_server <- function(input, output, session) {
       TRUE
   }
   
-  in_react_frame<-reactive({riskpies |>
-                                filter(
-                                  conditional(
-                                    input$projectInput != "",
-                                    riskpies$PROJECT_NAME == input$projectInput
-                                  ))|>
+  
+  
+  in_react_frame<-reactiveVal(riskpies)
+  
+  filtered_frame<-reactive({
+    in_react_frame()|>
+      filter(
+        conditional(
+          input$projectInput != "",
+          riskpies$PROJECT_NAME == input$projectInput
+        ))|>
       select(
         RISK_IDENTIFIER,
         USACE_ORGANIZATION,
@@ -129,12 +134,26 @@ app_server <- function(input, output, session) {
         DISCIPLINE,
         COST_RANK_DESC,
         SCHEDULE_RANK_DESC,
-        PERFORMANCE_RANK_DESC
-      )})
+        PERFORMANCE_RANK_DESC)
+    })
+  
+  filt_frame <- reactive({  
+  frame<-req(filtered_frame())
+    indexes <- req(input$overviewtab_rows_all)
+    frame[indexes,]
+  })
+
+  
+  cost_pie <- reactive(
+      pieprep(filt_frame(), "COST_RANK_DESC"))
+  
+  schedule_pie <- reactive(
+      pieprep(filt_frame(), "SCHEDULE_RANK_DESC"))
+  perform_pie <- reactive(pieprep(filt_frame(), "PERFORMANCE_RANK_DESC"))
   
   output$overviewtab = DT::renderDT({
     DT::datatable(
-      in_react_frame(),
+      filtered_frame(),
       colnames = c(
         "Risk Identifier",
         "USACE Organization",
@@ -152,24 +171,9 @@ app_server <- function(input, output, session) {
   })
   
   
-  filtered_frame<-reactive({
-    frame<-req(in_react_frame())
-    indexes <- req(input$table_rows_all)
-    frame[indexes,]
-  })
-  
-  
-  cost_pie <- reactive(pieprep(in_react_frame(), "COST_RANK_DESC"))
-  
-  schedule_pie <- reactive(pieprep(in_react_frame(), "SCHEDULE_RANK_DESC"))
-  perform_pie <-
-    reactive(pieprep(in_react_frame(), "PERFORMANCE_RANK_DESC"))
-  
-  
   output$pie = plotly::renderPlotly({
     pie_plots(cost_pie(), schedule_pie(), perform_pie())
   })
-
   
   output$reportrend <- renderUI({
     req(
