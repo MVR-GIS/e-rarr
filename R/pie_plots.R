@@ -35,7 +35,7 @@
 pieprep<- function(riskdf,rankcol){
   colName<- as.name(rankcol)
   colnameq<-enquo(colName)
-
+  
   pie_prepped<- riskdf |>
     group_by(!!colnameq) |>
     summarize(count = n())|>
@@ -45,10 +45,10 @@ pieprep<- function(riskdf,rankcol){
                                !!colnameq =='Medium'~ 'rgb(255,127,0)',
                                !!colnameq == 'High'~ 'rgb(227,26,28)' ))|>
     plotly::arrange(factor(!!colnameq, levels=c('Opportunity', 'Low', 'Medium', 'High')))
-
-
+  
+  
   return(pie_prepped)
-
+  
 }
 
 pie_plots<- function(cost_pie,schedule_pie,perform_pie){
@@ -59,7 +59,7 @@ pie_plots<- function(cost_pie,schedule_pie,perform_pie){
       labels = ~ .data$COST_RANK_DESC,
       sort = FALSE,
       title="Cost",
-      textinfo = 'value',
+      name= " ",
       textfont = list(color = '#FFFFFF'),
       domain = list(row = 0, column = 0),
       marker = list(
@@ -71,9 +71,9 @@ pie_plots<- function(cost_pie,schedule_pie,perform_pie){
       data = schedule_pie,
       values = ~ .data$count,
       labels = ~ .data$SCHEDULE_RANK_DESC,
-      textinfo = 'value',
       textfont = list(color = '#FFFFFF'),
       sort = FALSE,
+      name= " ",
       title = "Schedule",
       domain = list(row = 0, column = 1),
       marker = list(
@@ -85,17 +85,17 @@ pie_plots<- function(cost_pie,schedule_pie,perform_pie){
       data = perform_pie,
       values = ~ .data$count,
       labels = ~ .data$PERFORMANCE_RANK_DESC,
-      textinfo = 'value',
       title = "Performance",
+      name= " ",
       textfont = list(color = '#FFFFFF'),
       sort = FALSE,
       domain = list(row = 0, column = 2),
       marker = list(
         colors = ~ color,
         line = list(color = '#FFFFFF', width = 1.5)
-      )
-    )
-
+      ))
+    
+  
   pies<-fig |>
     plotly::layout(title = "", showlegend = T,
                    grid=list(rows=1, columns=3),legend= list(orientation = 'h'))
