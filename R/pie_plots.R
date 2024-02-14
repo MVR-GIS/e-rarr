@@ -21,8 +21,9 @@
 #'
 #' RiskImpactTable<-risk_item_db[,c("PROJECT_NAME", "RISK_NAME", "USACE_ORGANIZATION","P2_NUMBER")]
 #' riskpies <- erisk_ItemProj |>
-#'   select("P2_NUMBER.x", "RISK_IDENTIFIER","PROJECT_NAME.x","RISK_NAME","RISKCATEGORY",
-#'          "DISCIPLINE", "USACE_ORGANIZATION.x", "COST_RANK_DESC", "SCHEDULE_RANK_DESC", "PERFORMANCE_RANK_DESC")
+#'   select("P2_NUMBER.x", "RISK_IDENTIFIER","PROJECT_NAME.x","RISK_NAME",
+#'   "RISKCATEGORY","DISCIPLINE", "USACE_ORGANIZATION.x", "COST_RANK_DESC", 
+#'   "SCHEDULE_RANK_DESC", "PERFORMANCE_RANK_DESC")
 #'
 #'
 #'
@@ -40,48 +41,20 @@ fig <- plotly::plot_ly(textfont = list(color = '#FFFFFF')) |>
   plotly::add_pie(
     data = cost_pie,
     values =  ~ .data$count,
-    labels = ~ .data$COST_RANK_DESC,
-    sort = FALSE,
     title="Cost",
-    textinfo = 'value',
     textfont = list(color = '#FFFFFF'),
-    domain = list(row = 0, column = 0),
-    marker = list(
-      colors = ~ color,
-      line = list(color = '#FFFFFF', width = 1.5)
-    )
+    domain = list(row = 0, column = 0)
   ) |>
   plotly::add_pie(
     data = schedule_pie,
     values = ~ .data$count,
-    labels = ~ .data$SCHEDULE_RANK_DESC,
-    textinfo = 'value',
     textfont = list(color = '#FFFFFF'),
-    sort = FALSE,
     title = "Schedule",
-    domain = list(row = 0, column = 1),
-    marker = list(
-      colors = ~ color,
-      line = list(color = '#FFFFFF', width = 1.5)
-    )
-  ) |>
-  plotly::add_pie(
-    data = perform_pie,
-    values = ~ .data$count,
-    labels = ~ .data$PERFORMANCE_RANK_DESC,
-    textinfo = 'value',
-    title = "Performance",
-    textfont = list(color = '#FFFFFF'),
-    sort = FALSE,
-    domain = list(row = 0, column = 2),
-    marker = list(
-      colors = ~ color,
-      line = list(color = '#FFFFFF', width = 1.5)
-    )
+    domain = list(row = 0, column = 1)
   )
 
 pies<-fig |>
-  plotly::layout(title = "", showlegend = T,
+  plotly::layout(title = "", showlegend = F, 
          grid=list(rows=1, columns=3),legend= list(orientation = 'h'))
 return(pies)
 }
