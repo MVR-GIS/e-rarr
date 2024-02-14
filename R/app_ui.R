@@ -56,7 +56,8 @@ app_ui <- function(request) {
                        choices = NULL,
                        selected = NULL,
                        multiple = F,
-                       options=list(placeholder = 'Select a District', maxOptions = 40)
+                       options=list(placeholder = 'Select a District', 
+                                    maxOptions = 40)
                      ),
                      selectizeInput("projectInput", 
                                     "Project", 
