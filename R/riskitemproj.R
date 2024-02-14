@@ -1,6 +1,7 @@
 #' @title Risk Item Proj Table
 #'
-#' @description Creates the Risk Item Project table used to develop project level reports
+#' @description Creates the Risk Item Project table used to develop project 
+#' level reports
 #'
 #' @param riskdf   data frame; A data frame of all risk items.
 #' @param proj data frame; A data frame of all projects.

@@ -15,7 +15,8 @@ riskitemproj(riskdf, projdf)
 A ggplot of current milestone on timeline of all project milestones.
 }
 \description{
-Creates the Risk Item Project table used to develop project level reports
+Creates the Risk Item Project table used to develop project 
+level reports
 }
 \examples{
 riskdf<- read_csv("inst/app/data/RISKLIST_FULL.csv",show_col_types = FALSE)
