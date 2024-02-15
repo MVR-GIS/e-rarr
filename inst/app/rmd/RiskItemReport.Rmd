@@ -17,15 +17,17 @@ th {    vertical-align: top;
     padding: 10px;
     
 }
+td {    vertical-align: top;
+  padding: 10px;
+}
+
+
 
 .main-container {
     margin-left: 0;
     margin-right: auto;
 }
 
-td {    vertical-align: top;
-  padding: 10px;
-}
 
 ```
 
@@ -134,18 +136,18 @@ treat_condit <- ifelse(nrow(risk_treat_table)>0,TRUE,FALSE)
 
 # Risk Summary: `r risk_item$RISK_NAME`
 
-```{r milestoneplot, fig.align='center', fig.height=2, fig.width=9, echo=FALSE}
+
+<center>
+```{r milestoneplot, fig.height=2, fig.width=9, echo=FALSE}
 erarr::milestoneplot(riskitem=risk_item, milestonedf = milestone_df)
 
 ```
-
-
+</center>
 ##### **Lead Discipline:** `r risk_item$DISCIPLINE`
 
 ##### `r risk_item$RISK_STATEMENT`
 
 <center>
-
 ```{r echo=F, out.width="75%", fig.height=2}
 monteframe <- data.frame(Opportunity = c(100), Low = c(100))
 plot_ly() |>
@@ -196,7 +198,6 @@ plot_ly() |>
 
 
 ```
-
 </center>
 
 

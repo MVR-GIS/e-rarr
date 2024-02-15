@@ -16,8 +16,6 @@ th {white-space: break-word}
     margin-left: 0;
     margin-right: auto;
 }
-
-
 ```
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, include=FALSE}
