@@ -6,7 +6,7 @@
 #' @import plotly
 #' @noRd
 
-
+library(shinycssloaders)
 
 
 erisk_item <-
@@ -94,17 +94,17 @@ app_ui <- function(request) {
                          plotly::plotlyOutput("pie"),
                          DT::DTOutput("overviewtab")
                        ),
-                       tabPanel("Project Report",
-                                htmlOutput("ProjRend"), value =
+                       tabPanel("Project Report",shinycssloaders::withSpinner(
+                                htmlOutput("ProjRend"), type = 4), value =
                                   "Project"),
-                       tabPanel("All Risk Items",
-                                htmlOutput("AllRiskRend"), value =
+                       tabPanel("All Risk Items",shinycssloaders::withSpinner(
+                                htmlOutput("AllRiskRend"), type=4), value =
                                   "AllRisk"),
-                       tabPanel("Top 4 Risks",
-                                htmlOutput("Top4s"), value =
+                       tabPanel("Top 4 Risks", shinycssloaders::withSpinner(
+                                htmlOutput("Top4s"), type=4), value =
                                   "Top4"),
-                       tabPanel("Risk Item Report",
-                                htmlOutput("reportrend"), value =
+                       tabPanel("Risk Item Report",shinycssloaders::withSpinner(
+                                htmlOutput("reportrend"),type=4), value =
                                   "RiskItem"),
                      )
                    )
