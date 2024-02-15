@@ -1,5 +1,5 @@
+
 <!-- README.md is generated from README.Rmd. Please edit that file -->
-<!-- rmarkdown::render(input="README.Rmd", output_file = "README.md", output_format = "md_document") -->
 
 # erarr <img src="inst/app/www/erarr.png" align="right" width="170"/>
 
@@ -29,8 +29,8 @@ package](https://rmarkdown.rstudio.com/lesson-1.html).
 Funding for development and maintenance of `erarr` has been provided by
 the following US Army Corps of Engineers (USACE) programs:
 
--   [Navigation and Ecosystem Sustainability Program
-    (NESP)](https://www.mvr.usace.army.mil/Rock-Island-District/Programs/NESP/)
+- [Navigation and Ecosystem Sustainability Program
+  (NESP)](https://www.mvr.usace.army.mil/Rock-Island-District/Programs/NESP/)
 
 ------------------------------------------------------------------------
 
@@ -42,12 +42,12 @@ Check out the [News](news/index.html) for details on the latest updates.
 
 ## Authors
 
--   [Barrie Chileen
-    Martinez](mailto:barrie.v.chileenmartinez@usace.army.mil),
-    Geographer, Rock Island District, U.S. Army Corps of Engineers
+- [Barrie Chileen
+  Martinez](mailto:barrie.v.chileenmartinez@usace.army.mil), Geographer,
+  Rock Island District, U.S. Army Corps of Engineers
 
-    <a itemprop="sameAs" content="https://orcid.org/0000-0002-6960-8167" href="https://0000-0002-6960-8167" target="orcid.widget" rel="me noopener noreferrer" style="vertical-align:top;">
-    <img src="https://orcid.org/sites/default/files/images/orcid_16x16.png" alt="ORCID iD icon" style="width:1em;margin-right:.5em;"/>https://orcid.org/0000-0002-6960-8167</a>
+  <a itemprop="sameAs" content="https://orcid.org/0000-0002-6960-8167" href="https://0000-0002-6960-8167" target="orcid.widget" rel="me noopener noreferrer" style="vertical-align:top;">
+  <img src="https://orcid.org/sites/default/files/images/orcid_16x16.png" alt="ORCID iD icon" style="width:1em;margin-right:.5em;"/>https://orcid.org/0000-0002-6960-8167</a>
 
 ------------------------------------------------------------------------
 
