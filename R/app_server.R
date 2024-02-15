@@ -10,6 +10,7 @@
 library(shiny)
 library(readr)
 library(dplyr)
+library(shinycssloaders)
 erisk_item <-
   readr::read_csv("./inst/app/data/RISKLIST_FULL.csv", show_col_types = FALSE)
 risk_item_db <- data.frame(erisk_item)
@@ -107,9 +108,9 @@ app_server <- function(input, output, session) {
     )
   })
 
-  conditional <- function(condition, success) {
+  conditional <- function(condition, success, success2) {
     if (condition)
-      success
+      success|success2
     else
       TRUE
   }
@@ -121,10 +122,9 @@ app_server <- function(input, output, session) {
   filtered_frame<-reactive({
     in_react_frame()|>
       filter(
-        conditional(
-          input$projectInput != "",
+          riskpies$USACE_ORGANIZATION == input$districtInput |
           riskpies$PROJECT_NAME == input$projectInput
-        ))|>
+        )|>
       select(
         RISK_IDENTIFIER,
         USACE_ORGANIZATION,
@@ -179,60 +179,48 @@ app_server <- function(input, output, session) {
     req(
       isTruthy(input$riskInput),
       isTruthy(input$projectInput) || isTruthy(input$P2Input)
-    )
-    withProgress(message = 'Rendering', {
+    ) 
       includeMarkdown(rmarkdown::render(
         "./inst/app/rmd/RiskItemReport.Rmd",
         params = list(
           projID = input$projectInput,
           riskID = input$riskInput,
-          p2ID = input$P2Input,
-          shinyrend = TRUE
+          p2ID = input$P2Input
         )
       ))
-    })
   })
   output$ProjRend <- renderUI({
     req(isTruthy(input$projectInput) || isTruthy(input$P2Input))
-    withProgress(message = 'Rendering', {
       includeMarkdown(
         rmarkdown::render(
           "./inst/app/rmd/ProjectAllRiskReport.Rmd",
           params = list(
             projID = input$projectInput,
-            p2ID = input$P2Input,
-            shinyrend = TRUE
+            p2ID = input$P2Input
           )
         )
       )
-    })
   })
   output$AllRiskRend <- renderUI({
     req(isTruthy(input$projectInput) || isTruthy(input$P2Input))
-    withProgress(message = 'Rendering', {
       includeMarkdown(rmarkdown::render(
         "./inst/app/rmd/AllRiskDetailTable.Rmd",
         params = list(
           projID = input$projectInput,
-          p2ID = input$P2Input,
-          shinyrend = TRUE
+          p2ID = input$P2Input
         )
       ))
-    })
   })
   
   output$Top4s <- renderUI({
     req(isTruthy(input$projectInput) || isTruthy(input$P2Input))
-    withProgress(message = 'Rendering', {
       includeMarkdown(rmarkdown::render(
         "./inst/app/rmd/ProjectTop4s.Rmd",
         params = list(
           projID = input$projectInput,
-          p2ID = input$P2Input,
-          shinyrend = TRUE
+          p2ID = input$P2Input
         )
       ))
-    })
   })
   
   filnm <- reactive({

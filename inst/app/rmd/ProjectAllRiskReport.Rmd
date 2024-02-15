@@ -4,13 +4,20 @@ output: html_document
 params:
   projID: St. Augustine Back Bay CSRM
   p2ID: 479265
-  shinyrend: FALSE
 ---
 
 ```{css, echo=FALSE}
 h2,h3,h5 {
   text-align: center;
 }
+th {white-space: break-word}
+
+.main-container {
+    margin-left: 0;
+    margin-right: auto;
+}
+
+
 ```
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, include=FALSE}
@@ -60,15 +67,6 @@ proj_risk_item<- slice_head(Risk_List_Proj)
 
 ```
 
-
-
-
-```{r echo=FALSE}
-if (params$shinyrend)
-  shiny::setProgress(0.25)  # set progress to 25%
-```
-
-
 ```{r echo=FALSE, message=FALSE, warning=FALSE, include=FALSE}
 proj_risks <- proj_risks %>%
   mutate(
@@ -104,13 +102,6 @@ proj_risks <- proj_risks %>%
 
 ```
 
-
-```{r echo=FALSE}
-if (params$shinyrend)
-  shiny::setProgress(0.5)  # set progress to 50%
-```
-
-
 ## Project: `r proj_risk_item$PROJECT_NAME`
 ##### `r proj_risk_item$PRIMARYMISSION` `r proj_risk_item$LIFECYCLEPHASENAME`
 ##### `r proj_risk_item$USACE_ORGANIZATION`
@@ -125,13 +116,9 @@ if (params$shinyrend)
   perform_pie<- erarr::pieprep(proj_risks, "PERFORMANCE_RANK_DESC")
 
   erarr::pie_plots(cost_pie,schedule_pie,perform_pie)
-
 ```
 </center>
-```{r echo=FALSE}
-if (params$shinyrend)
-  shiny::setProgress(0.75)  # set progress to 75%
-```
+
 
 ``` {r proj risk log, echo = FALSE, warning=FALSE}
 
@@ -150,12 +137,9 @@ risk_log_table|>
   dplyr::arrange(code,as.numeric(rnkorder))|>
   select(RISK_IDENTIFIER, RISK_NAME,COST_RISK_RANKING, SCHEDULE_RISK_RANKING, PERFORMANCEIMPACT_RISK_RANKING) |>
   kbl(format = "html", escape = F, col.names =c("Risk ID","Risk","Cost","Schedule","Performance"), align="ccccc", row.names = FALSE)|>
-  kable_styling(bootstrap_options = c( "hover", "condensed", "responsive"))
+  kable_minimal()
 
                                                     
 ```
 
-```{r echo=FALSE}
-if (params$shinyrend)
-  shiny::setProgress(.95)  # set progress to 95%
-```
+
