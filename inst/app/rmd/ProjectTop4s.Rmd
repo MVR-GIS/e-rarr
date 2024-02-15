@@ -81,10 +81,6 @@ proj_risk_item<- dplyr::slice_head(Risk_List_Proj)
 
 ```
 
-```{r echo=FALSE}
-if (params$shinyrend)
-  shiny::setProgress(0.5)  # set progress to 50%
-```
 
 </center>
 
@@ -109,10 +105,7 @@ schedule_log_table<-proj_risks |>
 schedule_log_table
 ```
 
-```{r echo=FALSE}
-if (params$shinyrend)
-  shiny::setProgress(0.75)  # set progress to 75%
-```
+
 
 #### Top 3 Performance Impacts (All Phases)
 ``` {r perform risk log, echo = FALSE, warning=FALSE}
@@ -123,9 +116,4 @@ perform_log_table<-proj_risks |>
   kableExtra::kbl(format = "html", escape = F, col.names =c("Risk ID","Risk Name","Risk Category","Project Milestone","Likelihood", "Performance Impact"), align="clcccc", row.names = FALSE)|>
   kableExtra::kable_styling(bootstrap_options = c( "hover", "condensed", "responsive"))
 perform_log_table
-```
-
-```{r echo=FALSE}
-if (params$shinyrend)
-  shiny::setProgress(.95)  # set progress to 95%
 ```

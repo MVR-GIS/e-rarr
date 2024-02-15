@@ -5,7 +5,6 @@ params:
   riskID: Preliminary Design
   projID: Biscayne Bay Coastal Wetlands (BBCW)
   p2ID: 	113846
-  shinyrend: FALSE
 ---
 
 ```{css, echo=FALSE}
@@ -19,10 +18,15 @@ th {    vertical-align: top;
     
 }
 
+.main-container {
+    margin-left: 0;
+    margin-right: auto;
+}
+
 td {    vertical-align: top;
   padding: 10px;
 }
-}
+
 ```
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, include=FALSE}
@@ -85,11 +89,6 @@ risk_treat<-left_join(risk_treat, risk_item_filt, by=c("PROJECT_ID", "RISK_ID"))
 
 ```
 
-```{r echo=FALSE}
-if (params$shinyrend)
-  shiny::setProgress(0.25)  # set progress to 25%
-```
-
 ```{r echo=FALSE, eval = params$projID != ""}
 risk_item<-filter(RiskImpactTable, RiskImpactTable$RISK_NAME == params$riskID,
                   RiskImpactTable$PROJECT_NAME.x == params$projID)
@@ -140,10 +139,6 @@ erarr::milestoneplot(riskitem=risk_item, milestonedf = milestone_df)
 
 ```
 
-```{r echo=FALSE}
-if (params$shinyrend)
-  shiny::setProgress(0.50)  # set progress to 50%
-```
 
 ##### **Lead Discipline:** `r risk_item$DISCIPLINE`
 
@@ -159,6 +154,7 @@ plot_ly() |>
     value = monteframe$Opportunity,
     title = "Opportunity",
     textinfo = 'none',
+    name = " ",
     domain = list(row = 0, column = 0),
     hole = 0.7,
     marker = list(colors = "#1F78B4")
@@ -168,6 +164,7 @@ plot_ly() |>
     value = monteframe$Opportunity,
     title = "Opportunity",
     textinfo = 'none',
+    name = " ",
     domain = list(row = 0, column = 1),
     hole = 0.7,
     marker = list(colors = "#1F78B4")
@@ -177,6 +174,7 @@ plot_ly() |>
     value = monteframe$Low,
     title = "Low",
     textinfo = 'none',
+    name = " ",
     domain = list(row = 0, column = 2),
     hole = 0.7,
     marker = list(colors = "#33A02C")
@@ -201,10 +199,6 @@ plot_ly() |>
 
 </center>
 
-```{r echo=FALSE}
-if (params$shinyrend)
-  shiny::setProgress(0.75)  # set progress to 75%
-```
 
 #### **Event Likelihood:** `r risk_item$LIKELIHOOD_DISC`
 
@@ -362,8 +356,3 @@ add_header_above(c(
 ```
 
 ##### Risk Manager: `r risk_item$RISK_MANAGER`
-
-```{r echo = FALSE}
-if (params$shinyrend)
-shiny::setProgress(.95)  # set progress to 95%
-```
