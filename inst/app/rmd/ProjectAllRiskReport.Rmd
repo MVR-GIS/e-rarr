@@ -137,7 +137,8 @@ risk_log_table|>
   dplyr::arrange(code,as.numeric(rnkorder))|>
   select(RISK_IDENTIFIER, RISK_NAME,COST_RISK_RANKING, SCHEDULE_RISK_RANKING, PERFORMANCEIMPACT_RISK_RANKING) |>
   kbl(format = "html", escape = F, col.names =c("Risk ID","Risk","Cost","Schedule","Performance"), align="ccccc", row.names = FALSE)|>
-  kable_minimal()
+  kable_styling(bootstrap_options = c( "hover", "condensed", "responsive"))
+
 
                                                     
 ```
