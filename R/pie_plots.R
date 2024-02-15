@@ -1,4 +1,4 @@
-#' @title Pie Prep
+#' @title Pie Plots
 #'
 #' @description Preps data for pie charts
 #'
@@ -32,25 +32,6 @@
 #' @importFrom rlang .data
 #' @export
 #'
-pieprep<- function(riskdf,rankcol){
-  colName<- as.name(rankcol)
-  colnameq<-enquo(colName)
-  
-  pie_prepped<- riskdf |>
-    group_by(!!colnameq) |>
-    summarize(count = n())|>
-    filter(!!colnameq != "No Risk") |>
-    mutate('color' = case_when(!!colnameq == "Opportunity" ~'rgb(31,120,180)',
-                               !!colnameq =='Low'~'rgb(51,160,44)',
-                               !!colnameq =='Medium'~ 'rgb(255,127,0)',
-                               !!colnameq == 'High'~ 'rgb(227,26,28)' ))|>
-    plotly::arrange(factor(!!colnameq, levels=c('Opportunity', 'Low', 'Medium', 'High')))
-  
-  
-  return(pie_prepped)
-  
-}
-
 pie_plots<- function(cost_pie,schedule_pie,perform_pie){
   fig <- plotly::plot_ly(textfont = list(color = '#FFFFFF')) |>
     plotly::add_pie(
@@ -100,13 +81,4 @@ pie_plots<- function(cost_pie,schedule_pie,perform_pie){
     plotly::layout(title = "", showlegend = T,
                    grid=list(rows=1, columns=3),legend= list(orientation = 'h'))
   return(pies)
-}
-
-riskitemproj<- function(riskdf,projdf){
-  riskdf<-data.frame(riskdf)
-  projdf<-data.frame(projdf)
-  eriskitemproj<-riskdf |>
-    left_join(projdf|>
-                select(PROJECT_ID, PRIMARYMISSION))
-  return (eriskitemproj)
 }
