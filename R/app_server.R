@@ -108,23 +108,22 @@ app_server <- function(input, output, session) {
     )
   })
 
-  conditional <- function(condition, success, success2) {
+  conditional <- function(condition, success) {
     if (condition)
-      success|success2
+      success 
     else
       TRUE
   }
   
-  
-  
+  # filter(conditional(input$projectInput != "",
+  #riskpies$PROJECT_NAME == input$projectInput))
+   
   in_react_frame<-reactiveVal(riskpies)
   
   filtered_frame<-reactive({
     in_react_frame()|>
-      filter(
-          riskpies$USACE_ORGANIZATION == input$districtInput |
-          riskpies$PROJECT_NAME == input$projectInput
-        )|>
+      filter(conditional(input$projectInput != "",
+                         riskpies$PROJECT_NAME == input$projectInput))|>
       select(
         RISK_IDENTIFIER,
         USACE_ORGANIZATION,
@@ -138,7 +137,7 @@ app_server <- function(input, output, session) {
     })
   
   filt_frame <- reactive({  
-  frame<-req(filtered_frame())
+  frame<-filtered_frame()
     indexes <- req(input$overviewtab_rows_all)
     frame[indexes,]
   })
