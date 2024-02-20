@@ -1,10 +1,10 @@
 ---
-title: '&#32;'
+title: ''
 output: html_document 
 params:
   projID: City of Boston Coastal Storm Risk
   p2ID: 479265
-runtime: shiny
+
 classoption: landscape
 ---
 ```{css, echo=FALSE}
@@ -12,8 +12,10 @@ h1, h2,h3,h4,h5 {
   text-align: center;
 }
 
+th {white-space: break-word}
+
 .main-container {
-    margin-left: 0;
+    margin-left: 5%;
     margin-right: auto;
 }
 
@@ -37,33 +39,37 @@ risk_item_db<-risk_item_db |>
               select(PROJECT_ID, PRIMARYMISSION))
 
 RiskDeets <- risk_item_db |>
-  select("PROJECT_ID","RISK_IDENTIFIER", "PROJECT_NAME","P2_NUMBER","RISK_NAME","RISKCATEGORY","RISK_STATEMENT" ,"LIFECYCLEPHASENAME","MILESTONE","LIKELIHOOD","DISCIPLINE", "PERFORMANCEIMPACT", "PERFORMANCE_RANK_DESC","COST_IMPACT_MOSTLIKELY", "COST_RANK_DESC", "SCHEDULE_IMPACT_MOSTLIKELY", "SCHEDULE_RANK_DESC", "PRIMARYMISSION", "USACE_ORGANIZATION")
+  select("PROJECT_ID","RISK_IDENTIFIER", "PROJECT_NAME","P2_NUMBER","RISK_NAME",
+         "RISKCATEGORY","RISK_STATEMENT" ,"LIFECYCLEPHASENAME","MILESTONE",
+         "LIKELIHOOD","DISCIPLINE", "PERFORMANCEIMPACT", "PERFORMANCE_RANK_DESC",
+         "COST_IMPACT_MOSTLIKELY", "COST_RANK_DESC", "SCHEDULE_IMPACT_MOSTLIKELY",
+         "SCHEDULE_RANK_DESC", "PRIMARYMISSION", "USACE_ORGANIZATION")
 ```
 
 ```{r echo=FALSE, eval = params$projID != ""}
 Risk_List_Proj <-filter(RiskDeets, RiskDeets$PROJECT_NAME == params$projID)
-Risk_List_Proj$COST_IMPACT_MOSTLIKELY <- as.character(formattable::currency(Risk_List_Proj$COST_IMPACT_MOSTLIKELY))
+Risk_List_Proj$COST_IMPACT_MOSTLIKELY <- as.character(
+  formattable::currency(Risk_List_Proj$COST_IMPACT_MOSTLIKELY))
 ```
 
 ```{r echo=FALSE, eval = params$p2ID != ""}
 Risk_List_Proj <-filter(RiskDeets, RiskDeets$P2_NUMBER == params$p2ID)
-Risk_List_Proj$COST_IMPACT_MOSTLIKELY <- as.character(formattable::currency(Risk_List_Proj$COST_IMPACT_MOSTLIKELY))
+Risk_List_Proj$COST_IMPACT_MOSTLIKELY <- as.character(
+  formattable::currency(Risk_List_Proj$COST_IMPACT_MOSTLIKELY))
 ```
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, include=FALSE}
 RiskDeetsTable<-Risk_List_Proj |>
-  select("RISK_IDENTIFIER","RISK_NAME","RISKCATEGORY","RISK_STATEMENT" ,"LIFECYCLEPHASENAME","MILESTONE","LIKELIHOOD","DISCIPLINE", "PERFORMANCEIMPACT",  "PERFORMANCE_RANK_DESC", "COST_IMPACT_MOSTLIKELY","COST_RANK_DESC", "SCHEDULE_IMPACT_MOSTLIKELY", "SCHEDULE_RANK_DESC")|>
+  select("RISK_IDENTIFIER","RISK_NAME","RISKCATEGORY","RISK_STATEMENT" ,"LIFECYCLEPHASENAME","MILESTONE","LIKELIHOOD","DISCIPLINE", "PERFORMANCEIMPACT",
+         "COST_IMPACT_MOSTLIKELY", "SCHEDULE_IMPACT_MOSTLIKELY")|>
     rename("RISK" = RISK_IDENTIFIER,
          "RISK NAME" = RISK_NAME,
          "RISK CATEGORY" = RISKCATEGORY,
          "RISK STATEMENT" = RISK_STATEMENT,
          "PHASE" = LIFECYCLEPHASENAME,
          "PERFORMANCE IMPACT TYPE" = PERFORMANCEIMPACT,
-         "PERFORMANCE RANKING" = PERFORMANCE_RANK_DESC,
          "COST IMPACT" = COST_IMPACT_MOSTLIKELY,
-         "COST RANKING" = COST_RANK_DESC,
-         "SCHEDULE IMPACT (DAYS)" = SCHEDULE_IMPACT_MOSTLIKELY,
-         "SCHEDULE RANKING" = SCHEDULE_RANK_DESC)
+         "SCHEDULE IMPACT (DAYS)" = SCHEDULE_IMPACT_MOSTLIKELY)
   
 
 
@@ -84,9 +90,8 @@ RiskDeetsTable<-Risk_List_Proj |>
 RiskDeetsTable |>
 kableExtra::kbl("html",align = 'ccclcccccc') |>
     kable_styling(bootstrap_options = c( "condensed"),
-                  full_width = F,
-                  font_size=12)|>
-   column_spec(4, width_min = '2.5in')
+                  full_width = F)|>
+   column_spec(4, width_min = '3in')
 
 ```
 </left>

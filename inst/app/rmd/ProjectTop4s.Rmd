@@ -1,11 +1,10 @@
 ---
 title: ""
+runtime: shiny
 output: html_document
 params:
   projID: ""
   p2ID: 487264
-  shinyrend: FALSE
-  runtime: shiny
 ---
 
 ```{css, echo=FALSE}
@@ -15,6 +14,11 @@ params:
 h4 {
 font-weight: 600;
 text-align: center;
+}
+
+.main-container {
+    margin-left: 5%;
+    margin-right: auto;
 }
 ```
 

@@ -1,6 +1,7 @@
 ---
 title: ""
 output: html_document
+runtime: shiny
 params:
   projID: St. Augustine Back Bay CSRM
   p2ID: 479265
@@ -13,7 +14,7 @@ h2,h3,h5 {
 th {white-space: break-word}
 
 .main-container {
-    margin-left: 0;
+    margin-left: 5%;
     margin-right: auto;
 }
 ```
