@@ -36,8 +36,8 @@ projphases$xwrap = str_wrap(projphases$MILESTONE, width=15)
 mileplot <- ggplot(projphases, aes(x=factor(MILESTONE), level=ORDERBY, y= yval))+
   geom_segment(x=1, y = 0.15, xend = length(projphases$ORDERBY), yend = 0.15, linewidth=1.5, color = "grey")+
   geom_point(size=8,color="grey", fill="snow1", shape=21, stroke=1.5)+
-  geom_point(aes(x=riskitem$MILESTONE, y=0.15), colour="#1F78B4", fill="#1F78B4", shape = 21, size =8, stroke=1.5)+
-  geom_text(aes(label=xwrap),nudge_y = -0.1, vjust=1.7)+
+  geom_point(aes(x=riskitem$MILESTONE, y=0.15), colour="#1F78B4", fill="#1F78B4", shape = 16, size =7.75)+
+  geom_text(aes(label=xwrap), vjust=1.7)+
   scale_y_continuous(expand=c(0,0))+
   coord_cartesian(ylim=c(0.15,0.15))+
   aes(x = fct_inorder(MILESTONE))+
@@ -49,6 +49,6 @@ mileplot <- ggplot(projphases, aes(x=factor(MILESTONE), level=ORDERBY, y= yval))
         panel.background = element_blank(),
   )+
   theme(plot.margin=unit(c(0,0,0,0),"mm"))
-ggplotly(mileplot)
+mileplot<-ggsave("mileplot.png", dpi=600)
 return(mileplot)
 }
