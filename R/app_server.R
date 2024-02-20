@@ -122,8 +122,9 @@ app_server <- function(input, output, session) {
   
   filtered_frame<-reactive({
     in_react_frame()|>
-      filter(conditional(input$projectInput != "",
-                         riskpies$PROJECT_NAME == input$projectInput))|>
+      filter(conditional(input$districtInput != "",
+                         riskpies$USACE_ORGANIZATION == input$districtInput),
+             conditional(input$projectInput != "", riskpies$PROJECT_NAME == input$projectInput))|>
       select(
         RISK_IDENTIFIER,
         USACE_ORGANIZATION,
