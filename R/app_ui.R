@@ -9,6 +9,8 @@
 library(shinycssloaders)
 
 
+
+
 erisk_item <-
   read_csv("./inst/app/data/RISKLIST_FULL.csv", show_col_types = FALSE)
 risk_item_db <- data.frame(erisk_item)
@@ -29,15 +31,14 @@ app_ui <- function(request) {
     # Leave this function for adding external resources
     golem_add_external_resources(),
     # Your application UI logic
+    tags$head(tags$style(HTML("
+                          body > nav{
+                          margin-bottom:0 !important;}
+                          body > div.container-fluid{
+                          padding:0;}
+                            "))),
     fluidPage(
       theme = bslib::bs_theme(bootswatch = "cosmo"),
-      tags$head(tags$style(
-        HTML(
-          ".shiny-notification {position:fixed;top: 30%;left: 35%;right: 35%;
-             }"
-        )
-      )),
-      waiter::use_waiter(),
       navbarPage(
         title = div(
           img(
@@ -47,6 +48,9 @@ app_ui <- function(request) {
           ),
           "Risk Analysis Reporting System"
         ),
+        tabPanel("Division"),
+        tabPanel("District"),
+        tabPanel("Program"),
         tabPanel("Project",
                  sidebarLayout(
                    sidebarPanel(
@@ -105,11 +109,10 @@ app_ui <- function(request) {
                                   "Top4"),
                        tabPanel("Risk Item Report",shinycssloaders::withSpinner(
                                 htmlOutput("reportrend"),type=4), value =
-                                  "RiskItem"),
-                     )
+                                  "RiskItem"), )
+                   )
                    )
                  ))
-      )
     )
   )
 }
