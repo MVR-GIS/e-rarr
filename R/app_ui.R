@@ -26,6 +26,9 @@ RiskImpactTable <-
                    "P2_NUMBER")]
 
 
+
+
+
 app_ui <- function(request) {
   tagList(
     # Leave this function for adding external resources
@@ -48,21 +51,13 @@ app_ui <- function(request) {
           ),
           "Risk Analysis Reporting System"
         ),
+        tabPanel("HQ"),
         tabPanel("Division"),
         tabPanel("District"),
-        tabPanel("Program"),
         tabPanel("Project",
                  sidebarLayout(
                    sidebarPanel(
-                     selectizeInput(
-                       'districtInput',
-                       "District",
-                       choices = NULL,
-                       selected = NULL,
-                       multiple = F,
-                       options=list(placeholder = 'Select a District', 
-                                    maxOptions = 40)
-                     ),
+                   district_ui('dist1'),
                      selectizeInput("projectInput", 
                                     "Project", 
                                     choices = NULL,
@@ -87,8 +82,7 @@ app_ui <- function(request) {
                        options=list(placeholder = 'Select a Risk Item')
                      ),
                      downloadButton("report", "Download report"),
-                     width = 2
-                   ),
+                     width = 2),
                    
                    mainPanel(
                      tabsetPanel(
