@@ -44,10 +44,17 @@ riskpies <- risk_item_db |>
 
 app_server <- function(input, output, session) {
 
+  num <- reactive({
+    data = RiskImpactTable$USACE_ORGANIZATION
+    return(data)
+  })
   
-district_server("dist1", org=RiskImpactTable$USACE_ORGANIZATION)
-
-  
+  observe({
+    updateSelectizeInput(session,'districtInput',
+                         choices =c("", sort(unique(num()))), 
+                         options=list(maxOptions = 40
+                                      ,server = TRUE,placeholder = 'Select a District' ))
+  })
   
   projects <- reactive({
     RiskImpactTable |>

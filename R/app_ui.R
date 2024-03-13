@@ -57,7 +57,15 @@ app_ui <- function(request) {
         tabPanel("Project",
                  sidebarLayout(
                    sidebarPanel(
-                   district_ui('dist1'),
+                     selectizeInput(
+                       'districtInput',
+                       "District",
+                       choices = NULL,
+                       selected = NULL,
+                       multiple = F,
+                       options=list(placeholder = 'Select a District', 
+                                    maxOptions = 40)
+                     ),
                      selectizeInput("projectInput", 
                                     "Project", 
                                     choices = NULL,

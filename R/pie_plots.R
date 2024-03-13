@@ -39,9 +39,10 @@ pie_plots<- function(cost_pie,schedule_pie,perform_pie){
       values =  ~ .data$count,
       labels = ~ .data$COST_RANK_DESC,
       sort = FALSE,
-      title="Cost",
+      title=("Cost"),
       name= " ",
-      textfont = list(color = '#FFFFFF'),
+      textinfo='values',
+      textfont = list(color = '#FFFFFF', size=15),
       domain = list(row = 0, column = 0),
       marker = list(
         colors = ~ color,
@@ -79,6 +80,6 @@ pie_plots<- function(cost_pie,schedule_pie,perform_pie){
   
   pies<-fig |>
     plotly::layout(title = "", showlegend = T,
-                   grid=list(rows=1, columns=3),legend= list(orientation = 'h'))
+                   grid=list(rows=1, columns=3),legend= list(orientation = 'h', xanchor="center", x=.5))
   return(pies)
 }
