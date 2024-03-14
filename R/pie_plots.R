@@ -41,7 +41,7 @@ pie_plots<- function(cost_pie,schedule_pie,perform_pie){
       sort = FALSE,
       title=("Cost"),
       name= " ",
-      textinfo='values',
+      textinfo='value',
       textfont = list(color = '#FFFFFF', size=15),
       domain = list(row = 0, column = 0),
       marker = list(
@@ -56,6 +56,7 @@ pie_plots<- function(cost_pie,schedule_pie,perform_pie){
       textfont = list(color = '#FFFFFF'),
       sort = FALSE,
       name= " ",
+      textinfo='value',
       title = "Schedule",
       domain = list(row = 0, column = 1),
       marker = list(
@@ -69,6 +70,7 @@ pie_plots<- function(cost_pie,schedule_pie,perform_pie){
       labels = ~ .data$PERFORMANCE_RANK_DESC,
       title = "Performance",
       name= " ",
+      textinfo='value',
       textfont = list(color = '#FFFFFF'),
       sort = FALSE,
       domain = list(row = 0, column = 2),
