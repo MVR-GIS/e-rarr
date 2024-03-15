@@ -48,8 +48,7 @@ pieprep <- function(riskdf, rankcol) {
       'color' = case_when(
         !!colnameq == "Opportunity" ~ 'rgb(31,120,180)',
         !!colnameq == 'Low' ~ 'rgb(51,160,44)',
-        !!colnameq ==
-          'Medium' ~ 'rgb(255,127,0)',
+        !!colnameq == 'Medium' ~ 'rgb(255,127,0)',
         !!colnameq == 'High' ~ 'rgb(227,26,28)'
       )
     ) |>
