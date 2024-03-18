@@ -7,6 +7,7 @@
 #' @noRd
 
 library(shinycssloaders)
+library(shinyjs)
 
 
 
@@ -39,6 +40,7 @@ app_ui <- function(request) {
                           padding:0;}
                             "))),
     fluidPage(
+      shinyjs::useShinyjs(),
       theme = bslib::bs_theme(bootswatch = "cosmo"),
       navbarPage(
         title = div(
@@ -79,6 +81,14 @@ app_ui <- function(request) {
                        multiple = F,
                        options=list(placeholder = 'Enter P2 Number')
                      ),
+                     shinyjs::hidden(selectizeInput(
+                       "SubIDInput",
+                       "Sub ID",
+                       choices = NULL,
+                       selected = NULL,
+                       multiple = TRUE,
+                       options =  list(placeholder = "Select SubID")
+                     )),
                      conditionalPanel(condition = "input.reporttabs == 'RiskItem'",
                                       selectizeInput(
                                         "riskInput",

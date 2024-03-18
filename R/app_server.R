@@ -11,6 +11,7 @@ library(shiny)
 library(readr)
 library(dplyr)
 library(shinycssloaders)
+library(shinyjs)
 erisk_item <-
   readr::read_csv("./inst/app/data/RISKLIST_FULL.csv", show_col_types = FALSE)
 risk_item_db <- data.frame(erisk_item)
@@ -82,6 +83,8 @@ app_server <- function(input, output, session) {
       )
   })
   
+  
+  
   observeEvent(P2s(), {
     P2s <- sort(unique(P2s()$P2_NUMBER))
     updateSelectizeInput(
@@ -90,6 +93,15 @@ app_server <- function(input, output, session) {
       selected = ""
     )
   })
+  
+  # observeEvent(projects(), {
+  #   if (projects()$SubId != ""){
+  #     shinyjs::show("SubIDInput")}
+  #   else {
+  #     shinyjs::hide("SubIDInput")
+  #   }
+  # })
+  
   
   risks <- reactive({
     RiskImpactTable |>
@@ -123,6 +135,7 @@ app_server <- function(input, output, session) {
                          riskpies$USACE_ORGANIZATION == input$districtInput),
              conditional(input$projectInput != "", riskpies$PROJECT_NAME == input$projectInput),
              conditional(input$P2Input != "", riskpies$P2_NUMBER == input$P2Input))|>
+#             conditional(input$SubIDInput != "", riskpies$subIDInput == input$SubIdInput))|>
       select(
         RISK_IDENTIFIER,
         USACE_ORGANIZATION,
