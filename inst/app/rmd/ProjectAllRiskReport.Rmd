@@ -128,9 +128,9 @@ risk_log_tables<-proj_risks |>
 
 risk_log_tables|>
   mutate(
-    COST_RISK_RANKING = cell_spec("", align = 'c', background = costcolor),
+    COST_RISK_RANKING = cell_spec("", align = 'c', background = costcolor,extra_css = "padding:8px; display: flex;"),
     SCHEDULE_RISK_RANKING = cell_spec("",align = 'c', background = schedulecolor,extra_css = "padding:8px; display: flex;"),
-    PERFORMANCEIMPACT_RISK_RANKING = cell_spec("", align = 'c', background = performancecolor,extra_css="width:4px;") ) |>
+    PERFORMANCEIMPACT_RISK_RANKING = cell_spec("", align = 'c', background = performancecolor,extra_css= "padding:8px; display: flex;") ) |>
   select(RISK_IDENTIFIER, RISK_NAME,COST_RISK_RANKING, SCHEDULE_RISK_RANKING, PERFORMANCEIMPACT_RISK_RANKING) |>
   separate(RISK_IDENTIFIER,c("code", "rnkorder"), sep="-", remove = FALSE) |>
   dplyr::arrange(code,as.numeric(rnkorder))|>
