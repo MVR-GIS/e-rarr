@@ -27,8 +27,6 @@ RiskImpactTable <-
 
 
 
-
-
 app_ui <- function(request) {
   tagList(
     # Leave this function for adding external resources
@@ -81,26 +79,27 @@ app_ui <- function(request) {
                        multiple = F,
                        options=list(placeholder = 'Enter P2 Number')
                      ),
-                     selectizeInput(
-                       "riskInput",
-                       "Risk",
-                       choices = NULL ,
-                       selected = NULL,
-                       multiple = F,
-                       options=list(placeholder = 'Select a Risk Item')
-                     ),
-                     downloadButton("report", "Download report"),
-                     width = 2),
+                     conditionalPanel(condition = "input.reporttabs == 'RiskItem'",
+                                      selectizeInput(
+                                        "riskInput",
+                                        "Risk",
+                                        choices = NULL ,
+                                        selected = NULL,
+                                        multiple = F,
+                                        options=list(placeholder = 'Select a Risk Item')
+                                        ,downloadButton("report", "Download report"))),
+                     downloadButton("report", "Download report"), width=2),
+                    
                    
                    mainPanel(
                      tabsetPanel(
-                       id = "reporttabs",
                        tabPanel(
                          "Explore Risks",
                          plotly::plotlyOutput("pie"),
-                         DT::DTOutput("overviewtab")
+                         DT::DTOutput("overviewtab"), value= "Explore"
                        ),
-                       tabPanel("Project Report",shinycssloaders::withSpinner(
+                       tabPanel("Project Report",
+                                shinycssloaders::withSpinner(
                                 htmlOutput("ProjRend"), type = 4), value =
                                   "Project"),
                        tabPanel("All Risk Items",shinycssloaders::withSpinner(
@@ -111,7 +110,8 @@ app_ui <- function(request) {
                                   "Top4"),
                        tabPanel("Risk Item Report",shinycssloaders::withSpinner(
                                 htmlOutput("reportrend"),type=4), value =
-                                  "RiskItem"), )
+                                  "RiskItem"),
+                       id = "reporttabs" )
                    )
                    )
                  ))
