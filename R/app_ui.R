@@ -4,6 +4,7 @@
 #'     DO NOT REMOVE.
 #' @import shiny
 #' @import plotly
+#' @import shinyjs
 #' @noRd
 
 library(shinycssloaders)
