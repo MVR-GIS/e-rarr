@@ -13,6 +13,7 @@ library(shinyjs)
 
 
 
+
 erisk_item <-
   read_csv("./inst/app/data/RISKLIST_FULL.csv", show_col_types = FALSE)
 risk_item_db <- data.frame(erisk_item)

@@ -127,7 +127,7 @@ app_server <- function(input, output, session) {
   }
   
    
-  in_react_frame<-reactiveVal(riskpies)
+in_react_frame<-reactiveVal(riskpies)
   
   filtered_frame<-reactive({
     in_react_frame()|>
@@ -240,7 +240,7 @@ app_server <- function(input, output, session) {
                 height = 1000,  style = "border:none;")
   })
   
-  filnm <- reactive({
+  tabname <- reactive({
     if (input$reporttabs == "Project") {
       "ProjectAllRiskReport"
     }
@@ -255,11 +255,11 @@ app_server <- function(input, output, session) {
   output$report <- downloadHandler(
     # For PDF output, change this to "report.pdf"
     filename = function() {
-      paste0(input$projectInput, " - ", filnm(), ".html")
+      paste0(input$projectInput, " - ", tabname(), ".html")
     },
     content = function(file) {
       rmarkdown::render(
-        paste0("./inst/app/rmd/", filnm(), ".Rmd"),
+        paste0("./inst/app/rmd/", tabname(), ".Rmd"),
         output_file = file,
         params = list(projID = input$projectInput),
         envir = new.env(),

@@ -130,7 +130,7 @@ risk_log_tables|>
   mutate(
     COST_RISK_RANKING = cell_spec(COST_RISK_RANKING,color=costcolor, align = 'c', background = costcolor),
     SCHEDULE_RISK_RANKING = cell_spec(SCHEDULE_RISK_RANKING,color=schedulecolor,align = 'c', background = schedulecolor),
-    PERFORMANCEIMPACT_RISK_RANKING = cell_spec(PERFORMANCEIMPACT_RISK_RANKING,color=costcolor, align = 'c', background = performancecolor) ) |>
+    PERFORMANCEIMPACT_RISK_RANKING = cell_spec(PERFORMANCEIMPACT_RISK_RANKING,color=performancecolor, align = 'c', background = performancecolor) ) |>
   select(RISK_IDENTIFIER, RISK_NAME,COST_RISK_RANKING, SCHEDULE_RISK_RANKING, PERFORMANCEIMPACT_RISK_RANKING) |>
   separate(RISK_IDENTIFIER,c("code", "rnkorder"), sep="-", remove = FALSE) |>
   dplyr::arrange(code,as.numeric(rnkorder))|>
