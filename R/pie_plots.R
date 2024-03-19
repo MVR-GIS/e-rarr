@@ -46,9 +46,8 @@ pie_plots<- function(cost_pie,schedule_pie,perform_pie){
       domain = list(row = 0, column = 0),
       marker = list(
         colors = ~ color,
-        line = list(color = '#FFFFFF', width = 1.5)
-      )
-    ) |>
+        line = list(color = '#FFFFFF', width = 1.5)))|>
+
     plotly::add_pie(
       data = schedule_pie,
       values = ~ .data$count,
@@ -61,8 +60,7 @@ pie_plots<- function(cost_pie,schedule_pie,perform_pie){
       domain = list(row = 0, column = 1),
       marker = list(
         colors = ~ color,
-        line = list(color = '#FFFFFF', width = 1.5)
-      )
+        line = list(color = '#FFFFFF', width = 1.5))
     ) |>
     plotly::add_pie(
       data = perform_pie,
@@ -76,12 +74,13 @@ pie_plots<- function(cost_pie,schedule_pie,perform_pie){
       domain = list(row = 0, column = 2),
       marker = list(
         colors = ~ color,
-        line = list(color = '#FFFFFF', width = 1.5)
-      ))
+        line = list(color = '#FFFFFF', width = 1.5)))
     
   
   pies<-fig |>
     plotly::layout(title = "", showlegend = T,
-                   grid=list(rows=1, columns=3),legend= list(orientation = 'h', xanchor="center", x=.5))
+                   grid=list(rows=1, columns=3),legend= list(orientation = 'h',
+                  xanchor="center", x=.5))
+
   return(pies)
 }

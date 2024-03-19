@@ -30,7 +30,7 @@
 #'
 #'
 #' #example
-#' milestone_plot<-pieplot_prep(riskdf=risk_item, rankcol)
+#' cost_pie<-pieprep(riskdf=risk_item, rankcol)
 #'
 #' @importFrom dplyr mutate select arrange
 #' @importFrom rlang .data enquo
@@ -51,10 +51,9 @@ pieprep <- function(riskdf, rankcol) {
         !!colnameq == 'Medium' ~ 'rgb(255,127,0)',
         !!colnameq == 'High' ~ 'rgb(227,26,28)'
       )
-    ) |>
-    plotly::arrange(factor(!!colnameq, levels = c('Opportunity', 'Low', 'Medium',
-                                                  'High')))
-  
+    ) |> 
+  plotly::arrange(factor(!!colnameq, levels = c('Opportunity', 'Low', 'Medium',
+                                                'High')))
   
   return(pie_prepped)
   
