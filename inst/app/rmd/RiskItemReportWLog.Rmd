@@ -17,6 +17,21 @@ h1 {
     margin-right: auto;
 }
 
+@media print {
+body {-webkit-print-color-adjust: exact;}
+
+  .item-box {
+    page-break-inside: avoid;
+  }
+  .section-box {
+    page-break-inside: avoid;
+  }
+
+  .page-break {
+  page-break-after: always;
+  }
+
+}
 ```
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, include=FALSE}

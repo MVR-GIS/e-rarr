@@ -12,13 +12,29 @@ params:
   text-align: center;
 }
 h4 {
-font-weight: 600;
+font-weight: 300;
 text-align: center;
 }
 
 .main-container {
     margin-left: 5%;
     margin-right: auto;
+}
+
+@media print {
+body {-webkit-print-color-adjust: exact;}
+
+  .item-box {
+    page-break-inside: avoid;
+  }
+  .section-box {
+    page-break-inside: avoid;
+  }
+
+  .page-break {
+  page-break-after: always;
+  }
+
 }
 ```
 
@@ -88,7 +104,7 @@ proj_risk_item<- dplyr::slice_head(Risk_List_Proj)
 
 </center>
 
-#### Top 3 Cost Impacts (All Phases)
+#### Top 4 Cost Impacts (All Phases)
 ``` {r cost risk log, echo = FALSE, warning=FALSE}
 cost_log_table<-proj_risks |>
   dplyr::select(RISK_IDENTIFIER, RISK_NAME, RISKCATEGORY , MILESTONE , LIKELIHOOD, COST_IMPACT_MOSTLIKELY) |>
@@ -99,7 +115,7 @@ cost_log_table<-proj_risks |>
 cost_log_table
 ```
 
-#### Top 3 Schedule Impacts (All Phases)
+#### Top 4 Schedule Impacts (All Phases)
 ``` {r schedule risk log, echo = FALSE, warning=FALSE}
 schedule_log_table<-proj_risks |>
   dplyr::select(RISK_IDENTIFIER, RISK_NAME, RISKCATEGORY , MILESTONE , LIKELIHOOD, SCHEDULE_IMPACT_MOSTLIKELY) |>
@@ -111,7 +127,7 @@ schedule_log_table
 
 
 
-#### Top 3 Performance Impacts (All Phases)
+#### Top 4 Performance Impacts (All Phases)
 ``` {r perform risk log, echo = FALSE, warning=FALSE}
 perform_log_table<-proj_risks |>
   dplyr::select(RISK_IDENTIFIER, RISK_NAME, RISKCATEGORY , MILESTONE , LIKELIHOOD, PERFORMANCE_RANK_DESC) |>
