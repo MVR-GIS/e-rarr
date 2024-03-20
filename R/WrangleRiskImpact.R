@@ -4,7 +4,7 @@
 #' reporting
 #'
 #' @param risk_item_table   data frame; A data frame of a filtered risk item.
-#' @param impacttype
+#' @param impacttype column name for impact (Cost, Schedule,Risk)
 #' @return A formatted data table of risk impacts.
 #'
 #' #example
