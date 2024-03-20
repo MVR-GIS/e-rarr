@@ -8,6 +8,8 @@ impactcolumn(risk_item_table, impacttype)
 }
 \arguments{
 \item{risk_item_table}{data frame; A data frame of a filtered risk item.}
+
+\item{impacttype}{column name for impact (Cost, Schedule,Risk)}
 }
 \value{
 A formatted data table of risk impacts.

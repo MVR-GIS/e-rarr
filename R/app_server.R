@@ -250,7 +250,21 @@ in_react_frame<-reactiveVal(riskpies)
     else if (input$reporttabs == "Top4") {
       "ProjectTop4s"
     }
+    else if (input$reporttabs == "RiskItem") {
+      "RiskItemReport"
+    }
   })
+  
+  
+  params<-reactive({
+    if (input$reporttabs == "Project" | input$reporttabs == "AllRisk" | 
+        input$reporttabs == "Top4"){
+    list(projID = input$projectInput, p2ID = input$P2Input)
+  } else if (input$reporttabs == "RiskItem"){
+    list(projID = input$projectInput, p2ID = input$P2Input,
+         riskID = input$riskInput )
+  }
+    })
   
   output$report <- downloadHandler(
     # For PDF output, change this to "report.pdf"
@@ -259,9 +273,9 @@ in_react_frame<-reactiveVal(riskpies)
     },
     content = function(file) {
       rmarkdown::render(
-        paste0("./inst/app/rmd/", tabname(), ".Rmd"),
+        paste0("./inst/app/rmd/",tabname(), ".Rmd"),
         output_file = file,
-        params = list(projID = input$projectInput),
+        params = params(),
         envir = new.env(),
         intermediates_dir = tempdir()
       )

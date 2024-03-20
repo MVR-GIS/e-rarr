@@ -19,6 +19,7 @@ Imports:
     plotly,
     readr,
     rlang,
+    shinyjs,
     rmarkdown,
     shiny,
     shinycssloaders,
