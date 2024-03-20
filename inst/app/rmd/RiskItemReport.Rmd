@@ -9,9 +9,13 @@ params:
 ---
 
 ```{css, echo=FALSE}
-h1 {
+h2 {
   text-align: center;
 }
+
+body{ /* Normal  */
+      font-size: 16px;
+  }
 
 th {    vertical-align: top;    
     white-space: nowrap;
@@ -30,7 +34,8 @@ td {    vertical-align: top;
 
 @media print {
 body {-webkit-print-color-adjust: exact;}
-
+  .font-size{ 10pt;
+  }
   .item-box {
     page-break-inside: avoid;
   }
@@ -93,7 +98,7 @@ RiskImpactTable<-erisk_ItemProj |>
          "COST_IMPACT_EVIDENCE","SCHEDULE_IMPACT_LOWEST", 
          "SCHEDULE_IMPACT_MOSTLIKELY", "SCHEDULE_IMPACT_HIGHEST", 
          "SCHEDULE_IMPACT_EVIDENCE", "LIFECYCLEPHASENAME.x", 
-         "PERFORMANCEIMPACT_DESC", "PERFORMANCEIMPACT" ,"PROJECTPHASEID", 
+         "PERFORMANCEIMPACT_DESC", "PERFORMANCEIMPACT","PERFORMANCE_IMPACT_DESC" ,"PROJECTPHASEID", 
          "MILESTONE", "RISK_MANAGER", "COST_IMPACT_DISTTYPE", 
          "SCHEDULE_IMPACT_DISTTYPE", "NO_PERFORMANCE_IMPACT", "NO_COST_IMPACT",
          "NO_SCHEDULE_IMPACT")
@@ -143,13 +148,11 @@ treat_condit <- ifelse(nrow(risk_treat_table)>0,TRUE,FALSE)
   
 ```
 
-#### Project: `r risk_item$PROJECT_NAME.x`
+#### Project: `r risk_item$PROJECT_NAME.x` (`r risk_item$RISK_IDENTIFIER`)
 
-#### Risk Phase: `r risk_item$LIFECYCLEPHASENAME`, Category:
+#### Risk Phase: `r risk_item$LIFECYCLEPHASENAME`, Category: `r risk_item$RISKCATEGORY`
 
-#### `r risk_item$RISKCATEGORY`
-
-# Risk Summary: `r risk_item$RISK_NAME`
+## Risk Summary: `r risk_item$RISK_NAME`
 
 <center>
 
@@ -167,7 +170,6 @@ knitr::include_graphics("mileplot.png")
 ##### `r risk_item$RISK_STATEMENT`
 
 <center>
-
 ```{r echo=F, out.width="75%", fig.height=2}
 monteframe <- data.frame(Opportunity = c(100), Low = c(100))
 plot_ly() |>
@@ -218,7 +220,6 @@ plot_ly() |>
 
 
 ```
-
 </center>
 
 #### **Event Likelihood:** `r risk_item$LIKELIHOOD_DISC`
@@ -239,7 +240,7 @@ risk_item_table <- risk_item |>
     SCHEDULE_IMPACT_LOWEST,
     SCHEDULE_IMPACT_HIGHEST,
     SCHEDULE_IMPACT_EVIDENCE,
-    PERFORMANCEIMPACT_DESC,
+    PERFORMANCE_IMPACT_DESC,
     PERFORMANCEIMPACT,
     PERFORMANCEIMPACT_DESC,
     SCHEDULE_IMPACT_DISTTYPE,
@@ -247,41 +248,56 @@ risk_item_table <- risk_item |>
   ) |>
   mutate(
     COST_IMPACT_LOWEST = paste0("<p style = 
-                                'font-family: Arial Narrow;font-size:8pt'>",
+                                'font-family: Arial Narrow;font-size:10pt'>",
                                 "Lowest","</p>", 
                                 formattable::currency(COST_IMPACT_LOWEST)),
     COST_IMPACT_HIGHEST = paste0("<p style = 
-                                'font-family: Arial Narrow;font-size:8pt'>",
+                                'font-family: Arial Narrow;font-size:10pt'>",
                                 "Highest","</p>",
                                  formattable::currency(COST_IMPACT_HIGHEST)),
     COST_IMPACT_MOSTLIKELY = paste0("<p style = 
-                                    'font-family: Arial Narrow;font-size:8pt'>",
+                                    'font-family: Arial Narrow;font-size:10pt'>",
                                     "Most Likely","</p>", 
                                     formattable::currency(COST_IMPACT_MOSTLIKELY)),
     SCHEDULE_IMPACT_HIGHEST = paste0("<p style = 
-                                     'font-family: Arial Narrow;font-size:8pt'>",
+                                     'font-family: Arial Narrow;font-size:10pt'>",
                                      "Highest","</p>",
                                      SCHEDULE_IMPACT_HIGHEST, " days"),
     SCHEDULE_IMPACT_LOWEST = paste0("<p style = 
-                                    'font-family: Arial Narrow;font-size:8pt'>",
+                                    'font-family: Arial Narrow;font-size:10pt'>",
                                     "Lowest","</p>",
                                     SCHEDULE_IMPACT_LOWEST, " days"),
     SCHEDULE_IMPACT_MOSTLIKELY = paste0("<p style = 
-                                        'font-family: Arial Narrow;font-size:8pt'>",
+                                        'font-family: Arial Narrow;font-size:10pt'>",
                                         "Most Likely","</p>",
-                                        SCHEDULE_IMPACT_MOSTLIKELY, " days")
+                                        SCHEDULE_IMPACT_MOSTLIKELY, " days"),
+    PERFORMANCE_IMPACT_DESC = paste0("<p style = 
+                                        'font-family: Arial;font-size:10pt; 
+                                     font-weight: bold'>",
+                                        "Performance Impact:","</p>",
+                                        PERFORMANCE_IMPACT_DESC, "to", 
+                                     PERFORMANCEIMPACT),
+    PERFORMANCEIMPACT = paste0("<p style = 
+                                        'font-family: Arial;font-size:10pt;
+                               font-weight: bold'>",
+                                        "Performance Impact Type:","</p>",
+                                        PERFORMANCEIMPACT)
   )
 
 ####Modularize assess for each cost schedule and performance build function
 
 costcolumn <-
   if (risk_item_table$NO_COST_IMPACT == 1) {
-    "No cost impact is anticipated"
+    c("No cost impact is anticipated","","","")
   } else if (risk_item_table$COST_IMPACT_DISTTYPE == 299) {
-    risk_item_table$COST_IMPACT_MOSTLIKELY
+    c(risk_item_table$COST_IMPACT_MOSTLIKELY,
+      "",
+      "",
+      "")
   } else if (risk_item_table$COST_IMPACT_DISTTYPE == 306) {
     c(
       risk_item_table$COST_IMPACT_LOWEST,
+      "",
       risk_item_table$COST_IMPACT_HIGHEST,
       risk_item_table$COST_IMPACT_EVIDENCE
     )
@@ -296,12 +312,16 @@ costcolumn <-
 
 schedulecolumn <-
   if (risk_item_table$NO_PERFORMANCE_IMPACT == 1) {
-    "No performance impact is anticipated"
+    c("No performance impact is anticipated","","","")
   } else if (risk_item_table$SCHEDULE_IMPACT_DISTTYPE == 299) {
-    risk_item_table$SCHEDULE_IMPACT_MOSTLIKELY
+    c(risk_item_table$SCHEDULE_IMPACT_MOSTLIKELY,
+    "",
+    "",
+    "")
   } else if (risk_item_table$SCHEDULE_IMPACT_DISTTYPE == 306) {
     c(
       risk_item_table$SCHEDULE_IMPACT_LOWEST,
+      "",
       risk_item_table$SCHEDULE_IMPACT_HIGHEST,
       risk_item_table$SCHEDULE_IMPACT_EVIDENCE
     )
@@ -316,42 +336,46 @@ schedulecolumn <-
 
 performancecolumn <-
   if (risk_item_table$NO_PERFORMANCE_IMPACT == 1) {
-    "No performance impact is anticipated"
+    c("No performance impact is anticipated","","","")
   } else {
     c(
-      risk_item_table$PERFORMANCEIMPACT_DESC,
+      risk_item_table$PERFORMANCE_IMPACT_DESC,
       risk_item_table$PERFORMANCEIMPACT,
-      risk_item_table$PERFORMANCEIMPACT_DESC
+      risk_item_table$PERFORMANCEIMPACT_DESC,
+      ""
     )
   }
 
 
+disttable<-data.frame(costcolumn, schedulecolumn,performancecolumn)
 
+kable(disttable,format = "html", escape=FALSE, col.names=c("Cost Impact",
+                                                            "Schedule Impact",
+                                                            "Performance Impact"))|>
+  kable_styling()
 
-
-
-knitr::kables(
-  list(
-    knitr::kable(costcolumn,
-                 format = "html",
-                 col.names = "Cost Impact",escape=FALSE) |>
-       kable_styling(),
-    knitr::kable(schedulecolumn,
-                 format = "html",
-                 col.names = "Schedule Impact",escape=FALSE) |>
-       kable_styling(),
-
-    knitr::kable(performancecolumn,
-                 format = "html",
-                 col.names = "Performance Impact",escape=FALSE) |>
-       kable_styling()
-  )
-)
+# knitr::kables(
+#   list(
+#     knitr::kable(costcolumn,
+#                  format = "html",
+#                  col.names = "Cost Impact",escape=FALSE) |>
+#        kable_styling(),
+#     knitr::kable(schedulecolumn,
+#                  format = "html",
+#                  col.names = "Schedule Impact",escape=FALSE) |>
+#        kable_styling(),
+# 
+#     knitr::kable(performancecolumn,
+#                  format = "html",
+#                  col.names = "Performance Impact",escape=FALSE) |>
+#        kable_styling()
+#   )
+# )
 
 
 ```
 
-#### Risk Treatments:
+### Risk Treatments:
 
 `r if(!treat_condit){"Risk treatments have not been completed for this risk item"}`
 
