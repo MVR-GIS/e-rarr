@@ -40,6 +40,6 @@ riskpies <- erisk_ItemProj |>
 
 
 #example
-milestone_plot<-pieplot_prep(riskdf=risk_item, rankcol)
+cost_pie<-pieprep(riskdf=risk_item, rankcol)
 
 }
