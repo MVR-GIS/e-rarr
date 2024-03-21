@@ -275,7 +275,7 @@ risk_item_table <- risk_item |>
                                         'font-family: Arial;font-size:10pt; 
                                      font-weight: bold'>",
                                         "Performance Impact:","</p>",
-                                        PERFORMANCE_IMPACT_DESC, "to", 
+                                        PERFORMANCE_IMPACT_DESC, " to ", 
                                      PERFORMANCEIMPACT),
     PERFORMANCEIMPACT = paste0("<p style = 
                                         'font-family: Arial;font-size:10pt;
