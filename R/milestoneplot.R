@@ -19,6 +19,7 @@
 #'
 #' @importFrom dplyr mutate select arrange
 #' @importFrom rlang .data
+#' @importFrom scales label_wrap
 #' @export
 #'
 
@@ -27,28 +28,28 @@
 milestoneplot<- function(riskitem, milestonedf){
 projphases<- milestonedf |>
   dplyr::filter(PHASEID == riskitem$PROJECTPHASEID)|>
-  dplyr::mutate('yval' = rep(0.15))|>
+  dplyr::mutate('yval' = rep(0.1))|>
   dplyr::arrange(ORDERBY)
 
-projphases$xwrap = str_wrap(projphases$MILESTONE, width=15)
-
+#, vjust=1.4
 
 mileplot <- ggplot(projphases, aes(x=factor(MILESTONE), level=ORDERBY, y= yval))+
-  geom_segment(x=1, y = 0.15, xend = length(projphases$ORDERBY), yend = 0.15, linewidth=1.5, color = "grey")+
+  geom_segment(x=1, y = 0.1, xend = length(projphases$ORDERBY), yend = 0.1, linewidth=1.5, color = "grey")+
   geom_point(size=8,color="grey", fill="snow1", shape=21, stroke=1.5)+
-  geom_point(aes(x=riskitem$MILESTONE, y=0.15), colour="#1F78B4", fill="#1F78B4", shape = 16, size =7.75)+
-  geom_text(aes(label=xwrap), vjust=1.7)+
-  scale_y_continuous(expand=c(0,0))+
-  coord_cartesian(ylim=c(0.15,0.15))+
+  geom_point(aes(x=riskitem$MILESTONE, y=0.1), colour="#1F78B4", fill="#1F78B4", shape = 16, size =7.75)+
+  geom_text(aes(label=str_wrap(MILESTONE, width=14)), 
+            position = position_nudge(y = -0.4))+
+  scale_y_continuous(limits=c(-1,1),expand=c(0,0))+
+  coord_cartesian(clip="off")+
   aes(x = fct_inorder(MILESTONE))+
   theme(line = element_blank(),
         title = element_blank(),
-        axis.text.y = element_blank(),
         axis.text.x = element_blank(),
+        axis.text.y = element_blank(),
         axis.ticks.length = unit(0, "pt"),
         panel.background = element_blank(),
-  )+
-  theme(plot.margin=unit(c(0,0,0,0),"mm"))
+        plot.margin=unit(c(0,0,0,0),"mm")
+        )
 mileplot<-ggsave("mileplot.png", dpi=600)
 return(mileplot)
 }
