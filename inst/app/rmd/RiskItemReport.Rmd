@@ -375,7 +375,7 @@ kable(disttable,format = "html", escape=FALSE, col.names=c("Cost Impact",
 
 ```
 
-### Risk Treatments:
+#### Risk Treatments:
 
 `r if(!treat_condit){"Risk treatments have not been completed for this risk item"}`
 

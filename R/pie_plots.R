@@ -38,10 +38,10 @@ pie_plots<- function(cost_pie,schedule_pie,perform_pie){
       data = cost_pie,
       values =  ~ .data$count,
       labels = ~ .data$COST_RANK_DESC,
-      sort = FALSE,
       title=list(text='<b> Cost <br> </b>', font = list(size = 15)),
       name= " ",
       textinfo='value',
+      sort=FALSE,
       textfont = list(color = '#FFFFFF', size=15),
       domain = list(row = 0, column = 0),
       marker = list(

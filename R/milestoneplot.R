@@ -38,7 +38,7 @@ mileplot <- ggplot(projphases, aes(x=factor(MILESTONE), level=ORDERBY, y= yval))
   geom_point(size=8,color="grey", fill="snow1", shape=21, stroke=1.5)+
   geom_point(aes(x=riskitem$MILESTONE, y=0.1), colour="#1F78B4", fill="#1F78B4", shape = 16, size =7.75)+
   geom_text(aes(label=str_wrap(MILESTONE, width=14)), 
-            position = position_nudge(y = -0.4))+
+            position = position_nudge(y = -0.5))+
   scale_y_continuous(limits=c(-1,1),expand=c(0,0))+
   coord_cartesian(clip="off")+
   aes(x = fct_inorder(MILESTONE))+
