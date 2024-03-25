@@ -91,6 +91,30 @@ app_ui <- function(request) {
                        multiple = TRUE,
                        options =  list(placeholder = "Select SubID")
                      )),
+                     conditionalPanel(condition = "input.reporttabs == 'Explore'",
+                     selectizeInput(
+                       "catInput",
+                       "Category",
+                       choices = NULL,
+                       selected = NULL,
+                       multiple = F,
+                       options=list(placeholder = 'Select a Category')
+                     )),
+                     # selectizeInput(
+                     #   "Discipline",
+                     #   "Discipline",
+                     #   choices = NULL,
+                     #   selected = NULL,
+                     #   multiple = F,
+                     #   options=list(placeholder = 'Select a discipline')
+                     # ),
+                     # selectizeInput(
+                     #   "PhaseInput",
+                     #   "Phase",
+                     #   choices = NULL,
+                     #   selected = NULL,
+                     #   multiple = F,
+                     #   options=list(placeholder = 'Enter Phase')
                      conditionalPanel(condition = "input.reporttabs == 'RiskItem'",
                                       selectizeInput(
                                         "riskInput",

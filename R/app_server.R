@@ -13,20 +13,19 @@ library(dplyr)
 library(shinycssloaders)
 library(shinyjs)
 erisk_item <-
-  readr::read_csv("./inst/app/data/RISKLIST_FULL.csv", show_col_types = FALSE)
+  read.csv("./inst/app/data/RISKLIST_FULL.csv")
 risk_item_db <- data.frame(erisk_item)
-erisk_project <-
-  readr::read_csv("./inst/app/data/PROJECTLIST_FULL.csv", show_col_types = FALSE)
-risk_project_db <- data.frame(erisk_project)
 shiny::addResourcePath(prefix = "www", directoryPath = "./inst/app/www")
 
-RiskImpactTable <-
-  risk_item_db[, c("PROJECT_NAME",
+RiskImpactTable <-risk_item_db|> dplyr::select("PROJECT_NAME",
                    "RISK_NAME",
                    "USACE_ORGANIZATION",
-                   "P2_NUMBER", 
+                   "P2_NUMBER",
                    "LIFECYCLEPHASENAME",
-                   "MILESTONE")]
+                   "MILESTONE",
+                   "RISKCATEGORY",
+                   "DISCIPLINE")
+
 riskpies <- risk_item_db |>
   dplyr::select(
     "P2_NUMBER",
@@ -38,7 +37,9 @@ riskpies <- risk_item_db |>
     "USACE_ORGANIZATION",
     "COST_RANK_DESC",
     "SCHEDULE_RANK_DESC",
-    "PERFORMANCE_RANK_DESC"
+    "PERFORMANCE_RANK_DESC",
+    "LIFECYCLEPHASENAME",
+                   "MILESTONE"
   )|>
   mutate_if(is.character, as.factor)
   
@@ -58,7 +59,8 @@ app_server <- function(input, output, session) {
     updateSelectizeInput(session,'districtInput',
                          choices =c("", sort(unique(num()))), 
                          options=list(maxOptions = 40
-                                      ,server = TRUE,placeholder = 'Select a District' ))
+                                      ,server = TRUE,placeholder = 'Select a District'
+                                      ))
   })
   
   projects <- reactive({
@@ -68,13 +70,11 @@ app_server <- function(input, output, session) {
   
   
 
-  
-  
   observeEvent(projects(), {
-    choices <- sort(unique(projects()$PROJECT_NAME))
+    projs <- sort(unique(projects()$PROJECT_NAME))
     updateSelectizeInput(
       inputId = "projectInput",
-      choices = c("", choices),
+      choices = c("", projs),
       selected = ""
     )
   })
@@ -98,15 +98,17 @@ app_server <- function(input, output, session) {
     )
   })
   
+
   # observeEvent(projects(), {
-  #   if (projects()$SubId != ""){
-  #     shinyjs::show("SubIDInput")}
+  #   if (is.na(projects()$P2_SUB_IDENTIFIER)){
+  #     shinyjs::hide("SubIDInput")}
   #   else {
-  #     shinyjs::hide("SubIDInput")
+  #     shinyjs::show("SubIDInput")
   #   }
   # })
+  # 
   
-  
+
   risks <- reactive({
     RiskImpactTable |>
       filter(
@@ -114,14 +116,23 @@ app_server <- function(input, output, session) {
           RiskImpactTable$PROJECT_NAME == input$projectInput
       )
   })
+
   observeEvent(risks(), {
-    risks <- sort(unique(risks()$RISK_NAME))
+    riskitems <- sort(unique(risks()$RISK_NAME))
     updateSelectizeInput(
       inputId = "riskInput",
-      choices = c("", risks),
+      choices = c("", riskitems),
       selected = ""
     )
   })
+  
+  
+  observeEvent(risks(), {
+    categories <- sort(risks()$RISKCATEGORY)
+    updateSelectizeInput(
+    inputId = "catInput",
+    choices = c("", categories)
+  )})
 
   conditional <- function(condition, success) {
     if (condition)
@@ -138,7 +149,8 @@ in_react_frame<-reactiveVal(riskpies)
       filter(conditional(input$districtInput != "",
                          riskpies$USACE_ORGANIZATION == input$districtInput),
              conditional(input$projectInput != "", riskpies$PROJECT_NAME == input$projectInput),
-             conditional(input$P2Input != "", riskpies$P2_NUMBER == input$P2Input))|>
+             conditional(input$P2Input != "", riskpies$P2_NUMBER == input$P2Input),
+             conditional(input$catInput !="", riskpies$RISKCATEGORY == input$catInput))|>
 #             conditional(input$SubIDInput != "", riskpies$subIDInput == input$SubIdInput))|>
       select(
         RISK_IDENTIFIER,
