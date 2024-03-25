@@ -24,7 +24,9 @@ RiskImpactTable <-
   risk_item_db[, c("PROJECT_NAME",
                    "RISK_NAME",
                    "USACE_ORGANIZATION",
-                   "P2_NUMBER")]
+                   "P2_NUMBER", 
+                   "LIFECYCLEPHASENAME",
+                   "MILESTONE")]
 riskpies <- risk_item_db |>
   dplyr::select(
     "P2_NUMBER",
@@ -37,7 +39,9 @@ riskpies <- risk_item_db |>
     "COST_RANK_DESC",
     "SCHEDULE_RANK_DESC",
     "PERFORMANCE_RANK_DESC"
-  )
+  )|>
+  mutate_if(is.character, as.factor)
+  
 
 
 
