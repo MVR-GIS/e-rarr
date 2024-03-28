@@ -69,15 +69,13 @@ library(DT)
 library(webshot)
 library(erarr)
 options(scipen = 999)
-erisk_item <- readr::read_csv("../data/RISKLIST_FULL.csv")
+erisk_item <- readr::read_csv("../data/RISKLIST_FULL_0320245.csv")
 risk_item_db<-data.frame(erisk_item)
-erisk_project <- readr::read_csv("../data/PROJECTLIST_FULL.csv")
+erisk_project <- readr::read_csv("../data/PROJECTLIST_FULL_03226024.csv")
 risk_project_db<-data.frame(erisk_project)
-risk_treat <- readr::read_csv("../data/RISKTREATMENTLIST_FULL.csv",
+risk_treat <- readr::read_csv("../data/RISKTREATMENTLIST_FULL_032024.csv",
                               col_names = TRUE)
 checkimagepath<-"../www/check.png"
-erisk_item <- readr::read_csv("../data/RISKLIST_FULL.csv")
-risk_item_db<-data.frame(erisk_item)
 milestonedf<-read.csv("../data/PHASEMILESTONE.csv")
 milestone_df<-data.frame(milestonedf)
 headers<-c("Cost Impact", "Schedule Impact","Performance Impact")
