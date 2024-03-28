@@ -15,10 +15,10 @@ library(shinyjs)
 
 
 erisk_item <-
-  read_csv("./inst/app/data/RISKLIST_FULL.csv", show_col_types = FALSE)
+  read_csv("./inst/app/data/RISKLIST_FULL_0320245.csv", show_col_types = FALSE)
 risk_item_db <- data.frame(erisk_item)
 erisk_project <-
-  read_csv("./inst/app/data/PROJECTLIST_FULL.csv", show_col_types = FALSE)
+  read_csv("./inst/app/data/PROJECTLIST_FULL_03226024.csv", show_col_types=FALSE)
 risk_project_db <- data.frame(erisk_project)
 shiny::addResourcePath(prefix = "www", directoryPath = "./inst/app/www")
 
@@ -26,7 +26,11 @@ RiskImpactTable <-
   risk_item_db[, c("PROJECT_NAME",
                    "RISK_NAME",
                    "USACE_ORGANIZATION",
-                   "P2_NUMBER")]
+                   "P2_NUMBER",
+                   "RISKCATEGORY",
+                   "LIFECYCLEPHASENAME",
+                   "MILESTONE",
+                   "DISCIPLINE")]
 
 
 
@@ -83,14 +87,14 @@ app_ui <- function(request) {
                        multiple = F,
                        options=list(placeholder = 'Enter P2 Number')
                      ),
-                     shinyjs::hidden(selectizeInput(
+                    selectizeInput(
                        "SubIDInput",
                        "Sub ID",
                        choices = NULL,
                        selected = NULL,
                        multiple = TRUE,
                        options =  list(placeholder = "Select SubID")
-                     )),
+                     ),
                      conditionalPanel(condition = "input.reporttabs == 'Explore'",
                      selectizeInput(
                        "catInput",
@@ -98,23 +102,31 @@ app_ui <- function(request) {
                        choices = NULL,
                        selected = NULL,
                        multiple = F,
-                       options=list(placeholder = 'Select a Category')
-                     )),
-                     # selectizeInput(
-                     #   "Discipline",
-                     #   "Discipline",
-                     #   choices = NULL,
-                     #   selected = NULL,
-                     #   multiple = F,
-                     #   options=list(placeholder = 'Select a discipline')
-                     # ),
-                     # selectizeInput(
-                     #   "PhaseInput",
-                     #   "Phase",
-                     #   choices = NULL,
-                     #   selected = NULL,
-                     #   multiple = F,
-                     #   options=list(placeholder = 'Enter Phase')
+                       options = list(placeholder = 'Select a category')
+                     ),
+                     selectizeInput(
+                       "disInput",
+                       "Discipline",
+                       choices = NULL,
+                       selected = NULL,
+                       multiple = F,
+                       options=list(placeholder = 'Select a discipline')
+                     ),
+                     selectizeInput(
+                       "phaseInput",
+                       "Phase",
+                       choices = NULL,
+                       selected = NULL,
+                       multiple = F,
+                       options=list(placeholder = 'Enter Phase')),
+                     selectizeInput(
+                       "mileInput",
+                       "Milestone",
+                       choices = NULL,
+                       selected = NULL,
+                       multiple = F,
+                       options=list(placeholder = 'Enter Milestone'))
+                     ),
                      conditionalPanel(condition = "input.reporttabs == 'RiskItem'",
                                       selectizeInput(
                                         "riskInput",
