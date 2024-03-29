@@ -15,23 +15,26 @@ library(shinyjs)
 
 
 erisk_item <-
-  read_csv("./inst/app/data/RISKLIST_FULL_0320245.csv", show_col_types = FALSE)
+  read_csv("./inst/app/data/RISKLIST_FULL_0320245.csv", show_col_types = FALSE, col_types=cols(P2_SUB_IDENTIFIER = col_double()))
 risk_item_db <- data.frame(erisk_item)
 erisk_project <-
   read_csv("./inst/app/data/PROJECTLIST_FULL_03226024.csv", show_col_types=FALSE)
 risk_project_db <- data.frame(erisk_project)
 shiny::addResourcePath(prefix = "www", directoryPath = "./inst/app/www")
 
-RiskImpactTable <-
-  risk_item_db[, c("PROJECT_NAME",
-                   "RISK_NAME",
-                   "USACE_ORGANIZATION",
-                   "P2_NUMBER",
-                   "RISKCATEGORY",
-                   "LIFECYCLEPHASENAME",
-                   "MILESTONE",
-                   "DISCIPLINE")]
-
+RiskImpactTable <- risk_item_db |>
+  dplyr::select(
+    "PROJECT_NAME",
+    "RISK_NAME",
+    "USACE_ORGANIZATION",
+    "P2_NUMBER",
+    "LIFECYCLEPHASENAME",
+    "MILESTONE",
+    "RISKCATEGORY",
+    "DISCIPLINE",
+    "P2_SUB_IDENTIFIER"
+  ) |>
+  mutate(P2_SUB_IDENTIFIER = ifelse(is.na(P2_SUB_IDENTIFIER), "NA", P2_SUB_IDENTIFIER))
 
 
 app_ui <- function(request) {
@@ -119,13 +122,14 @@ app_ui <- function(request) {
                        selected = NULL,
                        multiple = F,
                        options=list(placeholder = 'Enter Phase')),
+                     hidden(
                      selectizeInput(
                        "mileInput",
                        "Milestone",
                        choices = NULL,
                        selected = NULL,
                        multiple = F,
-                       options=list(placeholder = 'Enter Milestone'))
+                       options=list(placeholder = 'Enter Milestone')))
                      ),
                      conditionalPanel(condition = "input.reporttabs == 'RiskItem'",
                                       selectizeInput(

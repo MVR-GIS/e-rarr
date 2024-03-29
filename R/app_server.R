@@ -14,7 +14,7 @@ library(shinycssloaders)
 library(shinyjs)
 
 erisk_item <-
-  read_csv("./inst/app/data/RISKLIST_FULL_0320245.csv", show_col_types = FALSE, col_types=cols(P2_SUB_IDENTIFIER = col_double()))
+  read_csv("./inst/app/data/RISKLIST_FULL_0320245.csv", show_col_types = FALSE, col_types=cols(P2_SUB_IDENTIFIER =  col_double()))
 risk_item_db <- data.frame(erisk_item)
 
 shiny::addResourcePath(prefix = "www", directoryPath = "./inst/app/www")
@@ -27,7 +27,8 @@ RiskImpactTable <-risk_item_db|> dplyr::select("PROJECT_NAME",
                                                "MILESTONE",
                                                "RISKCATEGORY",
                                                "DISCIPLINE",
-                                               "P2_SUB_IDENTIFIER")
+                                               "P2_SUB_IDENTIFIER")|>
+  mutate(P2_SUB_IDENTIFIER = ifelse(is.na(P2_SUB_IDENTIFIER), "NA", P2_SUB_IDENTIFIER))
 
 riskpies <- risk_item_db |>
   dplyr::select(
@@ -45,9 +46,8 @@ riskpies <- risk_item_db |>
     "MILESTONE",
     "P2_SUB_IDENTIFIER"
   )|>
-  mutate_if(is.character, as.factor)
-
-
+  mutate_if(is.character, as.factor)|>
+  mutate(P2_SUB_IDENTIFIER = ifelse(is.na(P2_SUB_IDENTIFIER), "NA", P2_SUB_IDENTIFIER))
 
 
 
@@ -102,22 +102,28 @@ app_server <- function(input, output, session) {
   })
   
 
-  observe({
-   if (is.na(projects()$P2_SUB_IDENTIFIER)) {
-     shinyjs::hide("SubIDInput")}
-  else {shinyjs::show("SubIDInput")}})
+  
+  # includes_na <- reactive({
+  #   sum('NA' == input$select_inupt_ele)
+  # })
+  # 
+  # select_input_react <- reactive({
+  #   if (includes_na() == 1) {
+  #     c(input$select_inupt_ele, NA)
+  #   } else {
+  #     input$select_inupt_ele
+  #   }
+  # })
+  
 
-  observeEvent(projects(), {
-    P2sub <- sort(unique(projects()$P2_SUB_IDENTIFIER))
+  observeEvent(risks(), {
+    P2sub <- sort(unique(risks()$P2_SUB_IDENTIFIER))
     updateSelectizeInput(
       inputId = "SubIDInput",
-      choices = c("", P2sub),
-      selected = ""
+      choices =c("NA",P2sub),
+      selected =  "NA"
     )
   })
-  
-
-  
 
   risks <- reactive({
     RiskImpactTable |>
@@ -166,6 +172,14 @@ app_server <- function(input, output, session) {
       )
   })
   
+  observe({
+    if (is.null(input$phaseInput) || input$phaseInput == ""){
+      shinyjs::hide("mileInput")
+    } else{
+      shinyjs::show("mileInput")
+    }
+  })
+  
   observeEvent(milestones(), {
     miles <- sort(unique(milestones()$MILESTONE))
     updateSelectInput(
@@ -193,11 +207,11 @@ in_react_frame<-reactiveVal(riskpies)
                          riskpies$USACE_ORGANIZATION == input$districtInput),
              conditional(input$projectInput != "", riskpies$PROJECT_NAME == input$projectInput),
              conditional(input$P2Input != "", riskpies$P2_NUMBER == input$P2Input),
+             conditional(input$SubIDInput != "NA",riskpies$P2_SUB_IDENTIFIER == input$SubIDInput),
              conditional(input$catInput !="", riskpies$RISKCATEGORY == input$catInput),
              conditional(input$disInput !="", riskpies$DISCIPLINE == input$disInput),
              conditional(input$phaseInput !="", riskpies$LIFECYCLEPHASENAME == input$phaseInput),
-             conditional(input$mileInput !="", riskpies$MILESTONE == input$mileInput))|>
-             # conditional(input$SubIDInput != "", riskpies$P2_SUB_IDENTIFIER == input$SubIdInput)
+             conditional(input$mileInput != "", riskpies$MILESTONE == input$mileInput))|>
       select(
         RISK_IDENTIFIER,
         USACE_ORGANIZATION,
