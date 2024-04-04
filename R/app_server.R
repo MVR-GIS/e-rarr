@@ -28,7 +28,7 @@ RiskImpactTable <-risk_item_db|> dplyr::select("PROJECT_NAME",
                                                "RISKCATEGORY",
                                                "DISCIPLINE",
                                                "P2_SUB_IDENTIFIER")|>
-  mutate(P2_SUB_IDENTIFIER = ifelse(is.na(P2_SUB_IDENTIFIER), "NA", P2_SUB_IDENTIFIER))
+  mutate(P2_SUB_IDENTIFIER = ifelse(is.na(P2_SUB_IDENTIFIER), "", P2_SUB_IDENTIFIER))
 
 riskpies <- risk_item_db |>
   dplyr::select(
@@ -47,7 +47,7 @@ riskpies <- risk_item_db |>
     "P2_SUB_IDENTIFIER"
   )|>
   mutate_if(is.character, as.factor)|>
-  mutate(P2_SUB_IDENTIFIER = ifelse(is.na(P2_SUB_IDENTIFIER), "NA", P2_SUB_IDENTIFIER))
+  mutate(P2_SUB_IDENTIFIER = ifelse(is.na(P2_SUB_IDENTIFIER), "", P2_SUB_IDENTIFIER))
 
 
 
@@ -101,27 +101,28 @@ app_server <- function(input, output, session) {
     )
   })
   
+  projsub <- RiskImpactTable|>
+    filter(P2_SUB_IDENTIFIER != "")|>
+    select(PROJECT_NAME, P2_NUMBER)|>
+    unique()
+  
+  observe({
+    if (input$projectInput %in% projsub$PROJECT_NAME || input$P2Input %in% projsub$P2_NUMBER){
+      shinyjs::show("SubIDInput")
+    } else {
+      shinyjs::hide("SubIDInput")
+    }
+  })
+
 
   
-  # includes_na <- reactive({
-  #   sum('NA' == input$select_inupt_ele)
-  # })
-  # 
-  # select_input_react <- reactive({
-  #   if (includes_na() == 1) {
-  #     c(input$select_inupt_ele, NA)
-  #   } else {
-  #     input$select_inupt_ele
-  #   }
-  # })
   
-
   observeEvent(risks(), {
     P2sub <- sort(unique(risks()$P2_SUB_IDENTIFIER))
     updateSelectizeInput(
       inputId = "SubIDInput",
-      choices =c("NA",P2sub),
-      selected =  "NA"
+      choices =c(P2sub),
+      selected =""
     )
   })
 
@@ -203,11 +204,10 @@ in_react_frame<-reactiveVal(riskpies)
   
   filtered_frame<-reactive({
     in_react_frame()|>
-      filter(conditional(input$districtInput != "",
-                         riskpies$USACE_ORGANIZATION == input$districtInput),
+      filter(conditional(input$districtInput != "",riskpies$USACE_ORGANIZATION == input$districtInput),
              conditional(input$projectInput != "", riskpies$PROJECT_NAME == input$projectInput),
+             conditional(input$SubIDInput != "", riskpies$P2_SUB_IDENTIFIER == input$SubIDInput),
              conditional(input$P2Input != "", riskpies$P2_NUMBER == input$P2Input),
-             conditional(input$SubIDInput != "NA",riskpies$P2_SUB_IDENTIFIER == input$SubIDInput),
              conditional(input$catInput !="", riskpies$RISKCATEGORY == input$catInput),
              conditional(input$disInput !="", riskpies$DISCIPLINE == input$disInput),
              conditional(input$phaseInput !="", riskpies$LIFECYCLEPHASENAME == input$phaseInput),
@@ -237,6 +237,8 @@ in_react_frame<-reactiveVal(riskpies)
   schedule_pie <- reactive(
       pieprep(filt_frame(), "SCHEDULE_RANK_DESC"))
   perform_pie <- reactive(pieprep(filt_frame(), "PERFORMANCE_RANK_DESC"))
+  
+  
   
   output$overviewtab = DT::renderDT({
     DT::datatable(

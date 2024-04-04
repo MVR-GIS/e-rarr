@@ -34,7 +34,7 @@ RiskImpactTable <- risk_item_db |>
     "DISCIPLINE",
     "P2_SUB_IDENTIFIER"
   ) |>
-  mutate(P2_SUB_IDENTIFIER = ifelse(is.na(P2_SUB_IDENTIFIER), "NA", P2_SUB_IDENTIFIER))
+  mutate(P2_SUB_IDENTIFIER = ifelse(is.na(P2_SUB_IDENTIFIER), "", P2_SUB_IDENTIFIER))
 
 
 app_ui <- function(request) {
@@ -90,14 +90,15 @@ app_ui <- function(request) {
                        multiple = F,
                        options=list(placeholder = 'Enter P2 Number')
                      ),
-                    selectizeInput(
+                     hidden(
+                     selectizeInput(
                        "SubIDInput",
                        "Sub ID",
                        choices = NULL,
                        selected = NULL,
-                       multiple = TRUE,
+                       multiple = FALSE,
                        options =  list(placeholder = "Select SubID")
-                     ),
+                     )),
                      conditionalPanel(condition = "input.reporttabs == 'Explore'",
                      selectizeInput(
                        "catInput",
