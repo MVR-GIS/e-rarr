@@ -25,6 +25,7 @@ shiny::addResourcePath(prefix = "www", directoryPath = "./inst/app/www")
 RiskImpactTable <- risk_item_db |>
   dplyr::select(
     "PROJECT_NAME",
+    "RISK_IDENTIFIER",
     "RISK_NAME",
     "USACE_ORGANIZATION",
     "P2_NUMBER",
@@ -34,8 +35,10 @@ RiskImpactTable <- risk_item_db |>
     "DISCIPLINE",
     "P2_SUB_IDENTIFIER"
   ) |>
-  mutate(P2_SUB_IDENTIFIER = ifelse(is.na(P2_SUB_IDENTIFIER), "", P2_SUB_IDENTIFIER))
-
+  mutate(P2_SUB_IDENTIFIER = ifelse(is.na(P2_SUB_IDENTIFIER), "", P2_SUB_IDENTIFIER))|>
+  mutate(RiskNameID = paste(RISK_IDENTIFIER,RISK_NAME))
+ 
+ 
 
 app_ui <- function(request) {
   tagList(

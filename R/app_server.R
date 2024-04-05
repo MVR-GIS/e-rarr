@@ -20,6 +20,7 @@ risk_item_db <- data.frame(erisk_item)
 shiny::addResourcePath(prefix = "www", directoryPath = "./inst/app/www")
 
 RiskImpactTable <-risk_item_db|> dplyr::select("PROJECT_NAME",
+                                               "RISK_IDENTIFIER",
                                                "RISK_NAME",
                                                "USACE_ORGANIZATION",
                                                "P2_NUMBER",
@@ -28,7 +29,12 @@ RiskImpactTable <-risk_item_db|> dplyr::select("PROJECT_NAME",
                                                "RISKCATEGORY",
                                                "DISCIPLINE",
                                                "P2_SUB_IDENTIFIER")|>
-  mutate(P2_SUB_IDENTIFIER = ifelse(is.na(P2_SUB_IDENTIFIER), "", P2_SUB_IDENTIFIER))
+  mutate(P2_SUB_IDENTIFIER = ifelse(is.na(P2_SUB_IDENTIFIER), "", P2_SUB_IDENTIFIER))|>
+  mutate(RiskNameID = paste(RISK_IDENTIFIER,RISK_NAME))
+
+
+
+
 
 riskpies <- risk_item_db |>
   dplyr::select(
@@ -102,9 +108,9 @@ app_server <- function(input, output, session) {
   })
   
   projsub <- RiskImpactTable|>
-    filter(P2_SUB_IDENTIFIER != "")|>
-    select(PROJECT_NAME, P2_NUMBER)|>
-    unique()
+  filter(P2_SUB_IDENTIFIER != "")|>
+  select(PROJECT_NAME, P2_NUMBER)|>
+  unique()
   
   observe({
     if (input$projectInput %in% projsub$PROJECT_NAME || input$P2Input %in% projsub$P2_NUMBER){
@@ -134,18 +140,35 @@ app_server <- function(input, output, session) {
       )
   })
   
+  riskitems <- reactive({
+    RiskImpactTable |>
+      filter(
+        RiskImpactTable$P2_NUMBER == input$P2Input |
+          RiskImpactTable$PROJECT_NAME == input$projectInput,
+        conditional(input$SubIDInput != "", RiskImpactTable$P2_SUB_IDENTIFIER == input$SubIDInput)|>
+        set_names(RISK_NAME,RiskNameID)
+      )
+  })
+  
 
+
+  
+  observeEvent(riskitems(),{
+    riskitems <- sort(unique(riskitems()$RISK_NAME))
+    updateSelectizeInput(
+      inputId = "riskInput",
+      choices = c("",riskitems),
+      selected = "")
+  })
+  
+  
+  
+  
 
   observeEvent(risks(), {
-    riskitems <- sort(unique(risks()$RISK_NAME))
     cats <-sort(unique(risks()$RISKCATEGORY))
     discs <-sort(unique(risks()$DISCIPLINE))
     phases <-sort(unique(risks()$LIFECYCLEPHASENAME))
-    updateSelectizeInput(
-      inputId = "riskInput",
-      choices = c("", riskitems),
-      selected = ""
-    )
     updateSelectInput(
       inputId = "catInput",
       choices = c("", cats),
@@ -340,7 +363,7 @@ in_react_frame<-reactiveVal(riskpies)
     list(projID = input$projectInput, p2ID = input$P2Input)
   } else if (input$reporttabs == "RiskItem"){
     list(projID = input$projectInput, p2ID = input$P2Input,
-         riskID = input$riskInput )
+         riskID = input$riskInput, p2sub = imput$SubIDInput )
   }
     })
   
