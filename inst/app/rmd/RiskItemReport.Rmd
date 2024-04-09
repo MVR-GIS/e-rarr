@@ -3,7 +3,7 @@ title: ""
 runtime: shiny
 output: html_document
 params:
-  riskID: Impacts due to Uncertain Bathymetric Data
+  riskID: ECV-2 Impacts due to Uncertain Bathymetric Data
   projID: Lee County Conservation Board CAP Sec 204
   p2ID: 	496169
   p2sub: ""
@@ -85,56 +85,67 @@ headers<-c("Cost Impact", "Schedule Impact","Performance Impact")
 
 risk_transact <- read_csv("../data/RISKTRANSACTIONLIST_FULL.csv")
 
-erisk_ItemProj<-left_join(risk_item_db, risk_project_db, by =c("PROJECT_ID"))                                                                                                                          
+erisk_ItemProj<-left_join(risk_item_db, risk_project_db, by =c("PROJECT_ID")) 
+
+erisk_ItemProj<-erisk_ItemProj |>
+  mutate(RISK_NAME_ID = paste(RISK_IDENTIFIER,RISK_NAME))                 
+
 risk_item_filt<- risk_item_db |>
-  select(RISK_ID, PROJECT_ID, RISK_NAME , PROJECT_NAME, P2_NUMBER, P2_SUB_IDENTIFIER)|>
-    mutate(P2_SUB_IDENTIFIER = ifelse(is.na(P2_SUB_IDENTIFIER), "", P2_SUB_IDENTIFIER))
+  mutate(RISK_NAME_ID = paste(RISK_IDENTIFIER,RISK_NAME))|>
+  select(RISK_ID, PROJECT_ID,RISK_NAME, RISK_NAME_ID , PROJECT_NAME, P2_NUMBER, 
+         P2_SUB_IDENTIFIER)|>
+    mutate(P2_SUB_IDENTIFIER = ifelse(is.na(P2_SUB_IDENTIFIER), "", 
+                                      P2_SUB_IDENTIFIER))
 
 
 
 RiskImpactTable<-erisk_ItemProj |>
-  select("RISK_ID","RISK_IDENTIFIER","P2_NUMBER.x", "PROJECT_ID",
-         "PROJECT_NAME.x","P2_SUB_IDENTIFIER.x", "RISK_NAME","RISKCATEGORY", "DISCIPLINE", 
+  select("RISK_ID","RISK_NAME_ID","RISK_NAME","RISK_IDENTIFIER","P2_NUMBER.x", "PROJECT_ID",
+         "PROJECT_NAME.x","P2_SUB_IDENTIFIER.x", "RISK_NAME","RISKCATEGORY", 
+         "DISCIPLINE", 
          "RISK_STATEMENT","LIKELIHOOD_DESC", "PROB_OCCURRENCE_EVIDENCE",  
          "COST_IMPACT_LOWEST", "COST_IMPACT_MOSTLIKELY", "COST_IMPACT_HIGHEST",
          "COST_IMPACT_EVIDENCE","SCHEDULE_IMPACT_LOWEST", 
          "SCHEDULE_IMPACT_MOSTLIKELY", "SCHEDULE_IMPACT_HIGHEST", 
          "SCHEDULE_IMPACT_EVIDENCE", "LIFECYCLEPHASENAME.x", 
-         "PERFORMANCEIMPACT_DESC", "PERFORMANCEIMPACT","PERFORMANCE_IMPACT_DESC" ,"PROJECTPHASEID", 
+         "PERFORMANCEIMPACT_DESC", "PERFORMANCEIMPACT","PERFORMANCE_IMPACT_DESC" 
+         ,"PROJECTPHASEID", 
          "MILESTONE", "RISK_MANAGER", "COST_IMPACT_DISTTYPE", 
          "SCHEDULE_IMPACT_DISTTYPE", "NO_PERFORMANCE_IMPACT", "NO_COST_IMPACT",
          "NO_SCHEDULE_IMPACT")
 
 risk_transact<-left_join(risk_transact, risk_item_filt, by=c("PROJECT_ID", 
-                                                             "RISK_ID","PROJECT_NAME"))     
-risk_treat<-left_join(risk_treat, risk_item_filt, by=c("PROJECT_ID", "RISK_ID","PROJECT_NAME"))
+                                                             "RISK_ID",
+                                                             "PROJECT_NAME"))     
+risk_treat<-left_join(risk_treat, risk_item_filt, by=c("PROJECT_ID", "RISK_ID",
+                                                       "PROJECT_NAME"))
 
 
 
 ```
 
 ```{r echo=FALSE, eval = params$projID != ""}
-risk_item<-filter(RiskImpactTable, RiskImpactTable$RISK_NAME == params$riskID,
+risk_item<-filter(RiskImpactTable, RiskImpactTable$RISK_NAME_ID == params$riskID,
                   RiskImpactTable$PROJECT_NAME.x == params$projID)
 risk_treatment<-filter(risk_treat, risk_treat$PROJECT_NAME == params$projID, 
-                       risk_treat$RISK_NAME == params$riskID)
+                       risk_treat$RISK_NAME_ID == params$riskID)
 
 ```
 
 ```{r echo=FALSE, eval = params$p2ID != ""}
-risk_item<-filter(RiskImpactTable, RiskImpactTable$RISK_NAME == params$riskID, 
+risk_item<-filter(RiskImpactTable, RiskImpactTable$RISK_NAME_ID == params$riskID, 
                   RiskImpactTable$P2_NUMBER.x == params$p2ID)
 risk_treatment<-filter(risk_treat, risk_treat$PROJECT_NAME == params$projID, 
-                       risk_treat$RISK_NAME == params$riskID)
+                       risk_treat$RISK_NAME_ID == params$riskID)
 
 ```
 
 ```{r echo=FALSE, eval = params$p2sub != ""}
-risk_item<-filter(RiskImpactTable, RiskImpactTable$RISK_NAME == params$riskID, 
+risk_item<-filter(RiskImpactTable, RiskImpactTable$RISK_NAME_ID == params$riskID, 
                   RiskImpactTable$P2_NUMBER.x == params$p2ID,
                   RiskImpactTable$P2_SUB_IDENTIFIER.x == params$p2sub)
 risk_treatment<-filter(risk_treat, risk_treat$PROJECT_NAME == params$projID, 
-                       risk_treat$RISK_NAME == params$riskID,
+                       risk_treat$RISK_NAME_ID == params$riskID,
                        risk_treat$P2_SUB_IDENTIFIER.x == params$p2ID
                        )
 
@@ -160,14 +171,20 @@ risk_treat_table<-risk_treatment |>
 
 treat_condit <- ifelse(nrow(risk_treat_table)>0,TRUE,FALSE)
 
-  
+subid_condit <- ifelse(params$p2sub != "", TRUE, FALSE)
+
 ```
 
-#### Project: `r risk_item$PROJECT_NAME.x` (`r risk_item$RISK_IDENTIFIER`) SubID:`r risk_item$P2_SUB_IDENTIFIER`
+```{r }
 
-#### Risk Phase: `r risk_item$LIFECYCLEPHASENAME`, Category: `r risk_item$RISKCATEGORY`
+print("Project:",risk_item$PROJECT_NAME.x," ",(risk_item$RISK_IDENTIFIER))
+      print(if(!subid_condit)({"Sub Id:",params$p2sub}))
+
+#### Risk Phase:`r risk_item$LIFECYCLEPHASENAME`, Category:`r risk_item$RISKCATEGORY`
 
 ## Risk Summary: `r risk_item$RISK_NAME`
+```
+
 
 <center>
 
