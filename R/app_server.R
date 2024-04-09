@@ -30,8 +30,7 @@ RiskImpactTable <-risk_item_db|> dplyr::select("PROJECT_NAME",
                                                "DISCIPLINE",
                                                "P2_SUB_IDENTIFIER")|>
   mutate(P2_SUB_IDENTIFIER = ifelse(is.na(P2_SUB_IDENTIFIER), "", P2_SUB_IDENTIFIER))|>
-  mutate(RiskNameID = paste(RISK_IDENTIFIER,RISK_NAME))
-
+  mutate(RISK_NAME_ID = paste(RISK_IDENTIFIER,RISK_NAME))
 
 
 
@@ -39,6 +38,7 @@ RiskImpactTable <-risk_item_db|> dplyr::select("PROJECT_NAME",
 riskpies <- risk_item_db |>
   dplyr::select(
     "P2_NUMBER",
+    "RISK_NAME_ID",
     "RISK_IDENTIFIER",
     "PROJECT_NAME",
     "RISK_NAME",
@@ -124,7 +124,7 @@ app_server <- function(input, output, session) {
   
   
   observeEvent(risks(), {
-    P2sub <- sort(unique(risks()$P2_SUB_IDENTIFIER))
+    P2sub <- sort(risks()$P2_SUB_IDENTIFIER)
     updateSelectizeInput(
       inputId = "SubIDInput",
       choices =c(P2sub),
@@ -153,7 +153,7 @@ app_server <- function(input, output, session) {
 
   
   observeEvent(riskitems(),{
-    riskitems <- sort(unique(riskitems()$RISK_NAME))
+    riskitems <- riskitems()$RISK_NAME_ID
     updateSelectizeInput(
       inputId = "riskInput",
       choices = c("",riskitems),
