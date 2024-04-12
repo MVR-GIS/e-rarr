@@ -19,7 +19,7 @@ risk_item_db <- data.frame(erisk_item)
 
 shiny::addResourcePath(prefix = "www", directoryPath = "./inst/app/www")
 
-RiskImpactTable <-risk_item_db|> dplyr::select("PROJECT_NAME",
+RiskImpactTable <-risk_item_db |> dplyr::select("PROJECT_NAME",
                                                "RISK_IDENTIFIER",
                                                "RISK_NAME",
                                                "USACE_ORGANIZATION",
@@ -32,13 +32,13 @@ RiskImpactTable <-risk_item_db|> dplyr::select("PROJECT_NAME",
   mutate(P2_SUB_IDENTIFIER = ifelse(is.na(P2_SUB_IDENTIFIER), "", P2_SUB_IDENTIFIER))|>
   mutate(RISK_NAME_ID = paste(RISK_IDENTIFIER,RISK_NAME))
 
+RiskImpactTable <- risk_item_db
 
 
 
 riskpies <- risk_item_db |>
   dplyr::select(
     "P2_NUMBER",
-    "RISK_NAME_ID",
     "RISK_IDENTIFIER",
     "PROJECT_NAME",
     "RISK_NAME",
@@ -53,7 +53,8 @@ riskpies <- risk_item_db |>
     "P2_SUB_IDENTIFIER"
   )|>
   mutate_if(is.character, as.factor)|>
-  mutate(P2_SUB_IDENTIFIER = ifelse(is.na(P2_SUB_IDENTIFIER), "", P2_SUB_IDENTIFIER))
+  mutate(P2_SUB_IDENTIFIER = ifelse(is.na(P2_SUB_IDENTIFIER), "", P2_SUB_IDENTIFIER))|>
+  mutate(RISK_NAME_ID = paste(RISK_IDENTIFIER,RISK_NAME))
 
 
 
@@ -275,7 +276,9 @@ in_react_frame<-reactiveVal(riskpies)
         "Cost Rank",
         "Schedule Rank",
         "Performance Rank"
-      ),
+      ),extensions = 'Buttons',
+      options = list(dom='Bfrtip',
+                     buttons = c('csv', 'excel','pdf','print')),
       rownames = FALSE,
       filter = "top"
     )
@@ -291,6 +294,10 @@ in_react_frame<-reactiveVal(riskpies)
       isTruthy(input$riskInput),
       isTruthy(input$projectInput) || isTruthy(input$P2Input)
     ) 
+    
+    
+    
+    
     rmarkdown::render(
         "./inst/app/rmd/RiskItemReport.Rmd",
         params = list(
