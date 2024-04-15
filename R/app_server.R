@@ -34,7 +34,7 @@ RiskImpactTable <-risk_item_db |> dplyr::select("PROJECT_NAME",
 
 RiskImpactTable <- risk_item_db
 
-
+reportlist<-c("All Risk", "All Risk Detail", "Top 4s", "Risk Item Report")
 
 riskpies <- risk_item_db |>
   dplyr::select(
@@ -72,6 +72,9 @@ app_server <- function(input, output, session) {
                                       ,server = TRUE,placeholder = 'Select a District'
                                       ))
   })
+  
+
+  
   
   projects <- reactive({
     RiskImpactTable |>
@@ -116,12 +119,13 @@ app_server <- function(input, output, session) {
   observe({
     if (input$projectInput %in% projsub$PROJECT_NAME || input$P2Input %in% projsub$P2_NUMBER){
       shinyjs::show("SubIDInput")
-    } else {
+    } else 
       shinyjs::hide("SubIDInput")
-    }
   })
 
 
+  
+  
   
   
   observeEvent(risks(), {
@@ -203,6 +207,15 @@ app_server <- function(input, output, session) {
       shinyjs::show("mileInput")
     }
   })
+  
+  observe({
+    if (input$reportInput == "Risk Item Report"){
+      shinyjs::show("riskInput")
+    } else{
+      shinyjs::hide("riskInput")
+    }
+  })
+  
   
   observeEvent(milestones(), {
     miles <- sort(unique(milestones()$MILESTONE))
@@ -289,100 +302,68 @@ in_react_frame<-reactiveVal(riskpies)
     pie_plots(cost_pie(), schedule_pie(), perform_pie())
   })
   
-  output$reportrend <- renderUI({
-    req(
-      isTruthy(input$riskInput),
-      isTruthy(input$projectInput) || isTruthy(input$P2Input)
-    ) 
-    
-    
-    
-    
-    rmarkdown::render(
-        "./inst/app/rmd/RiskItemReport.Rmd",
-        params = list(
-          projID = input$projectInput,
-          riskID = input$riskInput,
-          p2ID = input$P2Input
-        ),output_dir ="./inst/app/www"
-        )
-    tags$iframe(src="www/RiskItemReport.html", width = '100%',  
-                height = 1000,  style = "border:none;")
-  })
-  output$ProjRend <- renderUI({
-    req(isTruthy(input$projectInput) || isTruthy(input$P2Input))
-        rmarkdown::render(
-          "./inst/app/rmd/ProjectAllRiskReport.Rmd",
-          params = list(
-            projID = input$projectInput,
-            p2ID = input$P2Input
-          ),output_dir ="./inst/app/www"
-      )
-        tags$iframe(src="www/ProjectAllRiskReport.html", width = '100%',  
-                    height = 1000,  style = "border:none;")
-  })
-  output$AllRiskRend <- renderUI({
-    req(isTruthy(input$projectInput) || isTruthy(input$P2Input))
-      rmarkdown::render(
-        "./inst/app/rmd/AllRiskDetailTable.Rmd",
-        params = list(
-          projID = input$projectInput,
-          p2ID = input$P2Input
-        ), output_dir ="./inst/app/www"
-      )
-      tags$iframe(src="www/AllRiskDetailTable.html", width = '100%',  
-                  height = 1000,  style = "border:none;")
-  })
   
-  output$Top4s <- renderUI({
-    req(isTruthy(input$projectInput) || isTruthy(input$P2Input))
-    rmarkdown::render(
-        "./inst/app/rmd/ProjectTop4s.Rmd",
-        params = list(
-          projID = input$projectInput,
-          p2ID = input$P2Input
-        ), output_dir ="./inst/app/www"
-      )
-    tags$iframe(src="www/ProjectTop4s.html", width = '100%',  
-                height = 1000,  style = "border:none;")
-  })
   
-  tabname <- reactive({
-    if (input$reporttabs == "Project") {
+  
+  
+
+  
+
+  
+ reportname <- reactive({
+    if (input$reportInput == "All Risk") {
       "ProjectAllRiskReport"
     }
-    else if (input$reporttabs == "AllRisk") {
+    else if (input$reportInput == "All Risk Detail") {
       "AllRiskDetailTable"
     }
-    else if (input$reporttabs == "Top4") {
+    else if (input$reportInput == "Top 4s") {
       "ProjectTop4s"
     }
-    else if (input$reporttabs == "RiskItem") {
+    else if (input$reportInput == "Risk Item Report") {
       "RiskItemReport"
     }
   })
   
+ 
+ paramsreport<-reactive({
+   if (input$reportInput == "All Risk" | input$reportInput == "All Risk Detail" | 
+       input$reportInput == "Top 4s"){
+     list(projID = input$projectInput, p2ID = input$P2Input)
+   } else if (input$reportInput == "Risk Item Report"){
+     list(projID = input$projectInput, p2ID = input$P2Input,
+          riskID = input$riskInput)
+   }
+ })
   
-  params<-reactive({
-    if (input$reporttabs == "Project" | input$reporttabs == "AllRisk" | 
-        input$reporttabs == "Top4"){
-    list(projID = input$projectInput, p2ID = input$P2Input)
-  } else if (input$reporttabs == "RiskItem"){
-    list(projID = input$projectInput, p2ID = input$P2Input,
-         riskID = input$riskInput, p2sub = imput$SubIDInput )
-  }
-    })
   
+ 
+ output$ReportRend <- renderUI({
+   if (input$reportInput == "Risk Item Report"){
+     req(
+       isTruthy(input$riskInput),
+       isTruthy(input$projectInput) || isTruthy(input$P2Input)
+     )} else {req(isTruthy(input$projectInput) || isTruthy(input$P2Input))}
+   rmarkdown::render(
+       paste0("./inst/app/rmd/",reportname(), ".Rmd"),
+       params = paramsreport(),
+       output_dir ="./inst/app/www"
+   )
+   tags$iframe(src=paste0("./www/",reportname(),".html"), width = '100%',  
+               height = 1000,  style = "border:none;")
+ })
+  
+
   output$report <- downloadHandler(
     # For PDF output, change this to "report.pdf"
     filename = function() {
-      paste0(input$projectInput, " - ", tabname(), ".html")
+      paste0(input$projectInput, " - ", reportname(), ".html")
     },
     content = function(file) {
       rmarkdown::render(
-        paste0("./inst/app/rmd/",tabname(), ".Rmd"),
+        paste0("./inst/app/rmd/",reportname(), ".Rmd"),
         output_file = file,
-        params = params(),
+        params = paramsreport(),
         envir = new.env(),
         intermediates_dir = tempdir()
       )
