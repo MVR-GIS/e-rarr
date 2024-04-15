@@ -38,8 +38,8 @@ RiskImpactTable <- risk_item_db |>
   mutate(P2_SUB_IDENTIFIER = ifelse(is.na(P2_SUB_IDENTIFIER), "", P2_SUB_IDENTIFIER))|>
   mutate(RISK_NAME_ID = paste(RISK_IDENTIFIER,RISK_NAME))
  
+reportlist<-c("All Risk", "All Risk Detail", "Top 4s", "Risk Item Report")
  
-
 app_ui <- function(request) {
   tagList(
     # Leave this function for adding external resources
@@ -53,7 +53,7 @@ app_ui <- function(request) {
                             "))),
     fluidPage(
       shinyjs::useShinyjs(),
-      theme = bslib::bs_theme(bootswatch = "cosmo"),
+      theme = bslib::bs_theme(bootswatch = "cosmo", version=5),
       navbarPage(
         title = div(
           img(
@@ -69,6 +69,15 @@ app_ui <- function(request) {
         tabPanel("Project",
                  sidebarLayout(
                    sidebarPanel(
+                     conditionalPanel(condition = "input.reporttabs == 'Report'",
+                                      selectizeInput(
+                                        "reportInput",
+                                        "Report",
+                                        choices =c("", reportlist),
+                                        selected = NULL,
+                                        multiple = F,
+                                        options = list(placeholder = 'Select a report')
+                                      )),
                      selectizeInput(
                        'districtInput',
                        "District",
@@ -102,6 +111,15 @@ app_ui <- function(request) {
                        multiple = FALSE,
                        options =  list(placeholder = "Select SubID")
                      )),
+                     hidden(
+                       selectizeInput(
+                         "riskInput",
+                         "Risk",
+                         choices = NULL ,
+                         selected = NULL,
+                         multiple = F,
+                         options=list(placeholder = 'Select a Risk Item')
+                         ,downloadButton("report", "Download report"))),
                      conditionalPanel(condition = "input.reporttabs == 'Explore'",
                      selectizeInput(
                        "catInput",
@@ -135,15 +153,6 @@ app_ui <- function(request) {
                        multiple = F,
                        options=list(placeholder = 'Enter Milestone')))
                      ),
-                     conditionalPanel(condition = "input.reporttabs == 'RiskItem'",
-                                      selectizeInput(
-                                        "riskInput",
-                                        "Risk",
-                                        choices = NULL ,
-                                        selected = NULL,
-                                        multiple = F,
-                                        options=list(placeholder = 'Select a Risk Item')
-                                        ,downloadButton("report", "Download report"))),
                      downloadButton("report", "Download report"), width=2),
                     
                    
@@ -154,23 +163,14 @@ app_ui <- function(request) {
                          plotly::plotlyOutput("pie"),
                          DT::DTOutput("overviewtab"), value= "Explore"
                        ),
-                       tabPanel("Project Report",
+                       tabPanel("Reports", 
                                 shinycssloaders::withSpinner(
-                                htmlOutput("ProjRend"), type = 4), value =
-                                  "Project"),
-                       tabPanel("All Risk Items",shinycssloaders::withSpinner(
-                                htmlOutput("AllRiskRend"), type=4), value =
-                                  "AllRisk"),
-                       tabPanel("Top 4 Risks", shinycssloaders::withSpinner(
-                                htmlOutput("Top4s"), type=4), value =
-                                  "Top4"),
-                       tabPanel("Risk Item Report",shinycssloaders::withSpinner(
-                                htmlOutput("reportrend"),type=4), value =
-                                  "RiskItem"),
+                                  htmlOutput("ReportRend"), type = 4), value = "Report"
+                                ),
                        id = "reporttabs" )
                    )
                    )
-                 ))
+                 ), selected = "Project")
     )
   )
 }
