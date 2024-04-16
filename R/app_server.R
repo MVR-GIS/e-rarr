@@ -155,8 +155,6 @@ app_server <- function(input, output, session) {
   })
   
 
-
-  
   observeEvent(riskitems(),{
     riskitems <- riskitems()$RISK_NAME_ID
     updateSelectizeInput(
@@ -208,13 +206,7 @@ app_server <- function(input, output, session) {
     }
   })
   
-  observe({
-    if (input$reportInput == "Risk Item Report"){
-      shinyjs::show("riskInput")
-    } else{
-      shinyjs::hide("riskInput")
-    }
-  })
+  
   
   
   observeEvent(milestones(), {
@@ -336,7 +328,65 @@ in_react_frame<-reactiveVal(riskpies)
    }
  })
   
-  
+ 
+ output$riskitem <- renderUI({
+   req(
+     isTruthy(input$riskInput),
+     isTruthy(input$projectInput) || isTruthy(input$P2Input)
+   ) 
+   rmarkdown::render(
+     "./inst/app/rmd/RiskItemReport.Rmd",
+     params = list(
+       projID = input$projectInput,
+       riskID = input$riskInput,
+       p2ID = input$P2Input
+     ),output_dir ="./inst/app/www"
+   )
+   tags$iframe(src="www/RiskItemReport.html", width = '100%',  
+               height = 1000,  style = "border:none;")
+ })
+ 
+ 
+
+ output$ProjRend <- renderUI({
+   req(isTruthy(input$projectInput) || isTruthy(input$P2Input))
+   rmarkdown::render(
+     "./inst/app/rmd/ProjectAllRiskReport.Rmd",
+     params = list(
+       projID = input$projectInput,
+       p2ID = input$P2Input
+     ),output_dir ="./inst/app/www"
+   )
+   tags$iframe(src="www/ProjectAllRiskReport.html", width = '100%',  
+               height = 1000,  style = "border:none;")
+ }) 
+ 
+ output$AllRiskRend <- renderUI({
+   req(isTruthy(input$projectInput) || isTruthy(input$P2Input))
+   rmarkdown::render(
+     "./inst/app/rmd/AllRiskDetailTable.Rmd",
+     params = list(
+       projID = input$projectInput,
+       p2ID = input$P2Input
+     ), output_dir ="./inst/app/www"
+   )
+   tags$iframe(src="www/AllRiskDetailTable.html", width = '100%',  
+               height = 1000,  style = "border:none;")
+ })
+ 
+ output$Top4s <- renderUI({
+   req(isTruthy(input$projectInput) || isTruthy(input$P2Input))
+   rmarkdown::render(
+     "./inst/app/rmd/ProjectTop4s.Rmd",
+     params = list(
+       projID = input$projectInput,
+       p2ID = input$P2Input
+     ), output_dir ="./inst/app/www"
+   )
+   tags$iframe(src="www/ProjectTop4s.html", width = '100%',  
+               height = 1000,  style = "border:none;")
+ })
+ 
  
  output$ReportRend <- renderUI({
    if (input$reportInput == "Risk Item Report"){
