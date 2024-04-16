@@ -11,6 +11,7 @@ library(shinycssloaders)
 library(shinyjs)
 library(readr)
 library(dplyr)
+library(bslib)
 
 
 
@@ -111,7 +112,6 @@ app_ui <- function(request) {
                        multiple = FALSE,
                        options =  list(placeholder = "Select SubID")
                      )),
-                     hidden(
                        selectizeInput(
                          "riskInput",
                          "Risk",
@@ -119,7 +119,7 @@ app_ui <- function(request) {
                          selected = NULL,
                          multiple = F,
                          options=list(placeholder = 'Select a Risk Item')
-                         ,downloadButton("report", "Download report"))),
+                         ),
                      conditionalPanel(condition = "input.reporttabs == 'Explore'",
                      selectizeInput(
                        "catInput",
@@ -167,6 +167,39 @@ app_ui <- function(request) {
                                 shinycssloaders::withSpinner(
                                   htmlOutput("ReportRend"), type = 4), value = "Report"
                                 ),
+                       tabPanel("Cards",
+                                layout_column_wrap(
+                                  width = 1/2,
+                                  height = 700,
+                                bslib::card(
+                                  height = 250,
+                                  full_screen = TRUE,
+                                  card_header("Project Risks"),
+                                  card_body(shinycssloaders::withSpinner(
+                                    htmlOutput("ProjRend"), type = 4))
+                                ),
+                                bslib::card(
+                                  height = 250,
+                                  full_screen = TRUE,
+                                  card_header("All Risk"),
+                                  card_body(shinycssloaders::withSpinner(
+                                    htmlOutput("AllRiskRend"), type = 4))
+                                ),
+                                bslib::card(
+                                  height = 250,
+                                  full_screen = TRUE,
+                                  card_header("Top 4s"),
+                                  card_body(shinycssloaders::withSpinner(
+                                    htmlOutput("Top4s"), type = 4))
+                                ),
+                                bslib::card(
+                                  height = 250,
+                                  full_screen = TRUE,
+                                  card_header("Risk Item Report"),
+                                  card_body(shinycssloaders::withSpinner(
+                                    htmlOutput("riskitem"), type = 4))
+                                ))
+                       ),
                        id = "reporttabs" )
                    )
                    )
