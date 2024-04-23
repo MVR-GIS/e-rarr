@@ -13,7 +13,14 @@ library(readr)
 library(dplyr)
 library(bslib)
 
-
+tags$head(
+  tags$style(
+    HTML("
+                #download {
+                    padding: 0px 5px;
+                }")
+  )
+)
 
 erisk_item <-
   read_csv("./inst/app/data/RISKLIST_FULL_0320245.csv", show_col_types = FALSE, col_types=cols(P2_SUB_IDENTIFIER = col_double()))
@@ -174,7 +181,12 @@ app_ui <- function(request) {
                                 bslib::card(
                                   height = 250,
                                   full_screen = TRUE,
-                                  card_header("Project Risks"),
+                                  card_header("Project Risks", 
+                                              shiny::downloadButton(
+                                    outputId="download",
+                                    label="",
+                                    icon=shiny::icon("image") # way too large
+                                  )),
                                   card_body(shinycssloaders::withSpinner(
                                     htmlOutput("ProjRend"), type = 4))
                                 ),

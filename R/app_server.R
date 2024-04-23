@@ -34,8 +34,6 @@ RiskImpactTable <-risk_item_db |> dplyr::select("PROJECT_NAME",
 
 RiskImpactTable <- risk_item_db
 
-reportlist<-c("All Risk", "All Risk Detail", "Top 4s", "Risk Item Report")
-
 riskpies <- risk_item_db |>
   dplyr::select(
     "P2_NUMBER",
@@ -388,21 +386,7 @@ in_react_frame<-reactiveVal(riskpies)
  })
  
  
- output$ReportRend <- renderUI({
-   if (input$reportInput == "Risk Item Report"){
-     req(
-       isTruthy(input$riskInput),
-       isTruthy(input$projectInput) || isTruthy(input$P2Input)
-     )} else {req(isTruthy(input$projectInput) || isTruthy(input$P2Input))}
-   rmarkdown::render(
-       paste0("./inst/app/rmd/",reportname(), ".Rmd"),
-       params = paramsreport(),
-       output_dir ="./inst/app/www"
-   )
-   tags$iframe(src=paste0("./www/",reportname(),".html"), width = '100%',  
-               height = 1000,  style = "border:none;")
- })
-  
+
 
   output$report <- downloadHandler(
     # For PDF output, change this to "report.pdf"
