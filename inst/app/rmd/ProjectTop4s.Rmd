@@ -4,7 +4,7 @@ runtime: shiny
 output: html_document
 params:
   projID: ""
-  p2ID: 487264
+  p2ID: 479265
 ---
 
 ```{css, echo=FALSE}
@@ -59,7 +59,7 @@ risk_item_db<-risk_item_db |>
               dplyr::select(PROJECT_ID, PRIMARYMISSION))
 
 RiskDeets <- risk_item_db |>
-  dplyr::select("PROJECT_ID","P2_NUMBER","RISK_IDENTIFIER", "PROJECT_NAME","RISK_NAME","RISKCATEGORY","RISK_STATEMENT" ,"LIFECYCLEPHASENAME","MILESTONE","LIKELIHOOD","DISCIPLINE", "PERFORMANCEIMPACT", "PERFORMANCE_RANK_DESC", "PERFORMANCEIMPACT_RISK_RANKING","COST_IMPACT_MOSTLIKELY", "COST_RANK_DESC","COST_RISK_RANKING", "SCHEDULE_IMPACT_MOSTLIKELY", "SCHEDULE_RANK_DESC", "SCHEDULE_RISK_RANKING", "PRIMARYMISSION", "USACE_ORGANIZATION")
+  dplyr::select("PROJECT_ID","P2_NUMBER","RISK_IDENTIFIER", "PROJECT_NAME","RISK_NAME","RISKCATEGORY","RISK_STATEMENT" ,"LIFECYCLEPHASENAME","MILESTONE","LIKELIHOOD","DISCIPLINE","PROB_OCCURRENCE", "PERFORMANCEIMPACT","PERFORMANCEIMPACT_IMPCT", "PERFORMANCE_RANK_DESC", "PERFORMANCEIMPACT_RISK_RANKING","COST_IMPACT_LOWEST","COST_IMPACT_MOSTLIKELY","COST_IMPACT_HIGHEST", "COST_RANK_DESC","COST_RISK_RANKING","SCHEDULE_IMPACT_LOWEST","SCHEDULE_IMPACT_MOSTLIKELY","SCHEDULE_IMPACT_HIGHEST", "SCHEDULE_RANK_DESC", "SCHEDULE_RISK_RANKING", "PRIMARYMISSION", "USACE_ORGANIZATION")
 
 ```
 
@@ -67,7 +67,7 @@ RiskDeets <- risk_item_db |>
 
 ```{r echo=FALSE, eval = params$projID != ""}
 Risk_List_Proj <-dplyr::filter(RiskDeets, RiskDeets$PROJECT_NAME == params$projID | RiskDeets$P2_NUMBER == params$p2ID)
-Risk_List_Proj$COST_IMPACT_MOSTLIKELY <- as.character(formattable::currency(Risk_List_Proj$COST_IMPACT_MOSTLIKELY))
+
 
 proj_risks<-dplyr::filter(Risk_List_Proj, Risk_List_Proj$PROJECT_NAME == params$projID)
 proj_risk_item<- dplyr::slice_head(Risk_List_Proj)
@@ -76,7 +76,7 @@ proj_risk_item<- dplyr::slice_head(Risk_List_Proj)
 
 ```{r echo=FALSE, eval = params$p2ID != ""}
 Risk_List_Proj <-dplyr::filter(RiskDeets, RiskDeets$P2_NUMBER == params$p2ID)
-Risk_List_Proj$COST_IMPACT_MOSTLIKELY <- as.character(formattable::currency(Risk_List_Proj$COST_IMPACT_MOSTLIKELY))
+
 
 proj_risks<-dplyr::filter(Risk_List_Proj, Risk_List_Proj$P2_NUMBER == params$p2ID)
 proj_risk_item<- dplyr::slice_head(Risk_List_Proj)
@@ -103,26 +103,30 @@ proj_risk_item<- dplyr::slice_head(Risk_List_Proj)
 
 
 </center>
-
 #### Top 4 Cost Impacts (All Phases)
 ``` {r cost risk log, echo = FALSE, warning=FALSE}
-cost_log_table<-proj_risks |>
-  dplyr::select(RISK_IDENTIFIER, RISK_NAME, RISKCATEGORY , MILESTONE , LIKELIHOOD, COST_IMPACT_MOSTLIKELY) |>
-  dplyr::slice_max(COST_IMPACT_MOSTLIKELY, n=4)|>
+cost_top4s<-proj_risks |>
+  mutate(MAX_COST = pmax(COST_IMPACT_LOWEST, COST_IMPACT_MOSTLIKELY, COST_IMPACT_HIGHEST))|>
+  arrange(desc(COST_RISK_RANKING), desc(MAX_COST), desc(PROB_OCCURRENCE))|>
+      dplyr::select(RISK_IDENTIFIER, RISK_NAME, RISKCATEGORY , MILESTONE , LIKELIHOOD, MAX_COST) |>
+    dplyr::slice_head(n=4)|>
+  mutate(MAX_COST = as.character(formattable::currency(MAX_COST)))|>
   kableExtra::kbl(format = "html", escape = F, col.names =c("Risk ID","Risk Name","Risk Category","Project Milestone","Likelihood", "Cost Impact"), align="clcccc", row.names = FALSE)|>
   kableExtra::kable_styling(bootstrap_options = c( "hover", "condensed", "responsive"))
 
-cost_log_table
+cost_top4s
 ```
 
 #### Top 4 Schedule Impacts (All Phases)
 ``` {r schedule risk log, echo = FALSE, warning=FALSE}
-schedule_log_table<-proj_risks |>
-  dplyr::select(RISK_IDENTIFIER, RISK_NAME, RISKCATEGORY , MILESTONE , LIKELIHOOD, SCHEDULE_IMPACT_MOSTLIKELY) |>
-  dplyr::slice_max(SCHEDULE_IMPACT_MOSTLIKELY, n=4)|>
+schedule_top4s<-proj_risks |>
+   mutate(MAX_SCHED = pmax(SCHEDULE_IMPACT_LOWEST, SCHEDULE_IMPACT_MOSTLIKELY, SCHEDULE_IMPACT_HIGHEST))|>
+  arrange(desc(SCHEDULE_RISK_RANKING), desc(MAX_SCHED), desc(PROB_OCCURRENCE))|>
+      dplyr::select(RISK_IDENTIFIER, RISK_NAME, RISKCATEGORY , MILESTONE , LIKELIHOOD, MAX_SCHED) |>
+    dplyr::slice_head(n=4)|>
   kableExtra::kbl(format = "html", escape = F, col.names =c("Risk ID","Risk Name","Risk Category","Project Milestone","Likelihood", "Schedule Impact (Days)"), align="clcccc", row.names = FALSE)|>
   kableExtra::kable_styling(bootstrap_options = c( "hover", "condensed", "responsive"))
-schedule_log_table
+schedule_top4s
 ```
 
 
@@ -130,8 +134,8 @@ schedule_log_table
 #### Top 4 Performance Impacts (All Phases)
 ``` {r perform risk log, echo = FALSE, warning=FALSE}
 perform_log_table<-proj_risks |>
+  arrange(desc(PERFORMANCEIMPACT_RISK_RANKING), desc(PERFORMANCEIMPACT_IMPCT), desc(PROB_OCCURRENCE))|>
   dplyr::select(RISK_IDENTIFIER, RISK_NAME, RISKCATEGORY , MILESTONE , LIKELIHOOD, PERFORMANCE_RANK_DESC) |>
-  dplyr::arrange(factor(PERFORMANCE_RANK_DESC, levels = c ("High","Medium","Low","Opportunity"))) |>
   dplyr::slice_head(n=4)|>
   kableExtra::kbl(format = "html", escape = F, col.names =c("Risk ID","Risk Name","Risk Category","Project Milestone","Likelihood", "Performance Impact"), align="clcccc", row.names = FALSE)|>
   kableExtra::kable_styling(bootstrap_options = c( "hover", "condensed", "responsive"))
