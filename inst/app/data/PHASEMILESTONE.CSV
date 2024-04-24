@@ -1,6 +1,6 @@
 ﻿ID,PHASEID,MILESTONE,ORDERBY
 1,4,Project Initiation,1
-2,4,Alternatives ,2
+2,4,Alternatives,2
 3,4,Tentatively Selected Plan,3
 4,4,Agency Decision,4
 5,4,Senior Leaders Briefing,5
@@ -29,8 +29,8 @@
 28,3,Final Report,28
 29,8,Planning,29
 30,9,Design Start,30
-31,9,Parametric Design (15%) ,31
-32,9,Receive Concept (30%) ,32
+31,9,Parametric Design (15%),31
+32,9,Receive Concept (30%),32
 33,9,Complete Real Estate Acquisition,33
 34,9,Receive 65% Submittal,34
 35,9,Receive final 90% submittal,35
@@ -45,8 +45,8 @@
 44,11,Troop Ready Date,44
 45,12,Planning,45
 46,13,Design Start,46
-47,13,Parametric Design (15%) ,47
-48,13,Receive Concept (30%) ,48
+47,13,Parametric Design (15%),47
+48,13,Receive Concept (30%),48
 49,13,Complete Real Estate Acquisition,49
 50,13,Receive 65% Submittal,50
 51,13,Receive final 90% submittal,51
@@ -61,8 +61,8 @@
 60,15,Troop Ready Date,60
 61,16,Planning,61
 62,17,Design Start,62
-63,17,Parametric Design (15%) ,63
-64,17,Receive Concept (30%) ,64
+63,17,Parametric Design (15%),63
+64,17,Receive Concept (30%),64
 65,17,Complete Real Estate Acquisition,65
 66,17,Receive 65% Submittal,66
 67,17,Receive final 90% submittal,67
@@ -77,11 +77,11 @@
 76,19,Troop Ready Date,76
 77,20,Planning,77
 78,21,Design Start,78
-79,21,Parametric Design (15%) ,79
-80,21,Receive Concept (30%) ,80
+79,21,Parametric Design (15%),79
+80,21,Receive Concept (30%),80
 81,21,Complete Real Estate Acquisition,81
 82,21,Receive 65% Submittal,82
-83,21,Receive final 90% submittal,83
+83,21,Receive final 90% Submittal,83
 84,21,Final Design Complete,84
 85,21,BCOES Certification,85
 86,22,Advertise,86
@@ -91,10 +91,10 @@
 90,27,Initial outfitting of facility,90
 91,23,Beneficial Occupancy Date,91
 92,23,Troop Ready Date,92
-93,1,Federal Interest Determination ,93
-94,1,FCSA Execution ,94
-95,1,Tentatively Selected Plan ,95
-96,1,Decision Document Approval ,96
-97,2,PPA Execution ,97
-98,2,Contract Award ,98
+93,1,Federal Interest Determination,93
+94,1,FCSA Execution,94
+95,1,Tentatively Selected Plan,95
+96,1,Decision Document Approval,96
+97,2,PPA Execution,97
+98,2,Contract Award,98
 99,2,Project Completion,99

@@ -9,17 +9,16 @@ params:
 
 ```{css, echo=FALSE}
 
-h2,h3,h5 {
+h2,h3,h4,h5 {
   text-align: center;
 }
 th {white-space: break-word}
 
-.main-container {
-    margin-left: 5%;
-    margin-right: auto;
-}
 
 @media print {
+body{ /* Normal  */
+      font-size: 12px;
+  }
 body {-webkit-print-color-adjust: exact;}
 
   .item-box {
@@ -34,6 +33,7 @@ body {-webkit-print-color-adjust: exact;}
   }
 
 }
+
 
 
 ```
@@ -54,9 +54,9 @@ library(DT)
 library(webshot)
 options(scipen = 999)
 
-erisk_item <- read.csv("../data/RISKLIST_FULL.csv")
+erisk_item <- read.csv("../data/RISKLIST_FULL_0320245.csv")
 risk_item_db<-data.frame(erisk_item)
-erisk_project <- read_csv("../data/PROJECTLIST_FULL.csv")
+erisk_project <- read_csv("../data/PROJECTLIST_FULL_03226024.csv")
 risk_project_db<-data.frame(erisk_project)
 
 risk_item_db<-risk_item_db |>
@@ -65,6 +65,8 @@ risk_item_db<-risk_item_db |>
 
 RiskDeets <- risk_item_db |>
   select("PROJECT_ID","P2_NUMBER","RISK_IDENTIFIER", "PROJECT_NAME","RISK_NAME","RISKCATEGORY","RISK_STATEMENT" ,"LIFECYCLEPHASENAME","MILESTONE","LIKELIHOOD","DISCIPLINE", "PERFORMANCEIMPACT", "PERFORMANCE_RANK_DESC", "PERFORMANCEIMPACT_RISK_RANKING","COST_IMPACT_MOSTLIKELY", "COST_RANK_DESC","COST_RISK_RANKING", "SCHEDULE_IMPACT_MOSTLIKELY", "SCHEDULE_RANK_DESC", "SCHEDULE_RISK_RANKING", "PRIMARYMISSION", "USACE_ORGANIZATION")
+
+
 ```
 
 ```{r echo=FALSE, eval = params$projID != ""}
@@ -84,6 +86,17 @@ proj_risks<-filter(Risk_List_Proj, Risk_List_Proj$P2_NUMBER == params$p2ID)
 proj_risk_item<- slice_head(Risk_List_Proj)
 
 ```
+
+
+```{r echo=FALSE, eval = FALSE}
+risk_item<-filter(RiskImpactTable,
+                  RiskImpactTable$P2_SUB_IDENTIFIER.x == params$p2sub)
+risk_treatment<-filter(risk_treat,
+                       risk_treat$P2_SUB_IDENTIFIER.x == params$p2ID
+                       )
+
+```
+
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, include=FALSE}
 proj_risks <- proj_risks %>%
@@ -120,11 +133,23 @@ proj_risks <- proj_risks %>%
 
 ```
 
-## Project: `r proj_risk_item$PROJECT_NAME`
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE, eval=FALSE}
+
+header<-paste("Project:",risk_item$PROJECT_NAME.x," ",(risk_item$RISK_IDENTIFIER))
+header2<-if (params$p2sub != ""){
+  paste(params$p2sub)}
+
+cat("####",header, header2)
+```
+
+
+
+### Project: `r proj_risk_item$PROJECT_NAME`
 ##### `r proj_risk_item$PRIMARYMISSION` `r proj_risk_item$LIFECYCLEPHASENAME`
 ##### `r proj_risk_item$USACE_ORGANIZATION`
 
-### All Project Risk Impacts
+#### All Project Risk Impacts
 <center>
 ```{r proj risk pies, message=FALSE, warning=FALSE, echo=FALSE,fig.height=2, fig.width=7}
 #make pie plots 
@@ -136,7 +161,6 @@ proj_risks <- proj_risks %>%
   erarr::pie_plots(cost_pie,schedule_pie,perform_pie)
 ```
 </center>
-
 
 ``` {r proj risk log, echo = FALSE, warning=FALSE}
 
@@ -160,5 +184,6 @@ risk_log_tables|>
 
                                                     
 ```
+
 
 

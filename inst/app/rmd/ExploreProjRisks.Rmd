@@ -1,0 +1,143 @@
+---
+title: ""
+output: html_document
+runtime: shiny
+params:
+  riskID: ECV-2 Impacts due to Uncertain Bathymetric Data
+  projID: Lee County Conservation Board CAP Sec 204
+  p2ID: 	496169
+  p2sub: ""
+  catID:
+  disID:
+  phaseID:
+  mileID:
+---
+
+```{css, echo=FALSE}
+
+h2,h3,h5 {
+  text-align: center;
+}
+th {white-space: break-word}
+
+.main-container {
+    margin-left: 5%;
+    margin-right: auto;
+}
+
+@media print {
+body {-webkit-print-color-adjust: exact;}
+
+  .item-box {
+    page-break-inside: avoid;
+  }
+  .section-box {
+    page-break-inside: avoid;
+  }
+
+  .page-break {
+  page-break-after: always;
+  }
+
+}
+
+
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, include=FALSE}
+library(shiny)
+library(readr)
+library(dplyr)
+library(shinycssloaders)
+library(shinyjs)
+
+erisk_item <-
+  read_csv("./inst/app/data/RISKLIST_FULL_0320245.csv", show_col_types = FALSE, col_types=cols(P2_SUB_IDENTIFIER =  col_double()))
+risk_item_db <- data.frame(erisk_item)
+
+shiny::addResourcePath(prefix = "www", directoryPath = "./inst/app/www")
+
+RiskImpactTable <-risk_item_db|> dplyr::select("PROJECT_NAME",
+                                               "RISK_IDENTIFIER",
+                                               "RISK_NAME",
+                                               "USACE_ORGANIZATION",
+                                               "P2_NUMBER",
+                                               "LIFECYCLEPHASENAME",
+                                               "MILESTONE",
+                                               "RISKCATEGORY",
+                                               "DISCIPLINE",
+                                               "P2_SUB_IDENTIFIER")|>
+  mutate(P2_SUB_IDENTIFIER = ifelse(is.na(P2_SUB_IDENTIFIER), "", P2_SUB_IDENTIFIER))|>
+  mutate(RISK_NAME_ID = paste(RISK_IDENTIFIER,RISK_NAME))
+
+
+
+
+riskpies <- risk_item_db |>
+  dplyr::select(
+    "P2_NUMBER",
+    "RISK_NAME_ID",
+    "RISK_IDENTIFIER",
+    "PROJECT_NAME",
+    "RISK_NAME",
+    "RISKCATEGORY",
+    "DISCIPLINE",
+    "USACE_ORGANIZATION",
+    "COST_RANK_DESC",
+    "SCHEDULE_RANK_DESC",
+    "PERFORMANCE_RANK_DESC",
+    "LIFECYCLEPHASENAME",
+    "MILESTONE",
+    "P2_SUB_IDENTIFIER"
+  )|>
+  mutate_if(is.character, as.factor)|>
+  mutate(P2_SUB_IDENTIFIER = ifelse(is.na(P2_SUB_IDENTIFIER), "", P2_SUB_IDENTIFIER))
+```
+
+```{r}
+
+risk_filt<-riskpies|>
+filter(conditional(input$districtInput != "",riskpies$USACE_ORGANIZATION == input$districtInput),
+             conditional(input$projectInput != "", riskpies$PROJECT_NAME == input$projectInput),
+             conditional(input$SubIDInput != "", riskpies$P2_SUB_IDENTIFIER == input$SubIDInput),
+             conditional(input$P2Input != "", riskpies$P2_NUMBER == input$P2Input),
+             conditional(input$catInput !="", riskpies$RISKCATEGORY == input$catInput),
+             conditional(input$disInput !="", riskpies$DISCIPLINE == input$disInput),
+             conditional(input$phaseInput !="", riskpies$LIFECYCLEPHASENAME == input$phaseInput),
+             conditional(input$mileInput != "", riskpies$MILESTONE == input$mileInput))|>
+      select(
+        RISK_IDENTIFIER,
+        USACE_ORGANIZATION,
+        PROJECT_NAME,
+        RISK_NAME,
+        RISKCATEGORY,
+        DISCIPLINE,
+        COST_RANK_DESC,
+        SCHEDULE_RANK_DESC,
+        PERFORMANCE_RANK_DESC)
+
+
+DT::datatable(
+      filtered_frame(),
+      colnames = c(
+        "Risk Identifier",
+        "USACE Organization",
+        "Project Name",
+        "Risk Name ",
+        "Risk Category",
+        "Discipline",
+        "Cost Rank",
+        "Schedule Rank",
+        "Performance Rank"
+      ),
+      rownames = FALSE,
+      filter = "top"
+    )
+
+
+
+ pie_plots(cost_pie(), schedule_pie(), perform_pie())
+  
+
+```
+

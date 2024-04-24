@@ -38,25 +38,24 @@ pie_plots<- function(cost_pie,schedule_pie,perform_pie){
       data = cost_pie,
       values =  ~ .data$count,
       labels = ~ .data$COST_RANK_DESC,
-      sort = FALSE,
-      title=("Cost"),
+      title=list(text='<b> Cost <br> </b>', font = list(size = 15)),
       name= " ",
       textinfo='value',
+      sort=FALSE,
       textfont = list(color = '#FFFFFF', size=15),
       domain = list(row = 0, column = 0),
       marker = list(
         colors = ~ color,
         line = list(color = '#FFFFFF', width = 1.5)))|>
-
     plotly::add_pie(
       data = schedule_pie,
       values = ~ .data$count,
       labels = ~ .data$SCHEDULE_RANK_DESC,
-      textfont = list(color = '#FFFFFF'),
+      textfont = list(color = '#FFFFFF',size=15),
       sort = FALSE,
       name= " ",
       textinfo='value',
-      title = "Schedule",
+      title =list(text='<b> Schedule <br> </b>', font = list(size = 15)),
       domain = list(row = 0, column = 1),
       marker = list(
         colors = ~ color,
@@ -66,21 +65,21 @@ pie_plots<- function(cost_pie,schedule_pie,perform_pie){
       data = perform_pie,
       values = ~ .data$count,
       labels = ~ .data$PERFORMANCE_RANK_DESC,
-      title = "Performance",
+      title = list(text='<b> Performance <br> </b>', font = list(size = 15)),
       name= " ",
       textinfo='value',
-      textfont = list(color = '#FFFFFF'),
+      textfont = list(color = '#FFFFFF', size=15),
       sort = FALSE,
       domain = list(row = 0, column = 2),
       marker = list(
         colors = ~ color,
         line = list(color = '#FFFFFF', width = 1.5)))
-    
+
   
   pies<-fig |>
     plotly::layout(title = "", showlegend = T,
                    grid=list(rows=1, columns=3),legend= list(orientation = 'h',
-                  xanchor="center", x=.5))
+                  xanchor="center", x=.5, traceorder= "normal", font=list(size=15)))
 
   return(pies)
 }

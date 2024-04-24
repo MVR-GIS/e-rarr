@@ -9,27 +9,37 @@
 
 library(shinycssloaders)
 library(shinyjs)
-
+library(readr)
+library(dplyr)
+library(bslib)
 
 
 
 
 erisk_item <-
-  read_csv("./inst/app/data/RISKLIST_FULL.csv", show_col_types = FALSE)
+  read_csv("./inst/app/data/RISKLIST_FULL_0320245.csv", show_col_types = FALSE, col_types=cols(P2_SUB_IDENTIFIER = col_double()))
 risk_item_db <- data.frame(erisk_item)
 erisk_project <-
-  read_csv("./inst/app/data/PROJECTLIST_FULL.csv", show_col_types = FALSE)
+  read_csv("./inst/app/data/PROJECTLIST_FULL_03226024.csv", show_col_types=FALSE)
 risk_project_db <- data.frame(erisk_project)
 shiny::addResourcePath(prefix = "www", directoryPath = "./inst/app/www")
 
-RiskImpactTable <-
-  risk_item_db[, c("PROJECT_NAME",
-                   "RISK_NAME",
-                   "USACE_ORGANIZATION",
-                   "P2_NUMBER")]
-
-
-
+RiskImpactTable <- risk_item_db |>
+  dplyr::select(
+    "PROJECT_NAME",
+    "RISK_IDENTIFIER",
+    "RISK_NAME",
+    "USACE_ORGANIZATION",
+    "P2_NUMBER",
+    "LIFECYCLEPHASENAME",
+    "MILESTONE",
+    "RISKCATEGORY",
+    "DISCIPLINE",
+    "P2_SUB_IDENTIFIER"
+  ) |>
+  mutate(P2_SUB_IDENTIFIER = ifelse(is.na(P2_SUB_IDENTIFIER), "", P2_SUB_IDENTIFIER))|>
+  mutate(RISK_NAME_ID = paste(RISK_IDENTIFIER,RISK_NAME))
+ 
 app_ui <- function(request) {
   tagList(
     # Leave this function for adding external resources
@@ -43,7 +53,7 @@ app_ui <- function(request) {
                             "))),
     fluidPage(
       shinyjs::useShinyjs(),
-      theme = bslib::bs_theme(bootswatch = "cosmo"),
+      theme = bslib::bs_theme(bootswatch = "cosmo", version=5),
       navbarPage(
         title = div(
           img(
@@ -83,24 +93,57 @@ app_ui <- function(request) {
                        multiple = F,
                        options=list(placeholder = 'Enter P2 Number')
                      ),
-                     shinyjs::hidden(selectizeInput(
+                     hidden(
+                     selectizeInput(
                        "SubIDInput",
                        "Sub ID",
                        choices = NULL,
                        selected = NULL,
-                       multiple = TRUE,
+                       multiple = FALSE,
                        options =  list(placeholder = "Select SubID")
                      )),
-                     conditionalPanel(condition = "input.reporttabs == 'RiskItem'",
-                                      selectizeInput(
-                                        "riskInput",
-                                        "Risk",
-                                        choices = NULL ,
-                                        selected = NULL,
-                                        multiple = F,
-                                        options=list(placeholder = 'Select a Risk Item')
-                                        ,downloadButton("report", "Download report"))),
-                     downloadButton("report", "Download report"), width=2),
+                       conditionalPanel(condition = "input.reporttabs == 'Reports'",
+                         selectizeInput(
+                         "riskInput",
+                         "Risk",
+                         choices = NULL ,
+                         selected = NULL,
+                         multiple = F,
+                         options=list(placeholder = 'Select a Risk Item')
+                         )),
+                     conditionalPanel(condition = "input.reporttabs == 'Explore'",
+                     selectizeInput(
+                       "catInput",
+                       "Category",
+                       choices = NULL,
+                       selected = NULL,
+                       multiple = F,
+                       options = list(placeholder = 'Select a category')
+                     ),
+                     selectizeInput(
+                       "disInput",
+                       "Discipline",
+                       choices = NULL,
+                       selected = NULL,
+                       multiple = F,
+                       options=list(placeholder = 'Select a discipline')
+                     ),
+                     selectizeInput(
+                       "phaseInput",
+                       "Phase",
+                       choices = NULL,
+                       selected = NULL,
+                       multiple = F,
+                       options=list(placeholder = 'Enter Phase')),
+                     hidden(
+                     selectizeInput(
+                       "mileInput",
+                       "Milestone",
+                       choices = NULL,
+                       selected = NULL,
+                       multiple = F,
+                       options=list(placeholder = 'Enter Milestone')))
+                     ), width=2),
                     
                    
                    mainPanel(
@@ -110,23 +153,76 @@ app_ui <- function(request) {
                          plotly::plotlyOutput("pie"),
                          DT::DTOutput("overviewtab"), value= "Explore"
                        ),
-                       tabPanel("Project Report",
-                                shinycssloaders::withSpinner(
-                                htmlOutput("ProjRend"), type = 4), value =
-                                  "Project"),
-                       tabPanel("All Risk Items",shinycssloaders::withSpinner(
-                                htmlOutput("AllRiskRend"), type=4), value =
-                                  "AllRisk"),
-                       tabPanel("Top 4 Risks", shinycssloaders::withSpinner(
-                                htmlOutput("Top4s"), type=4), value =
-                                  "Top4"),
-                       tabPanel("Risk Item Report",shinycssloaders::withSpinner(
-                                htmlOutput("reportrend"),type=4), value =
-                                  "RiskItem"),
+                       tabPanel("Reports",
+                                layout_column_wrap(
+                                  width = 1/2,
+                                  height = 800,
+                                bslib::card(
+                                  height = 250,
+                                  full_screen = TRUE,
+                                  card_header("Project Risks",
+                                              shiny::downloadButton(
+                                                outputId="download_Proj",
+                                                label="Download",
+                                                style = "color: #3974db; 
+                                                background-color: transparent;
+                                                float:right;
+                                                border-color: transparent;"
+                                              )
+                                            ),
+                                  card_body(shinycssloaders::withSpinner(
+                                    htmlOutput("ProjRend"), type = 4))
+                                ),
+                                bslib::card(
+                                  height = 250,
+                                  full_screen = TRUE,
+                                  card_header("All Risk",
+                                              shiny::downloadButton(
+                                                outputId="download_AllRisk",
+                                                label="Download",
+                                                style = "color: #3974db; 
+                                                background-color: transparent;
+                                                float:right;
+                                                border-color: transparent;"
+                                              )),
+                                  card_body(shinycssloaders::withSpinner(
+                                    htmlOutput("AllRiskRend"), type = 4))
+                                ),
+                                bslib::card(
+                                  height = 250,
+                                  full_screen = TRUE,
+                                  card_header("Top 4s",
+                                              shiny::downloadButton(
+                                                outputId="download_Top4s",
+                                                label="Download",
+                                                style = "color: #3974db; 
+                                                background-color: transparent;
+                                                float:right;
+                                                border-color: transparent;"
+                                              )),
+                                  card_body(shinycssloaders::withSpinner(
+                                    htmlOutput("Top4s"), type = 4))
+                                ),
+                                bslib::card(
+                                  height = 250,
+                                  full_screen = TRUE,
+                                  card_header("Risk Item Report",
+                                              shiny::downloadButton(
+                                                outputId="download_RiskItem",
+                                                label="Download",
+                                                style = "color: #3974db; 
+                                                background-color: transparent;
+                                                float:right;
+                                                border-color: transparent;"
+                                              )),
+                                  card_body(shinycssloaders::withSpinner(
+                                    htmlOutput("riskitem"), type = 4))
+                                ))
+                       ),
                        id = "reporttabs" )
                    )
                    )
-                 ))
+                 ), selected = "Project")
     )
   )
 }

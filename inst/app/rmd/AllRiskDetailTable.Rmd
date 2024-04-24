@@ -5,21 +5,41 @@ params:
   projID: City of Boston Coastal Storm Risk
   p2ID: 479265
 
-classoption: landscape
 ---
 ```{css, echo=FALSE}
 h1, h2,h3,h4,h5 {
   text-align: center;
 }
 
-th {white-space: break-word}
+th {    vertical-align: top;    
+    padding: 5px;
+    
+}
+td {    vertical-align: top;
+  padding: 5px;
+}
 
-.main-container {
-    margin-left: 5%;
-    margin-right: auto;
+html {
+    display: table;
+    margin: 5px;
+}
+
+
+body{ /* Normal  */
+      font-size: 12px;
+  }
+
+
+
+.table > tbody {
+  padding: 1.5px;
 }
 
 @media print {
+body{ /* Normal  */
+      font-size: 14px;
+  }
+
 body {-webkit-print-color-adjust: exact;}
 
   .item-box {
@@ -44,9 +64,9 @@ library(kableExtra)
 library(tidyverse)
 library(formattable)
 options(scipen = 999)
-erisk_item <- read_csv("../data/RISKLIST_FULL.csv", show_col_types = FALSE)
+erisk_item <- read_csv("../data/RISKLIST_FULL_0320245.csv", show_col_types = FALSE)
 risk_item_db<-data.frame(erisk_item)
-erisk_project <- read_csv("../data/PROJECTLIST_FULL.csv", show_col_types = FALSE)
+erisk_project <- read_csv("../data/PROJECTLIST_FULL_03226024.csv", show_col_types = FALSE)
 risk_project_db<-data.frame(erisk_project)
 
 risk_item_db<-risk_item_db |>
@@ -92,22 +112,20 @@ RiskDeetsTable<-Risk_List_Proj |>
 
 
 
-# `r unique(Risk_List_Proj$PROJECT_NAME)`
+### `r unique(Risk_List_Proj$PROJECT_NAME)`
 
 #### `r unique(Risk_List_Proj$PRIMARYMISSION)`
 
 ##### `r unique(Risk_List_Proj$USACE_ORGANIZATION)`
 
-
-### ALL PROJECT RISK IMPACTS
-<left>
+#### All Project Risks
+<center>
 ```{r,  echo = FALSE, warning=FALSE, results='asis'}
-RiskDeetsTable |>
+RiskDeetsTable<-RiskDeetsTable |>
 kableExtra::kbl("html",align = 'ccclcccccc') |>
     kable_styling(bootstrap_options = c( "condensed"),
                   full_width = F)|>
    column_spec(4, width_min = '3in')
-
+kableExtra::landscape(RiskDeetsTable)
 ```
-</left>
-
+</center>

@@ -44,6 +44,8 @@ pieprep <- function(riskdf, rankcol) {
     group_by(!!colnameq) |>
     summarize(count = n()) |>
     filter(!!colnameq != "No Risk") |>
+    dplyr::arrange(factor(!!colnameq, levels = c('Opportunity', 'Low', 'Medium',
+                                                 'High')))|>
     mutate(
       'color' = case_when(
         !!colnameq == "Opportunity" ~ 'rgb(31,120,180)',
@@ -51,9 +53,7 @@ pieprep <- function(riskdf, rankcol) {
         !!colnameq == 'Medium' ~ 'rgb(255,127,0)',
         !!colnameq == 'High' ~ 'rgb(227,26,28)'
       )
-    ) |> 
-  plotly::arrange(factor(!!colnameq, levels = c('Opportunity', 'Low', 'Medium',
-                                                'High')))
+    )
   
   return(pie_prepped)
   
