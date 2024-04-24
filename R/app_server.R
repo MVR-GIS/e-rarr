@@ -292,29 +292,21 @@ in_react_frame<-reactiveVal(riskpies)
     pie_plots(cost_pie(), schedule_pie(), perform_pie())
   })
   
-  
-  
-  
-  
-
-  
-
-  
- reportname <- reactive({
-    if (input$reportInput == "All Risk") {
-      "ProjectAllRiskReport"
-    }
-    else if (input$reportInput == "All Risk Detail") {
-      "AllRiskDetailTable"
-    }
-    else if (input$reportInput == "Top 4s") {
-      "ProjectTop4s"
-    }
-    else if (input$reportInput == "Risk Item Report") {
-      "RiskItemReport"
-    }
-  })
-  
+ # reportname <- reactive({
+ #    if (input$reportInput == "All Risk") {
+ #      "ProjectAllRiskReport"
+ #    }
+ #    else if (input$reportInput == "All Risk Detail") {
+ #      "AllRiskDetailTable"
+ #    }
+ #    else if (input$reportInput == "Top 4s") {
+ #      "ProjectTop4s"
+ #    }
+ #    else if (input$reportInput == "Risk Item Report") {
+ #      "RiskItemReport"
+ #    }
+ #  })
+ #  
  
  paramsreport<-reactive({
    if (input$reportInput == "All Risk" | input$reportInput == "All Risk Detail" | 
@@ -384,23 +376,75 @@ in_react_frame<-reactiveVal(riskpies)
    tags$iframe(src="www/ProjectTop4s.html", width = '100%',  
                height = 1000,  style = "border:none;")
  })
- 
- 
-
-
-  output$report <- downloadHandler(
+  
+  
+  output$download_Proj <- downloadHandler(
     # For PDF output, change this to "report.pdf"
     filename = function() {
-      paste0(input$projectInput, " - ", reportname(), ".html")
+      paste0(input$projectInput, " - ", "Project Report", ".html")
     },
     content = function(file) {
       rmarkdown::render(
-        paste0("./inst/app/rmd/",reportname(), ".Rmd"),
+        paste0("./inst/app/rmd/ProjectAllRiskReport.Rmd"),
         output_file = file,
-        params = paramsreport(),
+        params = list(projID = input$projectInput, p2ID = input$P2Input),
         envir = new.env(),
         intermediates_dir = tempdir()
       )
     }
   )
+  
+  output$download_AllRisk <- downloadHandler(
+    # For PDF output, change this to "report.pdf"
+    filename = function() {
+      paste0(input$projectInput, " - ", "AllRiskDetailTable", ".html")
+    },
+    content = function(file) {
+      rmarkdown::render(
+        paste0("./inst/app/rmd/AllRiskDetailTable.Rmd"),
+        output_file = file,
+        params = list(projID = input$projectInput, p2ID = input$P2Input),
+        envir = new.env(),
+        intermediates_dir = tempdir()
+      )
+    }
+  )
+  
+  output$download_Top4s <- downloadHandler(
+    # For PDF output, change this to "report.pdf"
+    filename = function() {
+      paste0(input$projectInput, " - ", "ProjectTop4s", ".html")
+    },
+    content = function(file) {
+      rmarkdown::render(
+        paste0("./inst/app/rmd/ProjectTop4s.Rmd"),
+        output_file = file,
+        params = list(projID = input$projectInput, p2ID = input$P2Input),
+        envir = new.env(),
+        intermediates_dir = tempdir()
+      )
+    }
+  )
+  
+  output$download_RiskItem <- downloadHandler(
+    # For PDF output, change this to "report.pdf"
+    filename = function() {
+      paste0(input$projectInput,"-",input$riskInput, "-", "RiskItem", ".html")
+    },
+    content = function(file) {
+      rmarkdown::render(
+        paste0("./inst/app/rmd/RiskItemReport.Rmd"),
+        output_file = file,
+        params = list(projID = input$projectInput, p2ID = input$P2Input, 
+                      riskID = input$riskInput),
+        envir = new.env(),
+        intermediates_dir = tempdir()
+      )
+    }
+  )
+  
+  
+  
+  
+  
 }
