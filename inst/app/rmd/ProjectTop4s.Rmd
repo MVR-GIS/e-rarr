@@ -16,10 +16,6 @@ font-weight: 300;
 text-align: center;
 }
 
-.main-container {
-    margin-left: 5%;
-    margin-right: auto;
-}
 
 @media print {
 body {-webkit-print-color-adjust: exact;}

@@ -9,17 +9,16 @@ params:
 
 ```{css, echo=FALSE}
 
-h2,h3,h5 {
+h2,h3,h4,h5 {
   text-align: center;
 }
 th {white-space: break-word}
 
-.main-container {
-    margin-left: 5%;
-    margin-right: auto;
-}
 
 @media print {
+body{ /* Normal  */
+      font-size: 12px;
+  }
 body {-webkit-print-color-adjust: exact;}
 
   .item-box {
@@ -34,6 +33,7 @@ body {-webkit-print-color-adjust: exact;}
   }
 
 }
+
 
 
 ```
@@ -145,11 +145,11 @@ cat("####",header, header2)
 
 
 
-## Project: `r proj_risk_item$PROJECT_NAME`
+### Project: `r proj_risk_item$PROJECT_NAME`
 ##### `r proj_risk_item$PRIMARYMISSION` `r proj_risk_item$LIFECYCLEPHASENAME`
 ##### `r proj_risk_item$USACE_ORGANIZATION`
 
-### All Project Risk Impacts
+#### All Project Risk Impacts
 <center>
 ```{r proj risk pies, message=FALSE, warning=FALSE, echo=FALSE,fig.height=2, fig.width=7}
 #make pie plots 
@@ -161,7 +161,6 @@ cat("####",header, header2)
   erarr::pie_plots(cost_pie,schedule_pie,perform_pie)
 ```
 </center>
-
 
 ``` {r proj risk log, echo = FALSE, warning=FALSE}
 
@@ -185,5 +184,6 @@ risk_log_tables|>
 
                                                     
 ```
+
 
 

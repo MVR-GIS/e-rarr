@@ -27,10 +27,7 @@ td {    vertical-align: top;
 }
 
 
-.main-container {
-    margin-left: 5%;
-    margin-right: auto;
-}
+
 
 @media print {
 body {-webkit-print-color-adjust: exact;}
