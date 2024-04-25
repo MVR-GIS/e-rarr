@@ -9,7 +9,7 @@ params:
 ---
 
 ```{css, echo=FALSE}
-h2 {
+h2, h3,h4 {
   text-align: center;
 }
 
@@ -133,7 +133,6 @@ risk_treatment<-filter(risk_treat, risk_treat$PROJECT_NAME == params$projID,
 ```
 
 
-
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
 risk_treat_table<-risk_treatment |>
   select(RISK_TREATMENT_ID,PROPOSED_RISK_TREATMENT,COST_IMPACT_RISK_TREATMENT,
@@ -156,7 +155,9 @@ treat_condit <- ifelse(nrow(risk_treat_table)>0,TRUE,FALSE)
 ```
 
 
-```{r, echo=FALSE, warning=FALSE, message=FALSE, results='asis'}
+
+
+```{r echo=FALSE, warning=FALSE, message=FALSE, results='asis'}
 
 header<-paste("Project:",risk_item$PROJECT_NAME.x," ",(risk_item$RISK_IDENTIFIER))
 

@@ -4,7 +4,8 @@ output: html_document
 runtime: shiny
 params:
   projID: St. Augustine Back Bay CSRM
-  p2ID: 479265
+  p2ID: 	505374
+  p2sub: ""
 ---
 
 ```{css, echo=FALSE}
@@ -64,7 +65,7 @@ risk_item_db<-risk_item_db |>
               select(PROJECT_ID, PRIMARYMISSION))
 
 RiskDeets <- risk_item_db |>
-  select("PROJECT_ID","P2_NUMBER","RISK_IDENTIFIER", "PROJECT_NAME","RISK_NAME","RISKCATEGORY","RISK_STATEMENT" ,"LIFECYCLEPHASENAME","MILESTONE","LIKELIHOOD","DISCIPLINE", "PERFORMANCEIMPACT", "PERFORMANCE_RANK_DESC", "PERFORMANCEIMPACT_RISK_RANKING","COST_IMPACT_MOSTLIKELY", "COST_RANK_DESC","COST_RISK_RANKING", "SCHEDULE_IMPACT_MOSTLIKELY", "SCHEDULE_RANK_DESC", "SCHEDULE_RISK_RANKING", "PRIMARYMISSION", "USACE_ORGANIZATION")
+  select("PROJECT_ID","P2_NUMBER","RISK_IDENTIFIER","P2_SUB_IDENTIFIER", "PROJECT_NAME","RISK_NAME","RISKCATEGORY","RISK_STATEMENT" ,"LIFECYCLEPHASENAME","MILESTONE","LIKELIHOOD","DISCIPLINE", "PERFORMANCEIMPACT", "PERFORMANCE_RANK_DESC", "PERFORMANCEIMPACT_RISK_RANKING","COST_IMPACT_MOSTLIKELY", "COST_RANK_DESC","COST_RISK_RANKING", "SCHEDULE_IMPACT_MOSTLIKELY", "SCHEDULE_RANK_DESC", "SCHEDULE_RISK_RANKING", "PRIMARYMISSION", "USACE_ORGANIZATION")
 
 
 ```
@@ -88,11 +89,11 @@ proj_risk_item<- slice_head(Risk_List_Proj)
 ```
 
 
-```{r echo=FALSE, eval = FALSE}
-risk_item<-filter(RiskImpactTable,
-                  RiskImpactTable$P2_SUB_IDENTIFIER.x == params$p2sub)
-risk_treatment<-filter(risk_treat,
-                       risk_treat$P2_SUB_IDENTIFIER.x == params$p2ID
+```{r echo=FALSE,  eval = params$p2sub != ""}
+Risk_List_Proj<-filter(Risk_List_Proj,
+                  Risk_List_Proj$P2_SUB_IDENTIFIER == params$p2sub)
+proj_risks<-filter(proj_risks,
+                       proj_risks$P2_SUB_IDENTIFIER == params$p2sub
                        )
 
 ```
@@ -134,18 +135,16 @@ proj_risks <- proj_risks %>%
 ```
 
 
-```{r, echo=FALSE, warning=FALSE, message=FALSE, eval=FALSE}
+```{r, echo=FALSE, warning=FALSE, message=FALSE,results='asis'}
 
-header<-paste("Project:",risk_item$PROJECT_NAME.x," ",(risk_item$RISK_IDENTIFIER))
+header<-paste("Project:",proj_risk_item$PROJECT_NAME)
 header2<-if (params$p2sub != ""){
-  paste(params$p2sub)}
+  paste("SubID:",params$p2sub)}
 
-cat("####",header, header2)
+cat("###",header,header2)
+
 ```
 
-
-
-### Project: `r proj_risk_item$PROJECT_NAME`
 ##### `r proj_risk_item$PRIMARYMISSION` `r proj_risk_item$LIFECYCLEPHASENAME`
 ##### `r proj_risk_item$USACE_ORGANIZATION`
 
