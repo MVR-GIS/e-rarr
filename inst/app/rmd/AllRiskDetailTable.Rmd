@@ -2,8 +2,9 @@
 title: ''
 output: html_document 
 params:
-  projID: City of Boston Coastal Storm Risk
-  p2ID: 479265
+  projID: LaGrange New 1200-Foot Lock
+  p2ID: 505374
+  p2sub: ""
 
 ---
 ```{css, echo=FALSE}
@@ -64,7 +65,7 @@ library(kableExtra)
 library(tidyverse)
 library(formattable)
 options(scipen = 999)
-erisk_item <- read_csv("../data/RISKLIST_FULL_0320245.csv", show_col_types = FALSE)
+erisk_item <- read.csv("../data/RISKLIST_FULL_0320245.csv")
 risk_item_db<-data.frame(erisk_item)
 erisk_project <- read_csv("../data/PROJECTLIST_FULL_03226024.csv", show_col_types = FALSE)
 risk_project_db<-data.frame(erisk_project)
@@ -74,7 +75,7 @@ risk_item_db<-risk_item_db |>
               select(PROJECT_ID, PRIMARYMISSION))
 
 RiskDeets <- risk_item_db |>
-  select("PROJECT_ID","RISK_IDENTIFIER", "PROJECT_NAME","P2_NUMBER","RISK_NAME",
+  select("PROJECT_ID","RISK_IDENTIFIER","P2_SUB_IDENTIFIER", "PROJECT_NAME","P2_NUMBER","RISK_NAME",
          "RISKCATEGORY","RISK_STATEMENT" ,"LIFECYCLEPHASENAME","MILESTONE",
          "LIKELIHOOD","DISCIPLINE", "PERFORMANCEIMPACT", "PERFORMANCE_RANK_DESC",
          "COST_IMPACT_MOSTLIKELY", "COST_RANK_DESC", "SCHEDULE_IMPACT_MOSTLIKELY",
@@ -93,6 +94,13 @@ Risk_List_Proj$COST_IMPACT_MOSTLIKELY <- as.character(
   formattable::currency(Risk_List_Proj$COST_IMPACT_MOSTLIKELY))
 ```
 
+```{r echo=FALSE, eval = params$p2sub != ""}
+Risk_List_Proj <-filter(Risk_List_Proj, Risk_List_Proj$P2_SUB_IDENTIFIER == params$p2sub)
+Risk_List_Proj$COST_IMPACT_MOSTLIKELY <- as.character(
+  formattable::currency(Risk_List_Proj$COST_IMPACT_MOSTLIKELY))
+```
+
+
 ```{r echo=FALSE, message=FALSE, warning=FALSE, include=FALSE}
 RiskDeetsTable<-Risk_List_Proj |>
   select("RISK_IDENTIFIER","RISK_NAME","RISKCATEGORY","RISK_STATEMENT" ,"LIFECYCLEPHASENAME","MILESTONE","LIKELIHOOD","DISCIPLINE", "PERFORMANCEIMPACT",
@@ -105,14 +113,19 @@ RiskDeetsTable<-Risk_List_Proj |>
          "PERFORMANCE IMPACT TYPE" = PERFORMANCEIMPACT,
          "COST IMPACT" = COST_IMPACT_MOSTLIKELY,
          "SCHEDULE IMPACT (DAYS)" = SCHEDULE_IMPACT_MOSTLIKELY)
-  
-
 
 ```
 
+```{r, echo=FALSE, warning=FALSE, message=FALSE,results='asis'}
 
+header<-paste("Project:",params$projID)
+header2<-if (params$p2sub != ""){
+  paste("SubID:", params$p2sub)}
 
-### `r unique(Risk_List_Proj$PROJECT_NAME)`
+cat("###",header,header2)
+
+```
+
 
 #### `r unique(Risk_List_Proj$PRIMARYMISSION)`
 
@@ -126,6 +139,7 @@ kableExtra::kbl("html",align = 'ccclcccccc') |>
     kable_styling(bootstrap_options = c( "condensed"),
                   full_width = F)|>
    column_spec(4, width_min = '3in')
-kableExtra::landscape(RiskDeetsTable)
+RiskDeetsTable<-kableExtra::landscape(RiskDeetsTable)
+RiskDeetsTable
 ```
 </center>
