@@ -308,17 +308,17 @@ in_react_frame<-reactiveVal(riskpies)
  #  })
  #  
  
- paramsreport<-reactive({
-   if (input$reportInput == "All Risk" | input$reportInput == "All Risk Detail" | 
-       input$reportInput == "Top 4s"){
-     list(projID = input$projectInput, p2ID = input$P2Input,p2sub= input$SubIDInput)
-   } else if (input$reportInput == "Risk Item Report"){
-     list(projID = input$projectInput, p2ID = input$P2Input, 
-          riskID = input$riskInput)
-   }
- })
-  
- 
+ # paramsreport<-reactive({
+ #   if (input$reportInput == "All Risk" | input$reportInput == "All Risk Detail" | 
+ #       input$reportInput == "Top 4s"){
+ #     list(projID = input$projectInput, p2ID = input$P2Input,p2sub= input$SubIDInput)
+ #   } else if (input$reportInput == "Risk Item Report"){
+ #     list(projID = input$projectInput, p2ID = input$P2Input, 
+ #          riskID = input$riskInput)
+ #   }
+ # })
+ #  
+ # 
  output$riskitem <- renderUI({
    req(
      isTruthy(input$riskInput),
@@ -358,7 +358,8 @@ in_react_frame<-reactiveVal(riskpies)
      "./inst/app/rmd/AllRiskDetailTable.Rmd",
      params = list(
        projID = input$projectInput,
-       p2ID = input$P2Input
+       p2ID = input$P2Input,
+       p2sub= input$SubIDInput
      ), output_dir ="./inst/app/www"
    )
    tags$iframe(src="www/AllRiskDetailTable.html", width = '100%',  
@@ -371,7 +372,8 @@ in_react_frame<-reactiveVal(riskpies)
      "./inst/app/rmd/ProjectTop4s.Rmd",
      params = list(
        projID = input$projectInput,
-       p2ID = input$P2Input
+       p2ID = input$P2Input,
+       p2sub= input$SubIDInput
      ), output_dir ="./inst/app/www"
    )
    tags$iframe(src="www/ProjectTop4s.html", width = '100%',  
@@ -406,7 +408,7 @@ in_react_frame<-reactiveVal(riskpies)
         paste0("./inst/app/rmd/AllRiskDetailTable.Rmd"),
         output_file = file,
         params = list(projID = input$projectInput, p2ID = input$P2Input,
-                      ),
+                      p2sub= input$SubIDInput),
         envir = new.env(),
         intermediates_dir = tempdir()
       )
@@ -422,7 +424,8 @@ in_react_frame<-reactiveVal(riskpies)
       rmarkdown::render(
         paste0("./inst/app/rmd/ProjectTop4s.Rmd"),
         output_file = file,
-        params = list(projID = input$projectInput, p2ID = input$P2Input),
+        params = list(projID = input$projectInput, p2ID = input$P2Input,
+                      p2sub= input$SubIDInput),
         envir = new.env(),
         intermediates_dir = tempdir()
       )
