@@ -311,9 +311,9 @@ in_react_frame<-reactiveVal(riskpies)
  paramsreport<-reactive({
    if (input$reportInput == "All Risk" | input$reportInput == "All Risk Detail" | 
        input$reportInput == "Top 4s"){
-     list(projID = input$projectInput, p2ID = input$P2Input)
+     list(projID = input$projectInput, p2ID = input$P2Input,p2sub= input$SubIDInput)
    } else if (input$reportInput == "Risk Item Report"){
-     list(projID = input$projectInput, p2ID = input$P2Input,
+     list(projID = input$projectInput, p2ID = input$P2Input, 
           riskID = input$riskInput)
    }
  })
@@ -344,7 +344,8 @@ in_react_frame<-reactiveVal(riskpies)
      "./inst/app/rmd/ProjectAllRiskReport.Rmd",
      params = list(
        projID = input$projectInput,
-       p2ID = input$P2Input
+       p2ID = input$P2Input,
+       p2sub = input$SubIDInput
      ),output_dir ="./inst/app/www"
    )
    tags$iframe(src="www/ProjectAllRiskReport.html", width = '100%',  
@@ -387,7 +388,8 @@ in_react_frame<-reactiveVal(riskpies)
       rmarkdown::render(
         paste0("./inst/app/rmd/ProjectAllRiskReport.Rmd"),
         output_file = file,
-        params = list(projID = input$projectInput, p2ID = input$P2Input),
+        params = list(projID = input$projectInput, p2ID = input$P2Input,
+                      p2sub= input$SubIDInput),
         envir = new.env(),
         intermediates_dir = tempdir()
       )
@@ -403,7 +405,8 @@ in_react_frame<-reactiveVal(riskpies)
       rmarkdown::render(
         paste0("./inst/app/rmd/AllRiskDetailTable.Rmd"),
         output_file = file,
-        params = list(projID = input$projectInput, p2ID = input$P2Input),
+        params = list(projID = input$projectInput, p2ID = input$P2Input,
+                      ),
         envir = new.env(),
         intermediates_dir = tempdir()
       )
@@ -435,7 +438,7 @@ in_react_frame<-reactiveVal(riskpies)
       rmarkdown::render(
         paste0("./inst/app/rmd/RiskItemReport.Rmd"),
         output_file = file,
-        params = list(projID = input$projectInput, p2ID = input$P2Input, 
+        params = list(projID = input$projectInput, p2ID = input$P2Input,
                       riskID = input$riskInput),
         envir = new.env(),
         intermediates_dir = tempdir()
