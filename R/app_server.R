@@ -336,8 +336,8 @@ in_react_frame<-reactiveVal(riskpies)
        p2sub= input$SubIDInput
      ), output_dir ="./inst/app/www"
    )
-   tags$iframe(src="www/AllRiskDetailTable.html", width = 900,  
-               height = 1000,  style = "border:none;")
+   tags$iframe(src="www/AllRiskDetailTable.html", width = 1200,  
+               height = 900,  style = "border:none;")
  })
  
  output$Top4s <- renderUI({
@@ -350,7 +350,7 @@ in_react_frame<-reactiveVal(riskpies)
        p2sub= input$SubIDInput
      ), output_dir ="./inst/app/www"
    )
-   tags$iframe(src="www/ProjectTop4s.html", width = 100%,  
+   tags$iframe(src="www/ProjectTop4s.html", width = 1000,  
                height = 1000,  style = "border:none;") 
  })
   
