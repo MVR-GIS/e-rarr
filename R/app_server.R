@@ -292,33 +292,7 @@ in_react_frame<-reactiveVal(riskpies)
     pie_plots(cost_pie(), schedule_pie(), perform_pie())
   })
   
- # reportname <- reactive({
- #    if (input$reportInput == "All Risk") {
- #      "ProjectAllRiskReport"
- #    }
- #    else if (input$reportInput == "All Risk Detail") {
- #      "AllRiskDetailTable"
- #    }
- #    else if (input$reportInput == "Top 4s") {
- #      "ProjectTop4s"
- #    }
- #    else if (input$reportInput == "Risk Item Report") {
- #      "RiskItemReport"
- #    }
- #  })
- #  
- 
- # paramsreport<-reactive({
- #   if (input$reportInput == "All Risk" | input$reportInput == "All Risk Detail" | 
- #       input$reportInput == "Top 4s"){
- #     list(projID = input$projectInput, p2ID = input$P2Input,p2sub= input$SubIDInput)
- #   } else if (input$reportInput == "Risk Item Report"){
- #     list(projID = input$projectInput, p2ID = input$P2Input, 
- #          riskID = input$riskInput)
- #   }
- # })
- #  
- # 
+
  output$riskitem <- renderUI({
    req(
      isTruthy(input$riskInput),
@@ -332,7 +306,7 @@ in_react_frame<-reactiveVal(riskpies)
        p2ID = input$P2Input
      ),output_dir ="./inst/app/www"
    )
-   tags$iframe(src="www/RiskItemReport.html", width = '100%',  
+   tags$iframe(src="www/RiskItemReport.html", width = 900,  
                height = 1000,  style = "border:none;")
  })
  
@@ -348,7 +322,7 @@ in_react_frame<-reactiveVal(riskpies)
        p2sub = input$SubIDInput
      ),output_dir ="./inst/app/www"
    )
-   tags$iframe(src="www/ProjectAllRiskReport.html", width = '100%',  
+   tags$iframe(src="www/ProjectAllRiskReport.html", width = 900,  
                height = 1000,  style = "border:none;")
  }) 
  
@@ -362,7 +336,7 @@ in_react_frame<-reactiveVal(riskpies)
        p2sub= input$SubIDInput
      ), output_dir ="./inst/app/www"
    )
-   tags$iframe(src="www/AllRiskDetailTable.html", width = '100%',  
+   tags$iframe(src="www/AllRiskDetailTable.html", width = 900,  
                height = 1000,  style = "border:none;")
  })
  
@@ -376,8 +350,8 @@ in_react_frame<-reactiveVal(riskpies)
        p2sub= input$SubIDInput
      ), output_dir ="./inst/app/www"
    )
-   tags$iframe(src="www/ProjectTop4s.html", width = '100%',  
-               height = 1000,  style = "border:none;")
+   tags$iframe(src="www/ProjectTop4s.html", width = 100%,  
+               height = 1000,  style = "border:none;") 
  })
   
   
