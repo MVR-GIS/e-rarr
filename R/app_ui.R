@@ -53,7 +53,9 @@ app_ui <- function(request) {
                           margin-bottom:0 !important;}
                           body > div.container-fluid{
                           padding:0;}
-                           .popover {--bs-popover-max-width: 100%;}"))),
+                          .popover {--bs-popover-max-width: 100%;
+                          data-bs-animation: FALSE;}
+                          "))),
     fluidPage(
       shinyjs::useShinyjs(),
       theme = bslib::bs_theme(bootswatch = "cosmo", version=5),
@@ -193,7 +195,7 @@ app_ui <- function(request) {
                                   card_body(popover(
                                     bsicons::bs_icon("file-bar-graph",size='7em'),
                                     shinycssloaders::withSpinner(htmlOutput("AllRiskRend"), type=4),
-                                    title=c("All Risk Report"),options=list(animation=FALSE))
+                                    title=c("All Risk Report"), class = "d-flex align-items-center gap-1")
                                   )
                                   ),
                                 bslib::card(
@@ -211,8 +213,7 @@ app_ui <- function(request) {
                                   card_body(popover(
                                     bsicons::bs_icon("file-bar-graph",size='7em'),
                                     shinycssloaders::withSpinner(htmlOutput("Top4s"), type=4),
-                                    title=c("Top4s Report"),  class = "d-flex align-items-center gap-1",
-                                    show=TRUE)
+                                    title=c("Top4s Report"), class = "d-flex align-items-center gap-1")
                                   )
                                 ),
                                 bslib::card(
