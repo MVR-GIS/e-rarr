@@ -170,14 +170,12 @@ cat("###",header)
 ### Risk Summary: `r risk_item$RISK_NAME`
 
 <center>
-
-```{r milestoneplot, fig.height=2, fig.width=9, echo=FALSE, message=FALSE}
+```{r milestoneplot, fig.height=2, fig.width=8, echo=FALSE, message=FALSE}
 mileplot<-erarr::milestoneplot(riskitem=risk_item, milestonedf = milestone_df)
 
 knitr::include_graphics("mileplot.png")
 
 ```
-
 </center>
 
 ##### **Lead Discipline:** `r risk_item$DISCIPLINE`
