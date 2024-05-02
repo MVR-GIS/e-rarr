@@ -177,8 +177,7 @@ app_ui <- function(request) {
                                   card_body(popover(
                                     bsicons::bs_icon("file-bar-graph",size='7em'),
                                     shinycssloaders::withSpinner(htmlOutput("ProjRend"), type=4),
-                                    title=c("Project Risks"),  class = "d-flex align-items-center gap-1")
-                                )
+                                    title=c("Project Report"), class = "d-flex align-items-center gap-1"))
                                 ),
                                 bslib::card(
                                   height = 200,
@@ -242,8 +241,7 @@ app_ui <- function(request) {
                    )
                  ), selected = "Project")
     )
-  )
-}
+  )}
 
 #' Add external Resources to the Application
 #'
