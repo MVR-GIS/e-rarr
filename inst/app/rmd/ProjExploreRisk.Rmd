@@ -96,7 +96,7 @@ proj_risks <- proj_risks %>%
          
 
 ```
-
+###### Report Created On: `r format(Sys.time(), '%d %B, %Y')`
 ## Project: `r proj_risk_item$PROJECT_NAME`
 ##### `r proj_risk_item$PRIMARYMISSION` `r proj_risk_item$LIFECYCLEPHASENAME`
 ##### `r proj_risk_item$USACE_ORGANIZATION`

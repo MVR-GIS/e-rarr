@@ -154,9 +154,7 @@ treat_condit <- ifelse(nrow(risk_treat_table)>0,TRUE,FALSE)
 
 ```
 
-
-
-
+###### Report Created On: `r format(Sys.time(), '%d %B, %Y')`
 ```{r echo=FALSE, warning=FALSE, message=FALSE, results='asis'}
 
 header<-paste("Project:",risk_item$PROJECT_NAME.x," ",(risk_item$RISK_IDENTIFIER))
@@ -416,3 +414,4 @@ add_header_above(c(
 ```
 
 ##### Risk Manager: `r risk_item$RISK_MANAGER`
+
