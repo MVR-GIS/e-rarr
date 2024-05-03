@@ -13,7 +13,7 @@ library(readr)
 library(dplyr)
 library(bslib)
 library(bsicons)
-
+library(shinyalert)
 
 
 
@@ -55,6 +55,7 @@ app_ui <- function(request) {
                           padding:0;}
                           .popover {--bs-popover-max-width: 100%;
                           data-bs-animation: FALSE;}
+                          .action-button {border-radius: 12px;}
                           "))),
     fluidPage(
       shinyjs::useShinyjs(),
@@ -160,9 +161,9 @@ app_ui <- function(request) {
                        tabPanel("Reports",
                                 layout_column_wrap(
                                   width = 1/4,
-                                  height = 400,
+                                  height = 275,
                                 bslib::card(
-                                  height = 200,
+                                  height = 165,
                                   full_screen = FALSE,
                                   card_header("Project Risks",
                                               shiny::downloadButton(
@@ -174,13 +175,12 @@ app_ui <- function(request) {
                                                 border-color: transparent;"
                                               )
                                             ),
-                                  card_body(popover(
-                                    bsicons::bs_icon("file-bar-graph",size='7em'),
-                                    shinycssloaders::withSpinner(htmlOutput("ProjRend"), type=4),
-                                    title=c("Project Report"), class = "d-flex align-items-center gap-1"))
-                                ),
+                                  card_body(
+                                    tags$button(id ="Proj", class="action-button",tags$img(src="www/ProjAllRisk.png", height='165px', max_width='100%')
+                                    )
+                                )),
                                 bslib::card(
-                                  height = 200,
+                                  height = 100,
                                   full_screen = FALSE,
                                   card_header("All Risk",
                                               shiny::downloadButton(
@@ -191,14 +191,12 @@ app_ui <- function(request) {
                                                 float:right;
                                                 border-color: transparent;"
                                               )),
-                                  card_body(popover(
-                                    bsicons::bs_icon("file-bar-graph",size='7em'),
-                                    shinycssloaders::withSpinner(htmlOutput("AllRiskRend"), type=4),
-                                    title=c("All Risk Report"), class = "d-flex align-items-center gap-1")
-                                  )
+                                  card_body(
+                                    tags$button(id = "AllRisk", class="action-button",tags$img(src="www/AllRiskDetail.png", height='165px', max_width='100%')))
+                                  
                                   ),
                                 bslib::card(
-                                  height = 200,
+                                  height = 165,
                                   full_screen = FALSE,
                                   card_header("Top 4s",
                                               shiny::downloadButton(
@@ -209,14 +207,16 @@ app_ui <- function(request) {
                                                 float:right;
                                                 border-color: transparent;"
                                               )),
-                                  card_body(popover(
-                                    bsicons::bs_icon("file-bar-graph",size='7em'),
-                                    shinycssloaders::withSpinner(htmlOutput("Top4s"), type=4),
-                                    title=c("Top4s Report"), class = "d-flex align-items-center gap-1")
+                                  card_body(
+                                    tags$button(id = "Proj4s", class="action-button",tags$img(src="www/ProjectTop4.png",height = '165px',max_width = '100%',
+                                                                                        ),
+                                                ),
+                             
                                   )
+                                  #d-flex align-items-center gap-1
                                 ),
                                 bslib::card(
-                                  height = 200,
+                                  height = 165,
                                   full_screen = FALSE,
                                   card_header("Risk Item Report",
                                               shiny::downloadButton(
@@ -227,10 +227,9 @@ app_ui <- function(request) {
                                                 float:right;
                                                 border-color: transparent;"
                                               )),
-                                  card_body(popover(
-                                    bsicons::bs_icon("file-bar-graph",size='7em'),
-                                    shinycssloaders::withSpinner(htmlOutput("riskitem"), type=4),
-                                    title=c("Risk Item Report"),  class = "d-flex align-items-center gap-1")
+                                  card_body(
+                                    tags$button(id = "RiskItem", class="action-button",tags$img(src="www/RiskItem.png", height='165px', max_width = '100%')),
+                        
                                   )
                                 ),
                                 
