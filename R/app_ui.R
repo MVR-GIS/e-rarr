@@ -12,7 +12,8 @@ library(shinyjs)
 library(readr)
 library(dplyr)
 library(bslib)
-
+library(bsicons)
+library(shinyalert)
 
 
 
@@ -40,6 +41,8 @@ RiskImpactTable <- risk_item_db |>
   mutate(P2_SUB_IDENTIFIER = ifelse(is.na(P2_SUB_IDENTIFIER), "", P2_SUB_IDENTIFIER))|>
   mutate(RISK_NAME_ID = paste(RISK_IDENTIFIER,RISK_NAME))
  
+
+
 app_ui <- function(request) {
   tagList(
     # Leave this function for adding external resources
@@ -50,7 +53,10 @@ app_ui <- function(request) {
                           margin-bottom:0 !important;}
                           body > div.container-fluid{
                           padding:0;}
-                            "))),
+                          .popover {--bs-popover-max-width: 100%;
+                          data-bs-animation: FALSE;}
+                          .action-button {border-radius: 12px;}
+                          "))),
     fluidPage(
       shinyjs::useShinyjs(),
       theme = bslib::bs_theme(bootswatch = "cosmo", version=5),
@@ -144,8 +150,7 @@ app_ui <- function(request) {
                        multiple = F,
                        options=list(placeholder = 'Enter Milestone')))
                      ), width=2),
-                    
-                   
+                  
                    mainPanel(
                      tabsetPanel(
                        tabPanel(
@@ -155,11 +160,11 @@ app_ui <- function(request) {
                        ),
                        tabPanel("Reports",
                                 layout_column_wrap(
-                                  width = 1/2,
-                                  height = 800,
+                                  width = 1/4,
+                                  height = 275,
                                 bslib::card(
-                                  height = 250,
-                                  full_screen = TRUE,
+                                  height = 165,
+                                  full_screen = FALSE,
                                   card_header("Project Risks",
                                               shiny::downloadButton(
                                                 outputId="download_Proj",
@@ -170,12 +175,13 @@ app_ui <- function(request) {
                                                 border-color: transparent;"
                                               )
                                             ),
-                                  card_body(shinycssloaders::withSpinner(
-                                    htmlOutput("ProjRend"), type = 4))
-                                ),
+                                  card_body(
+                                    tags$button(id ="Proj", class="action-button",tags$img(src="www/ProjAllRisk.png", height='165px', max_width='100%')
+                                    )
+                                )),
                                 bslib::card(
-                                  height = 250,
-                                  full_screen = TRUE,
+                                  height = 100,
+                                  full_screen = FALSE,
                                   card_header("All Risk",
                                               shiny::downloadButton(
                                                 outputId="download_AllRisk",
@@ -185,12 +191,13 @@ app_ui <- function(request) {
                                                 float:right;
                                                 border-color: transparent;"
                                               )),
-                                  card_body(shinycssloaders::withSpinner(
-                                    htmlOutput("AllRiskRend"), type = 4))
-                                ),
+                                  card_body(
+                                    tags$button(id = "AllRisk", class="action-button",tags$img(src="www/AllRiskDetail.png", height='165px', max_width='100%')))
+                                  
+                                  ),
                                 bslib::card(
-                                  height = 250,
-                                  full_screen = TRUE,
+                                  height = 165,
+                                  full_screen = FALSE,
                                   card_header("Top 4s",
                                               shiny::downloadButton(
                                                 outputId="download_Top4s",
@@ -200,12 +207,17 @@ app_ui <- function(request) {
                                                 float:right;
                                                 border-color: transparent;"
                                               )),
-                                  card_body(shinycssloaders::withSpinner(
-                                    htmlOutput("Top4s"), type = 4))
+                                  card_body(
+                                    tags$button(id = "Proj4s", class="action-button",tags$img(src="www/ProjectTop4.png",height = '165px',max_width = '100%',
+                                                                                        ),
+                                                ),
+                             
+                                  )
+                                  #d-flex align-items-center gap-1
                                 ),
                                 bslib::card(
-                                  height = 250,
-                                  full_screen = TRUE,
+                                  height = 165,
+                                  full_screen = FALSE,
                                   card_header("Risk Item Report",
                                               shiny::downloadButton(
                                                 outputId="download_RiskItem",
@@ -215,17 +227,20 @@ app_ui <- function(request) {
                                                 float:right;
                                                 border-color: transparent;"
                                               )),
-                                  card_body(shinycssloaders::withSpinner(
-                                    htmlOutput("riskitem"), type = 4))
-                                ))
+                                  card_body(
+                                    tags$button(id = "RiskItem", class="action-button",tags$img(src="www/RiskItem.png", height='165px', max_width = '100%')),
+                        
+                                  )
+                                ),
+                                
+                      )
                        ),
                        id = "reporttabs" )
                    )
                    )
                  ), selected = "Project")
     )
-  )
-}
+  )}
 
 #' Add external Resources to the Application
 #'

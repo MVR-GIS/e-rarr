@@ -46,6 +46,7 @@ library(erarr)
 options(scipen = 999)
 
 
+
 erisk_item <- utils::read.csv("../data/RISKLIST_FULL_0320245.csv")
 risk_item_db<-data.frame(erisk_item)
 erisk_project <- utils::read.csv("../data/PROJECTLIST_FULL_03226024.csv")
@@ -78,6 +79,7 @@ Risk_List_Proj <-dplyr::filter(RiskDeets, RiskDeets$P2_NUMBER == params$p2ID)
 proj_risks<-dplyr::filter(Risk_List_Proj, Risk_List_Proj$P2_NUMBER == params$p2ID)
 proj_risk_item<- dplyr::slice_head(Risk_List_Proj)
 ```
+
 ```{r echo=FALSE, eval = params$p2sub != ""}
 Risk_List_Proj <-dplyr::filter(Risk_List_Proj, Risk_List_Proj$P2_SUB_IDENTIFIER == params$p2sub)
 
@@ -86,7 +88,7 @@ proj_risks<-dplyr::filter(Risk_List_Proj, Risk_List_Proj$P2_SUB_IDENTIFIER == pa
 proj_risk_item<- dplyr::slice_head(Risk_List_Proj)
 ```
 
-
+###### Report Created On: `r format(Sys.time(), '%d %B, %Y')`
 ```{r, echo=FALSE, warning=FALSE, message=FALSE,results='asis'}
 
 header<-paste("Project:",proj_risk_item$PROJECT_NAME)
@@ -99,10 +101,9 @@ cat("###",header,header2)
 
 ##### `r proj_risk_item$PRIMARYMISSION` (Current Phase:`r proj_risk_item$LIFECYCLEPHASENAME`)
 ##### `r proj_risk_item$USACE_ORGANIZATION`
-
 ### Project Risk Summary 
 <center>
-```{r proj risk pies, message=FALSE, warning=FALSE, echo=FALSE, fig.align='center',fig.height=2, fig.width=7}
+```{r proj risk pies, message=FALSE, warning=FALSE, echo=FALSE,fig.height=2, fig.width=7}
 #make pie plots 
   cost_pie<- erarr::pieprep(proj_risks, "COST_RANK_DESC")
   schedule_pie<-erarr::pieprep(proj_risks, "SCHEDULE_RANK_DESC")
@@ -110,9 +111,8 @@ cat("###",header,header2)
 
   erarr::pie_plots(cost_pie,schedule_pie,perform_pie)
 
+
 ```
-
-
 </center>
 #### Top 4 Cost Impacts (All Phases)
 ``` {r cost risk log, echo = FALSE, warning=FALSE}

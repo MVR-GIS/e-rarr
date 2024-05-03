@@ -8,9 +8,7 @@ params:
 
 ---
 ```{css, echo=FALSE}
-h1, h2,h3,h4,h5 {
-  text-align: center;
-}
+
 
 th {    vertical-align: top;    
     padding: 5px;
@@ -33,7 +31,7 @@ body{ /* Normal  */
 
 
 .table > tbody {
-  padding: 1.5px;
+  padding: 1px;
 }
 
 @media print {
@@ -84,20 +82,19 @@ RiskDeets <- risk_item_db |>
 
 ```{r echo=FALSE, eval = params$projID != ""}
 Risk_List_Proj <-filter(RiskDeets, RiskDeets$PROJECT_NAME == params$projID)
-Risk_List_Proj$COST_IMPACT_MOSTLIKELY <- as.character(
-  formattable::currency(Risk_List_Proj$COST_IMPACT_MOSTLIKELY))
+Risk_List_Proj$COST_IMPACT_MOSTLIKELY <- 
+currency(Risk_List_Proj$COST_IMPACT_MOSTLIKELY, format = "d")
 ```
 
 ```{r echo=FALSE, eval = params$p2ID != ""}
 Risk_List_Proj <-filter(RiskDeets, RiskDeets$P2_NUMBER == params$p2ID)
-Risk_List_Proj$COST_IMPACT_MOSTLIKELY <- as.character(
-  formattable::currency(Risk_List_Proj$COST_IMPACT_MOSTLIKELY))
+Risk_List_Proj$COST_IMPACT_MOSTLIKELY <-
+  currency(Risk_List_Proj$COST_IMPACT_MOSTLIKELY,format = "d")
 ```
 
 ```{r echo=FALSE, eval = params$p2sub != ""}
 Risk_List_Proj <-filter(Risk_List_Proj, Risk_List_Proj$P2_SUB_IDENTIFIER == params$p2sub)
-Risk_List_Proj$COST_IMPACT_MOSTLIKELY <- as.character(
-  formattable::currency(Risk_List_Proj$COST_IMPACT_MOSTLIKELY))
+Risk_List_Proj$COST_IMPACT_MOSTLIKELY <- currency(Risk_List_Proj$COST_IMPACT_MOSTLIKELY,format = "d")
 ```
 
 
@@ -115,7 +112,7 @@ RiskDeetsTable<-Risk_List_Proj |>
          "SCHEDULE IMPACT (DAYS)" = SCHEDULE_IMPACT_MOSTLIKELY)
 
 ```
-
+###### Report Created On: `r format(Sys.time(), '%d %B, %Y')`
 ```{r, echo=FALSE, warning=FALSE, message=FALSE,results='asis'}
 
 header<-paste("Project:",params$projID)
@@ -125,11 +122,9 @@ header2<-if (params$p2sub != ""){
 cat("###",header,header2)
 
 ```
-
-
 #### `r unique(Risk_List_Proj$PRIMARYMISSION)`
-
 ##### `r unique(Risk_List_Proj$USACE_ORGANIZATION)`
+
 
 #### All Project Risks
 <center>
@@ -138,8 +133,10 @@ RiskDeetsTable<-RiskDeetsTable |>
 kableExtra::kbl("html",align = 'ccclcccccc') |>
     kable_styling(bootstrap_options = c( "condensed"),
                   full_width = F)|>
-   column_spec(4, width_min = '3in')
+   column_spec(4, width_min = '3in')|>
+  column_spec(1, width_min='.75in')
 RiskDeetsTable<-kableExtra::landscape(RiskDeetsTable)
 RiskDeetsTable
 ```
 </center>
+

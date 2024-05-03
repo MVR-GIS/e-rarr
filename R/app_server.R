@@ -12,6 +12,7 @@ library(readr)
 library(dplyr)
 library(shinycssloaders)
 library(shinyjs)
+library(shinyalert)
 
 erisk_item <-
   read_csv("./inst/app/data/RISKLIST_FULL_0320245.csv", show_col_types = FALSE, col_types=cols(P2_SUB_IDENTIFIER =  col_double()))
@@ -292,34 +293,8 @@ in_react_frame<-reactiveVal(riskpies)
     pie_plots(cost_pie(), schedule_pie(), perform_pie())
   })
   
- # reportname <- reactive({
- #    if (input$reportInput == "All Risk") {
- #      "ProjectAllRiskReport"
- #    }
- #    else if (input$reportInput == "All Risk Detail") {
- #      "AllRiskDetailTable"
- #    }
- #    else if (input$reportInput == "Top 4s") {
- #      "ProjectTop4s"
- #    }
- #    else if (input$reportInput == "Risk Item Report") {
- #      "RiskItemReport"
- #    }
- #  })
- #  
- 
- # paramsreport<-reactive({
- #   if (input$reportInput == "All Risk" | input$reportInput == "All Risk Detail" | 
- #       input$reportInput == "Top 4s"){
- #     list(projID = input$projectInput, p2ID = input$P2Input,p2sub= input$SubIDInput)
- #   } else if (input$reportInput == "Risk Item Report"){
- #     list(projID = input$projectInput, p2ID = input$P2Input, 
- #          riskID = input$riskInput)
- #   }
- # })
- #  
- # 
- output$riskitem <- renderUI({
+
+observeEvent(input$RiskItem, {
    req(
      isTruthy(input$riskInput),
      isTruthy(input$projectInput) || isTruthy(input$P2Input)
@@ -332,27 +307,36 @@ in_react_frame<-reactiveVal(riskpies)
        p2ID = input$P2Input
      ),output_dir ="./inst/app/www"
    )
-   tags$iframe(src="www/RiskItemReport.html", width = '100%',  
-               height = 1000,  style = "border:none;")
+   
+   
+   shinyalert::shinyalert(html = TRUE, 
+                          text = tagList(tags$iframe(
+                            src="www/RiskItemReport.html", width = 900,  
+               height = 1000,  style = "border:none;")),size = "l",
+               confirmButtonText = "Close Report",
+               closeOnClickOutside = TRUE)
  })
  
  
 
- output$ProjRend <- renderUI({
-   req(isTruthy(input$projectInput) || isTruthy(input$P2Input))
-   rmarkdown::render(
-     "./inst/app/rmd/ProjectAllRiskReport.Rmd",
-     params = list(
-       projID = input$projectInput,
-       p2ID = input$P2Input,
-       p2sub = input$SubIDInput
-     ),output_dir ="./inst/app/www"
-   )
-   tags$iframe(src="www/ProjectAllRiskReport.html", width = '100%',  
-               height = 1000,  style = "border:none;")
- }) 
- 
- output$AllRiskRend <- renderUI({
+observeEvent(input$Proj, {
+  req(isTruthy(input$projectInput) || isTruthy(input$P2Input))
+  rmarkdown::render(
+    "./inst/app/rmd/ProjectAllRiskReport.Rmd",
+    params = list(
+      projID = input$projectInput,
+      p2ID = input$P2Input,
+      p2sub = input$SubIDInput
+    ),output_dir ="./inst/app/www"
+  )
+ shinyalert::shinyalert(html = TRUE, text = tagList(tags$iframe(
+   src="www/ProjectAllRiskReport.html", width = 900, height = 1000,  
+   style = "border:none;")),
+                        size = "l",confirmButtonText = "Close Report",
+                        closeOnClickOutside = TRUE)
+   })
+
+ observeEvent(input$AllRisk, {
    req(isTruthy(input$projectInput) || isTruthy(input$P2Input))
    rmarkdown::render(
      "./inst/app/rmd/AllRiskDetailTable.Rmd",
@@ -362,11 +346,13 @@ in_react_frame<-reactiveVal(riskpies)
        p2sub= input$SubIDInput
      ), output_dir ="./inst/app/www"
    )
-   tags$iframe(src="www/AllRiskDetailTable.html", width = '100%',  
-               height = 1000,  style = "border:none;")
+   showModal(modalDialog(title="Risk Report",
+                         tags$iframe(src="www/AllRiskDetailTable.html", width = 1200,  
+                                     height = 900,  style = "border:none:"), easyClose=TRUE,
+                         size = "xl"))
  })
  
- output$Top4s <- renderUI({
+observeEvent(input$Proj4s, {
    req(isTruthy(input$projectInput) || isTruthy(input$P2Input))
    rmarkdown::render(
      "./inst/app/rmd/ProjectTop4s.Rmd",
@@ -376,8 +362,11 @@ in_react_frame<-reactiveVal(riskpies)
        p2sub= input$SubIDInput
      ), output_dir ="./inst/app/www"
    )
-   tags$iframe(src="www/ProjectTop4s.html", width = '100%',  
-               height = 1000,  style = "border:none;")
+   shinyalert::shinyalert(html = TRUE, text = tagList(tags$iframe(
+     src="www/ProjectTop4s.html", width = 1000, height = 900,  
+     style = "border:none;")),
+     size = "l",confirmButtonText = "Close Report",
+     closeOnClickOutside = TRUE)
  })
   
   

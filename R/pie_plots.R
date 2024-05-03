@@ -77,7 +77,7 @@ pie_plots<- function(cost_pie,schedule_pie,perform_pie){
 
   
   pies<-fig |>
-    plotly::layout(title = "", showlegend = T,
+    plotly::layout(title = "", showlegend = T,margin=list(l=20,r=20,b=20, t=20, pad=0),
                    grid=list(rows=1, columns=3),legend= list(orientation = 'h',
                   xanchor="center", x=.5, traceorder= "normal", font=list(size=15)))
 
