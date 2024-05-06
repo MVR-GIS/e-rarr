@@ -13,6 +13,7 @@ library(dplyr)
 library(shinycssloaders)
 library(shinyjs)
 library(shinyalert)
+library(bslib)
 
 erisk_item <-
   read_csv("./inst/app/data/RISKLIST_FULL_0320245.csv", show_col_types = FALSE, col_types=cols(P2_SUB_IDENTIFIER =  col_double()))
@@ -288,10 +289,18 @@ in_react_frame<-reactiveVal(riskpies)
     )
   })
   
-  
   output$pie = plotly::renderPlotly({
     pie_plots(cost_pie(), schedule_pie(), perform_pie())
   })
+  
+  observeEvent(input$riskInput,{
+    if (input$riskInput ==""){
+      disable("RiskItemCard")
+    } else{
+      enable("RiskItemCard")
+    }
+  })
+    
   
 
 observeEvent(input$RiskItem, {
@@ -346,10 +355,15 @@ observeEvent(input$Proj, {
        p2sub= input$SubIDInput
      ), output_dir ="./inst/app/www"
    )
-   showModal(modalDialog(title="Risk Report",
-                         tags$iframe(src="www/AllRiskDetailTable.html", width = 1200,  
-                                     height = 900,  style = "border:none:"), easyClose=TRUE,
-                         size = "xl"))
+   shinyalert::shinyalert(html = TRUE, text = tagList(tags$iframe(
+     src="www/AllRiskDetailTable.html", width = 1200, height = 1000,  
+     style = "border:none;")),
+     size = "l",confirmButtonText = "Close Report",
+     closeOnClickOutside = TRUE)
+   # showModal(modalDialog(title="Risk Report",
+   #                       tags$iframe(src="www/AllRiskDetailTable.html", width = 1200,  
+   #                                   height = 1000,  style = "border:none:"), easyClose=TRUE,
+   #                       size = "xl"))
  })
  
 observeEvent(input$Proj4s, {
