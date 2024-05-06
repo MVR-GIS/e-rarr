@@ -9,7 +9,7 @@ params:
 ---
 
 ```{css, echo=FALSE}
-h2, h3,h4 {
+h2, h3 {
   text-align: center;
 }
 
@@ -165,7 +165,7 @@ cat("###",header)
 
 #### Risk Phase:`r risk_item$LIFECYCLEPHASENAME`, Category:`r risk_item$RISKCATEGORY`
 
-### Risk Summary: `r risk_item$RISK_NAME`
+#### Risk Summary: `r risk_item$RISK_NAME`
 
 <center>
 ```{r milestoneplot, fig.height=2, fig.width=8, echo=FALSE, message=FALSE}
@@ -236,7 +236,6 @@ plot_ly() |>
 </center>
 
 #### **Event Likelihood:** `r risk_item$LIKELIHOOD_DISC`
-
 #### `r risk_item$PROB_OCCURRENCE_EVIDENCE`
 
 ```{r echo=FALSE, results='asis'}
