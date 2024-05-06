@@ -217,7 +217,7 @@ app_ui <- function(request) {
                                 ),
                                 bslib::card(
                                   height = 165,
-                                  full_screen = FALSE,
+                                  full_screen = FALSE,id="RiskItemCard",
                                   card_header("Risk Item Report",
                                               shiny::downloadButton(
                                                 outputId="download_RiskItem",
@@ -228,10 +228,10 @@ app_ui <- function(request) {
                                                 border-color: transparent;"
                                               )),
                                   card_body(
-                                    tags$button(id = "RiskItem", class="action-button",tags$img(src="www/RiskItem.png", height='165px', max_width = '100%')),
-                        
-                                  )
-                                ),
+                                    tooltip(trigger = tags$button(id = "RiskItem", class="action-button",tags$img(src="www/RiskItem.png", height='165px', max_width = '100%')),
+                                            "Select a risk item", id="tooltip"
+                                  )))
+                                ,
                                 
                       )
                        ),
