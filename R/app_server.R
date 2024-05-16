@@ -78,7 +78,8 @@ app_server <- function(input, output, session) {
   
   projects <- reactive({
     RiskImpactTable |>
-      filter(RiskImpactTable$USACE_ORGANIZATION == input$districtInput)
+      filter(RiskImpactTable$USACE_ORGANIZATION == input$districtInput,
+    conditional(input$P2Input != "" ,RiskImpactTable$P2_NUMBER == input$P2Input))
   })
   
   
@@ -95,8 +96,8 @@ app_server <- function(input, output, session) {
   P2s <- reactive({
     RiskImpactTable |>
       filter(
-        RiskImpactTable$USACE_ORGANIZATION == input$districtInput |
-          RiskImpactTable$PROJECT_NAME == input$projectInput
+        RiskImpactTable$USACE_ORGANIZATION == input$districtInput,
+        conditional(input$projectInput != "", RiskImpactTable$PROJECT_NAME == input$projectInput)
       )
   })
   
@@ -107,7 +108,7 @@ app_server <- function(input, output, session) {
     updateSelectizeInput(
       inputId = "P2Input",
       choices = c("", P2s),
-      selected = P2s
+      selected = input$P2Input
     )
   })
   
@@ -164,51 +165,75 @@ app_server <- function(input, output, session) {
   })
   
   
-  
-  
 
-  observeEvent(risks(), {
-    cats <-sort(unique(risks()$RISKCATEGORY))
-    discs <-sort(unique(risks()$DISCIPLINE))
-    phases <-sort(unique(risks()$LIFECYCLEPHASENAME))
-    updateSelectInput(
-      inputId = "catInput",
-      choices = c("", cats),
-      selected = ""
-    )
+  
+  disciplines<- reactive({
+    RiskImpactTable |>
+      filter(
+        RiskImpactTable$P2_NUMBER == input$P2Input |
+          RiskImpactTable$PROJECT_NAME == input$projectInput,
+        conditional(input$SubIDInput != "", RiskImpactTable$P2_SUB_IDENTIFIER == input$SubIDInput),
+        conditional(input$catInput !="", RiskImpactTable$RISKCATEGORY == input$catInput),
+        conditional(input$phaseInput !="", RiskImpactTable$LIFECYCLEPHASENAME == input$phaseInput)
+      )
+  })
+  
+  
+  observeEvent(disciplines(), {
+    discs <- sort(unique(disciplines()$DISCIPLINE))
     updateSelectInput(
       inputId = "disInput",
       choices = c("", discs),
       selected = ""
     )
+  })
+  
+  
+  
+  
+  
+  categories<- reactive({
+    RiskImpactTable |>
+      filter(
+        RiskImpactTable$P2_NUMBER == input$P2Input |
+          RiskImpactTable$PROJECT_NAME == input$projectInput,
+        conditional(input$SubIDInput != "", RiskImpactTable$P2_SUB_IDENTIFIER == input$SubIDInput),
+        conditional(input$disInput !="", RiskImpactTable$DISCIPLINE == input$disInput),
+        conditional(input$phaseInput !="", RiskImpactTable$LIFECYCLEPHASENAME == input$phaseInput)
+      )
+  })
+  
+  
+  observeEvent(categories(), {
+    cats <- sort(unique(categories()$RISKCATEGORY))
+    updateSelectInput(
+    inputId = "catInput",
+    choices = c("", cats),
+    selected = ""
+    )
+  })
+  
+  
+  phases<- reactive({
+    RiskImpactTable |>
+      filter(
+        RiskImpactTable$P2_NUMBER == input$P2Input |
+          RiskImpactTable$PROJECT_NAME == input$projectInput,
+        conditional(input$SubIDInput != "", RiskImpactTable$P2_SUB_IDENTIFIER == input$SubIDInput),
+        conditional(input$disInput !="", RiskImpactTable$DISCIPLINE == input$disInput),
+        conditional(input$catInput !="", RiskImpactTable$RISKCATEGORY == input$catInput),
+      )
+  })
+  
+  
+  observeEvent(phases(), {
+    phases <-sort(unique(phases()$LIFECYCLEPHASENAME))
     updateSelectInput(
       inputId = "phaseInput",
       choices = c("", phases),
       selected = ""
     )
   })
-  
-  observeEvent(risks(), {
-    cats <-sort(unique(risks()$RISKCATEGORY))
-    discs <-sort(unique(risks()$DISCIPLINE))
-    phases <-sort(unique(risks()$LIFECYCLEPHASENAME))
-    updateSelectInput(
-      inputId = "catInput",
-      choices = c("", cats),
-      selected = ""
-    )
-    updateSelectInput(
-      inputId = "disInput",
-      choices = c("", discs),
-      selected = ""
-    )
-    updateSelectInput(
-      inputId = "phaseInput",
-      choices = c("", phases),
-      selected = ""
-    )
-  })
-  
   
   
 
