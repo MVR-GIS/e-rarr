@@ -107,7 +107,7 @@ app_server <- function(input, output, session) {
     updateSelectizeInput(
       inputId = "P2Input",
       choices = c("", P2s),
-      selected = ""
+      selected = P2s
     )
   })
   
@@ -187,6 +187,29 @@ app_server <- function(input, output, session) {
       selected = ""
     )
   })
+  
+  observeEvent(risks(), {
+    cats <-sort(unique(risks()$RISKCATEGORY))
+    discs <-sort(unique(risks()$DISCIPLINE))
+    phases <-sort(unique(risks()$LIFECYCLEPHASENAME))
+    updateSelectInput(
+      inputId = "catInput",
+      choices = c("", cats),
+      selected = ""
+    )
+    updateSelectInput(
+      inputId = "disInput",
+      choices = c("", discs),
+      selected = ""
+    )
+    updateSelectInput(
+      inputId = "phaseInput",
+      choices = c("", phases),
+      selected = ""
+    )
+  })
+  
+  
   
 
   milestones <- reactive({
