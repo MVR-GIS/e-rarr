@@ -3,9 +3,9 @@ title: ""
 runtime: shiny
 output: html_document
 params:
-  riskID: ECV-1 Flooding of Construction Site
-  projID: LaGrange New 1200-Foot Lock
-  p2ID: 	505374
+  riskID: PRM-1 Sponsor's Inability to Execute PPA due to funding
+  projID: Lee County Conservation Board CAP Sec 204
+  p2ID: 	""
 ---
 
 ```{css, echo=FALSE}
@@ -65,21 +65,22 @@ library(english)
 library(DT)
 library(webshot)
 library(erarr)
+library(usethis)
 options(scipen = 999)
-erisk_item <- readr::read_csv("../data/RISKLIST_FULL_0320245.csv")
+erisk_item<-erarr::erisk_item
 risk_item_db<-data.frame(erisk_item)
-erisk_project <- readr::read_csv("../data/PROJECTLIST_FULL_03226024.csv")
+erisk_project <- erarr::erisk_project
 risk_project_db<-data.frame(erisk_project)
-risk_treat <- readr::read_csv("../data/RISKTREATMENTLIST_FULL_032024.csv",
-                              col_names = TRUE)
+risk_transact <- erarr::risk_transact
+risk_transact <- data.frame(risk_transact)
+milestonedf<- erarr::milestonedf
+milestone_df<-data.frame(erarr::milestonedf)
 checkimagepath<-"../www/check.png"
-milestonedf<-read.csv("../data/PHASEMILESTONE.csv")
-milestone_df<-data.frame(milestonedf)
 headers<-c("Cost Impact", "Schedule Impact","Performance Impact")
 
-risk_transact <- read_csv("../data/RISKTRANSACTIONLIST_FULL.csv")
 
-erisk_ItemProj<-left_join(risk_item_db, risk_project_db, by =c("PROJECT_ID")) 
+
+erisk_ItemProj<-left_join(risk_item_db, risk_project_db, by =c("PROJECT_ID"), relationship = "many-to-many") 
 
 erisk_ItemProj<-erisk_ItemProj |>
   mutate(RISK_NAME_ID = paste(RISK_IDENTIFIER,RISK_NAME))                 
@@ -108,9 +109,9 @@ RiskImpactTable<-erisk_ItemProj |>
 
 risk_transact<-left_join(risk_transact, risk_item_filt, by=c("PROJECT_ID", 
                                                              "RISK_ID",
-                                                             "PROJECT_NAME"))     
+                                                             "PROJECT_NAME"), relationship = "many-to-many")     
 risk_treat<-left_join(risk_treat, risk_item_filt, by=c("PROJECT_ID", "RISK_ID",
-                                                       "PROJECT_NAME"))
+                                                       "PROJECT_NAME"), relationship = "many-to-many")
 
 
 
