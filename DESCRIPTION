@@ -3,7 +3,10 @@ Title: A package to support the Enterprise Risk Analysis Reporting
     Application
 Version: 0.0.0.9000
 Authors@R: 
-    person("Barrie", "Chileen Martinez", , "barrie.chileen@gmail.com", role = c("cre", "aut"))
+    person("Barrie", "Chileen Martinez",
+           email = "barrie.chileen@gmail.com",
+           role = c("aut","cre"),
+           comment = c(ORCID = "0000-0002-6960-8167"))
 Description: PKG_DESC.
 License: MIT + file LICENSE
 URL: https://github.com/MVR-GIS/erarr

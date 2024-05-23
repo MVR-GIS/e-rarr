@@ -67,7 +67,7 @@ library(webshot)
 library(erarr)
 library(usethis)
 options(scipen = 999)
-erisk_item<-erarr::erisk_item
+erisk_item<- erarr::erisk_item
 risk_item_db<-data.frame(erisk_item)
 erisk_project <- erarr::erisk_project
 risk_project_db<-data.frame(erisk_project)
