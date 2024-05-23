@@ -50,7 +50,7 @@ con_roracle <- ROracle::dbConnect(drv,
 erisk_project            <- ROracle::dbReadTable(con_roracle, 
                                              "ERR_PROJECTLIST_FULL")
 milestonedf      <- ROracle::dbReadTable(con_roracle, 
-                                             "ERR_PROJECTPHASES")
+                                             "ERR_PHASEMILESTONE")
 erisk_item            <- ROracle::dbReadTable(con_roracle, 
                                              "ERR_RISKLIST_FULL")
 risk_transact          <- ROracle::dbReadTable(con_roracle, 

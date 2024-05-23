@@ -1,5 +1,9 @@
-## code to prepare `Data_Update` dataset goes here
 
+library(stringr)
+library(readr)
+library(DBI)
+library(ROracle)
+library(keyring)
 
 # Use the `keyring` package to save the database username and password in the 
 # system credential store
@@ -28,7 +32,7 @@ con_roracle <- ROracle::dbConnect(drv,
 erisk_project            <- ROracle::dbReadTable(con_roracle, 
                                                  "ERR_PROJECTLIST_FULL")
 milestonedf      <- ROracle::dbReadTable(con_roracle, 
-                                         "ERR_PROJECTPHASES")
+                                         "ERR_LIFECYCLE_PHASES")
 erisk_item            <- ROracle::dbReadTable(con_roracle, 
                                               "ERR_RISKLIST_FULL")
 risk_transact          <- ROracle::dbReadTable(con_roracle, 
@@ -40,7 +44,6 @@ erisk_orgs      <- ROracle::dbReadTable(con_roracle,
 
 # Disconnect from the database
 ROracle::dbDisconnect(con_roracle)
-
 
 usethis::use_data(erisk_project,
                   milestonedf,
