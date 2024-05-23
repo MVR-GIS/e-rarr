@@ -26,21 +26,21 @@ district_ui<- function(id){
 #'
 #' @noRd 
 #' 
-district_server <- function(id, org){
-  moduleServer(id, function(input, output, session){
-    num <- reactive({
-      data = org
-      return(data) 
-    }) 
-    observe({
-      updateSelectizeInput(session,inputID='districtInput',
-                           choices =c("", sort(unique(num()))), 
-                           options=list(maxOptions = 40
-                                        ,server = TRUE,placeholder = 'Select a District' ))
-    })
-  })
-}
-    
+# district_server <- function(id, org){
+#   moduleServer(id, function(input, output, session){
+#     num <- reactive({
+#       data = org
+#       return(data) 
+#     }) 
+#     observe({
+#       updateSelectizeInput(session,inputID='districtInput',
+#                            choices =c("", sort(unique(num()))), 
+#                            options=list(maxOptions = 40
+#                                         ,server = TRUE,placeholder = 'Select a District' ))
+#     })
+#   })
+# }
+#     
 
 
 
