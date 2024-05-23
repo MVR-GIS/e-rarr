@@ -63,9 +63,9 @@ library(kableExtra)
 library(tidyverse)
 library(formattable)
 options(scipen = 999)
-erisk_item2 <- read.csv("../data/RISKLIST_FULL_0320245.csv")
+erisk_item <- erarr::erisk_item
 risk_item_db<-data.frame(erisk_item)
-erisk_project2 <- read_csv("../data/PROJECTLIST_FULL_03226024.csv", show_col_types = FALSE)
+erisk_project <- erarr::erisk_project
 risk_project_db<-data.frame(erisk_project)
 
 risk_item_db<-risk_item_db |>
