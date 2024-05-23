@@ -47,9 +47,9 @@ options(scipen = 999)
 
 
 
-erisk_item <- utils::read.csv("../data/RISKLIST_FULL_0320245.csv")
-risk_item_db<-data.frame(erisk_item)
-erisk_project <- utils::read.csv("../data/PROJECTLIST_FULL_03226024.csv")
+
+risk_item_db<-erarr::erisk_item
+erisk_project <- erarr::erisk_project
 risk_project_db<-data.frame(erisk_project)
 
 risk_item_db<-risk_item_db |>
