@@ -14,7 +14,7 @@ h2, h3 {
 }
 
 body{ /* Normal  */
-      font-size: 16px;
+      font-size: 14px;
   }
 
 th {    vertical-align: top;    
@@ -27,11 +27,9 @@ td {    vertical-align: top;
 }
 
 
-
-
 @media print {
 body {-webkit-print-color-adjust: exact;}
-  .font-size{ 10pt;
+  .font-size{ 8pt;
   }
   .item-box {
     page-break-inside: avoid;
@@ -164,9 +162,9 @@ header<-paste("Project:",risk_item$PROJECT_NAME.x," ",(risk_item$RISK_IDENTIFIER
 cat("###",header)
 ```
 
-#### Risk Phase:`r risk_item$LIFECYCLEPHASENAME`, Category:`r risk_item$RISKCATEGORY`
+##### Risk Phase:`r risk_item$LIFECYCLEPHASENAME`, Category:`r risk_item$RISKCATEGORY`
 
-#### Risk Summary: `r risk_item$RISK_NAME`
+##### Risk Summary: `r risk_item$RISK_NAME`
 
 <center>
 ```{r milestoneplot, fig.height=2, fig.width=8, echo=FALSE, message=FALSE}
@@ -179,11 +177,10 @@ knitr::include_graphics("mileplot.png")
 
 ##### **Lead Discipline:** `r risk_item$DISCIPLINE`
 
-##### `r risk_item$RISK_STATEMENT`
+`r risk_item$RISK_STATEMENT` 
 
 <center>
-
-```{r echo=F, out.width="75%", fig.height=2}
+```{r echo=F, fig.width=7, fig.height=2}
 monteframe <- data.frame(Opportunity = c(100), Low = c(100))
 plot_ly() |>
   add_pie(
@@ -227,17 +224,15 @@ plot_ly() |>
                "Mean: 0 Days"),
       xref = "paper",
       yref = "paper",
-      showarrow = F
+      showarrow = F,
+      margin=list(l=20,r=20,b=20,t=20, pad=0)
     )
   )
-
-
 ```
-
 </center>
 
-#### **Event Likelihood:** `r risk_item$LIKELIHOOD_DISC`
-#### `r risk_item$PROB_OCCURRENCE_EVIDENCE`
+###### **Event Likelihood:** `r risk_item$LIKELIHOOD_DESC`
+`r risk_item$PROB_OCCURRENCE_EVIDENCE`
 
 ```{r echo=FALSE, results='asis'}
 risk_item_table <- risk_item |>
@@ -388,7 +383,7 @@ kable(disttable,format = "html", escape=FALSE, col.names=c("Cost Impact",
 
 ```
 
-#### Risk Treatments:
+##### Risk Treatments:
 
 `r if(!treat_condit){"Risk treatments have not been completed for this risk item"}`
 
