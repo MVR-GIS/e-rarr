@@ -43,7 +43,7 @@ mileplot <- ggplot(projphases, aes(x=factor(MILESTONE), level=ORDERBY, y= yval))
   aes(x = fct_inorder(MILESTONE))+
   theme(line = element_blank(),
         title = element_blank(),
-        text = element_text(size = 10),
+        text = element_text(size = 5),
         axis.text.x = element_blank(),
         axis.text.y = element_blank(),
         axis.ticks.length = unit(0, "pt"),
