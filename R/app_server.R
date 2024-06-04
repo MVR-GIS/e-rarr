@@ -15,9 +15,11 @@ library(shinyjs)
 library(shinyalert)
 library(bslib)
 
-erisk_item <-erarr::erisk_item
-#  read_csv("./inst/app/data/RISKLIST_FULL_0320245.csv", show_col_types = FALSE, col_types=cols(P2_SUB_IDENTIFIER =  col_double()))
+erisk_item <-read_csv("./inst/app/data/RISKLIST_FULL_0320245.csv", show_col_types = FALSE, col_types=cols(P2_SUB_IDENTIFIER =  col_double()))
 risk_item_db <- data.frame(erisk_item)
+
+
+
 
 shiny::addResourcePath(prefix = "www", directoryPath = "./inst/app/www")
 
@@ -149,7 +151,8 @@ app_server <- function(input, output, session) {
     RiskImpactTable |>
       filter(
         RiskImpactTable$P2_NUMBER == input$P2Input |
-          RiskImpactTable$PROJECT_NAME == input$projectInput
+        RiskImpactTable$PROJECT_NAME == input$projectInput |
+        RiskImpactTable$P2_SUB_IDENTIFIER == input$SubIDInput
       )
   })
   
@@ -195,18 +198,18 @@ app_server <- function(input, output, session) {
   
   
 
-  # 
-  # disciplines<- reactive({
-  #   RiskImpactTable |>
-  #     filter(
-  #       RiskImpactTable$P2_NUMBER == input$P2Input |
-  #         RiskImpactTable$PROJECT_NAME == input$projectInput,
-  #       conditional(input$SubIDInput != "", RiskImpactTable$P2_SUB_IDENTIFIER == input$SubIDInput),
-  #       conditional(input$catInput !="", RiskImpactTable$RISKCATEGORY == input$catInput),
-  #       conditional(input$phaseInput !="", RiskImpactTable$LIFECYCLEPHASENAME == input$phaseInput)
-  #     )
-  # })
-  
+
+  disciplines<- reactive({
+    RiskImpactTable |>
+      filter(
+        RiskImpactTable$P2_NUMBER == input$P2Input |
+          RiskImpactTable$PROJECT_NAME == input$projectInput,
+        conditional(input$SubIDInput != "", RiskImpactTable$P2_SUB_IDENTIFIER == input$SubIDInput),
+        conditional(input$catInput !="", RiskImpactTable$RISKCATEGORY == input$catInput),
+        conditional(input$phaseInput !="", RiskImpactTable$LIFECYCLEPHASENAME == input$phaseInput)
+      )
+  })
+
   
   # observeEvent(disciplines(), {
   #   discs <- sort(unique(disciplines()$DISCIPLINE))
