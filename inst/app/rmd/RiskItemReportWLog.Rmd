@@ -3,20 +3,17 @@ title: ""
 runtime: shiny
 output: html_document
 params:
-  riskID: "PRM-1 Sponsor's Inability to Execute PPA due to funding"
+  riskID: ECV-1 Flooding of Construction Site
   projID: Lee County Conservation Board CAP Sec 204
   p2ID: 	""
 ---
 
 ```{css, echo=FALSE}
-h1 {
-  text-align: center;
+h4 {
+  font-weight: bold;
 }
 
-.main-container {
-    margin-left: 0;
-    margin-right: auto;
-}
+
 
 table {
 width: 100%;
@@ -59,21 +56,17 @@ library(dplyr)
 library(kableExtra) 
 library(rlang)
 library(plotly)
-library(ggplot2)
-library(ggrepel)
 library(dplyr)
 library(knitr)
-library(crosstalk)
 library(tidyverse)
 library(english)
 library(DT)
-library(webshot)
 library(erarr)
 library(usethis)
 options(scipen = 999)
-erisk_item<- erarr::erisk_item
+erisk_item <-utils::read.csv("../data/RISKLIST_FULL_0320245.csv")
 risk_item_db<-data.frame(erisk_item)
-erisk_project <- erarr::erisk_project
+erisk_project <- utils::read.csv("../data/PROJECTLIST_FULL_03226024.csv")
 risk_project_db<-data.frame(erisk_project)
 risk_transact <- erarr::risk_transact
 risk_transact <- data.frame(risk_transact)
@@ -120,6 +113,7 @@ risk_treat<-left_join(risk_treat, risk_item_filt, by=c("PROJECT_ID", "RISK_ID",
 
 ```
 
+
 ```{r echo=FALSE, eval = params$projID != ""}
 risk_item<-filter(RiskImpactTable, RiskImpactTable$RISK_NAME_ID == params$riskID,
                   RiskImpactTable$PROJECT_NAME.x == params$projID)
@@ -150,6 +144,8 @@ risk_treat_table<-risk_treatment |>
                                           str_to_title(english::english(
                                             RISK_TREATMENT_ID)),": ",
                                           PROPOSED_RISK_TREATMENT )) |>
+  mutate(COST_IMPACT_RISK_TREATMENT = as.character(COST_IMPACT_RISK_TREATMENT))|>
+  mutate(COST_IMPACT_RISK_TREATMENT = paste0("$",formattable::currency(COST_IMPACT_RISK_TREATMENT)))|>
   mutate(SCHEDULE_IMPACT_RISK_TREATMENT = 
            paste(SCHEDULE_IMPACT_RISK_TREATMENT, "Days"))
 
@@ -172,7 +168,7 @@ cat("####",header)
 ##### Risk Summary: `r risk_item$RISK_NAME`
 
 <center>
-```{r milestoneplot, fig.height=1.40, fig.width=8, echo=FALSE, message=FALSE}
+```{r milestoneplot, fig.height=1.20, fig.width=8, echo=FALSE, message=FALSE}
 mileplot<-erarr::milestoneplot(riskitem=risk_item, milestonedf = milestone_df)
 
 knitr::include_graphics("mileplot.png")
@@ -184,7 +180,7 @@ knitr::include_graphics("mileplot.png")
 
 `r risk_item$RISK_STATEMENT` 
 <center>
-```{r proj montepies, message=FALSE, warning=FALSE, echo=FALSE,fig.height=1.75, fig.width=7}
+```{r proj montepies, message=FALSE, warning=FALSE, echo=FALSE,fig.height=1.5, fig.width=6}
 monteframe <- data.frame(Opportunity = c(100), Low = c(100))
 monte_pie<-plot_ly() |>
   add_pie(
@@ -365,32 +361,12 @@ kable(disttable,format = "html", escape=FALSE, col.names=c("Cost Impact",
                                                             "Schedule Impact",
                                                             "Performance Impact"))
 
-# knitr::kables(
-#   list(
-#     knitr::kable(costcolumn,
-#                  format = "html",
-#                  col.names = "Cost Impact",escape=FALSE) |>
-#        kable_styling(),
-#     knitr::kable(schedulecolumn,
-#                  format = "html",
-#                  col.names = "Schedule Impact",escape=FALSE) |>
-#        kable_styling(),
-# 
-#     knitr::kable(performancecolumn,
-#                  format = "html",
-#                  col.names = "Performance Impact",escape=FALSE) |>
-#        kable_styling()
-#   )
-# )
-
-
 ```
 `r if(!treat_condit){"Risk treatments have not been completed for this risk item"}`
 
 ```{r echo = FALSE, message = FALSE, eval = treat_condit}
 risk_treat_table$IMPLEMENT_IMG = sprintf("![    ](%s)",
 risk_treat_table$IMPLEMENT_IMG)
-
 
 kbl(
 risk_treat_table,
@@ -410,7 +386,7 @@ add_header_above(c(
 
 ##### Risk Manager: `r risk_item$RISK_MANAGER`
 
-### Risk Log
+##### Risk Log
 
 
 `r if(!transact_condit){"Risk transactions have not been completed for this risk item"}`
