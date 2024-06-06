@@ -119,22 +119,6 @@ app_ui <- function(request) {
                          )),
                      conditionalPanel(condition = "input.reporttabs == 'Explore'",
                      selectizeInput(
-                       "catInput",
-                       "Category",
-                       choices = NULL,
-                       selected = NULL,
-                       multiple = F,
-                       options = list(placeholder = 'Select a category')
-                     ),
-                     selectizeInput(
-                       "disInput",
-                       "Discipline",
-                       choices = NULL,
-                       selected = NULL,
-                       multiple = F,
-                       options=list(placeholder = 'Select a discipline')
-                     ),
-                     selectizeInput(
                        "phaseInput",
                        "Phase",
                        choices = NULL,
@@ -148,7 +132,15 @@ app_ui <- function(request) {
                        choices = NULL,
                        selected = NULL,
                        multiple = F,
-                       options=list(placeholder = 'Enter Milestone')))
+                       options=list(placeholder = 'Enter Milestone'))),
+                     selectizeInput(
+                       "disInput",
+                       "Discipline",
+                       choices = NULL,
+                       selected = NULL,
+                       multiple = F,
+                       options=list(placeholder = 'Select a discipline')
+                     )
                      ), width=2),
                   
                    mainPanel(
