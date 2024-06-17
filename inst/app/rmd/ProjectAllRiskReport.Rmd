@@ -55,9 +55,9 @@ library(DT)
 library(webshot)
 options(scipen = 999)
 
-erisk_item <- read.csv("../data/RISKLIST_FULL_0320245.csv")
+erisk_item <- erarr::erisk_item
 risk_item_db<-data.frame(erisk_item)
-erisk_project <- read_csv("../data/PROJECTLIST_FULL_03226024.csv")
+erisk_project <- erarr::erisk_project
 risk_project_db<-data.frame(erisk_project)
 
 risk_item_db<-risk_item_db |>

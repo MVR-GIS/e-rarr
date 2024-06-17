@@ -21,7 +21,6 @@ attachment::att_amend_desc()
 ## Add modules ----
 ## Create a module infrastructure in R/
 golem::add_module(name = "name_of_module1", with_test = TRUE) # Name of the module
-golem::add_module(name = "name_of_module2", with_test = TRUE) # Name of the module
 
 ## Add helper functions ----
 ## Creates fct_* and utils_*
@@ -37,7 +36,15 @@ golem::add_sass_file("custom")
 
 ## Add internal datasets ----
 ## If you have data in your package
-usethis::use_data_raw(name = "my_dataset", open = FALSE)
+#usethis::use_data_raw(name = "Data_Update", open = FALSE)
+usethis::use_data(erisk_project,
+                  milestonedf,
+                  erisk_item,
+                  risk_transact,
+                  risk_treat,
+                  erisk_orgs,
+                  overwrite = TRUE)
+
 
 ## Tests ----
 ## Add one line by test you want to create
@@ -52,9 +59,6 @@ devtools::build_vignettes()
 ## Code Coverage----
 ## Set the code coverage service ("codecov" or "coveralls")
 usethis::use_coverage()
-
-# Create a summary readme for the testthat subdirectory
-covrpage::covrpage()
 
 ## CI ----
 ## Use this part of the script if you need to set up a CI

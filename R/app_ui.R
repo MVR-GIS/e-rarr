@@ -119,22 +119,6 @@ app_ui <- function(request) {
                          )),
                      conditionalPanel(condition = "input.reporttabs == 'Explore'",
                      selectizeInput(
-                       "catInput",
-                       "Category",
-                       choices = NULL,
-                       selected = NULL,
-                       multiple = F,
-                       options = list(placeholder = 'Select a category')
-                     ),
-                     selectizeInput(
-                       "disInput",
-                       "Discipline",
-                       choices = NULL,
-                       selected = NULL,
-                       multiple = F,
-                       options=list(placeholder = 'Select a discipline')
-                     ),
-                     selectizeInput(
                        "phaseInput",
                        "Phase",
                        choices = NULL,
@@ -148,7 +132,15 @@ app_ui <- function(request) {
                        choices = NULL,
                        selected = NULL,
                        multiple = F,
-                       options=list(placeholder = 'Enter Milestone')))
+                       options=list(placeholder = 'Enter Milestone'))),
+                     selectizeInput(
+                       "disInput",
+                       "Discipline",
+                       choices = NULL,
+                       selected = NULL,
+                       multiple = F,
+                       options=list(placeholder = 'Select a discipline')
+                     )
                      ), width=2),
                   
                    mainPanel(
@@ -217,7 +209,7 @@ app_ui <- function(request) {
                                 ),
                                 bslib::card(
                                   height = 165,
-                                  full_screen = FALSE,
+                                  full_screen = FALSE,id="RiskItemCard",
                                   card_header("Risk Item Report",
                                               shiny::downloadButton(
                                                 outputId="download_RiskItem",
@@ -228,10 +220,10 @@ app_ui <- function(request) {
                                                 border-color: transparent;"
                                               )),
                                   card_body(
-                                    tags$button(id = "RiskItem", class="action-button",tags$img(src="www/RiskItem.png", height='165px', max_width = '100%')),
-                        
-                                  )
-                                ),
+                                    tooltip(trigger = tags$button(id = "RiskItem", class="action-button",tags$img(src="www/RiskItem.png", height='165px', max_width = '100%')),
+                                            "Select a risk item", id="tooltip"
+                                  )))
+                                ,
                                 
                       )
                        ),

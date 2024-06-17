@@ -3,35 +3,33 @@ title: ""
 runtime: shiny
 output: html_document
 params:
-  riskID: ECV-1 Flooding of Construction Site
-  projID: LaGrange New 1200-Foot Lock
-  p2ID: 	505374
+  riskID: "PRM-1 Sponsor's Inability to Execute PPA due to funding"
+  projID: Lee County Conservation Board CAP Sec 204
+  p2ID: 	""
 ---
 
 ```{css, echo=FALSE}
-h2, h3,h4 {
+h2, h3, h4 {
   text-align: center;
 }
 
 body{ /* Normal  */
-      font-size: 16px;
+      font-size: 12px;
   }
 
 th {    vertical-align: top;    
     white-space: nowrap;
-    padding: 10px;
+    padding: 5px;
     
 }
 td {    vertical-align: top;
-  padding: 10px;
+  padding: 5px;
 }
-
-
 
 
 @media print {
 body {-webkit-print-color-adjust: exact;}
-  .font-size{ 10pt;
+  .font-size{ 9pt;
   }
   .item-box {
     page-break-inside: avoid;
@@ -65,21 +63,22 @@ library(english)
 library(DT)
 library(webshot)
 library(erarr)
+library(usethis)
 options(scipen = 999)
-erisk_item <- readr::read_csv("../data/RISKLIST_FULL_0320245.csv")
+erisk_item<- erarr::erisk_item
 risk_item_db<-data.frame(erisk_item)
-erisk_project <- readr::read_csv("../data/PROJECTLIST_FULL_03226024.csv")
+erisk_project <- erarr::erisk_project
 risk_project_db<-data.frame(erisk_project)
-risk_treat <- readr::read_csv("../data/RISKTREATMENTLIST_FULL_032024.csv",
-                              col_names = TRUE)
+risk_transact <- erarr::risk_transact
+risk_transact <- data.frame(risk_transact)
+milestonedf<- erarr::milestonedf
+milestone_df<-data.frame(erarr::milestonedf)
 checkimagepath<-"../www/check.png"
-milestonedf<-read.csv("../data/PHASEMILESTONE.csv")
-milestone_df<-data.frame(milestonedf)
 headers<-c("Cost Impact", "Schedule Impact","Performance Impact")
 
-risk_transact <- read_csv("../data/RISKTRANSACTIONLIST_FULL.csv")
 
-erisk_ItemProj<-left_join(risk_item_db, risk_project_db, by =c("PROJECT_ID")) 
+
+erisk_ItemProj<-left_join(risk_item_db, risk_project_db, by =c("PROJECT_ID"), relationship = "many-to-many") 
 
 erisk_ItemProj<-erisk_ItemProj |>
   mutate(RISK_NAME_ID = paste(RISK_IDENTIFIER,RISK_NAME))                 
@@ -108,9 +107,9 @@ RiskImpactTable<-erisk_ItemProj |>
 
 risk_transact<-left_join(risk_transact, risk_item_filt, by=c("PROJECT_ID", 
                                                              "RISK_ID",
-                                                             "PROJECT_NAME"))     
+                                                             "PROJECT_NAME"), relationship = "many-to-many")     
 risk_treat<-left_join(risk_treat, risk_item_filt, by=c("PROJECT_ID", "RISK_ID",
-                                                       "PROJECT_NAME"))
+                                                       "PROJECT_NAME"), relationship = "many-to-many")
 
 
 
@@ -160,15 +159,15 @@ treat_condit <- ifelse(nrow(risk_treat_table)>0,TRUE,FALSE)
 header<-paste("Project:",risk_item$PROJECT_NAME.x," ",(risk_item$RISK_IDENTIFIER))
 
 
-cat("###",header)
+cat("####",header)
 ```
 
-#### Risk Phase:`r risk_item$LIFECYCLEPHASENAME`, Category:`r risk_item$RISKCATEGORY`
+##### Risk Phase:`r risk_item$LIFECYCLEPHASENAME`, Category:`r risk_item$RISKCATEGORY`
 
-### Risk Summary: `r risk_item$RISK_NAME`
+##### Risk Summary: `r risk_item$RISK_NAME`
 
 <center>
-```{r milestoneplot, fig.height=2, fig.width=8, echo=FALSE, message=FALSE}
+```{r milestoneplot, fig.height=1.40, fig.width=8, echo=FALSE, message=FALSE}
 mileplot<-erarr::milestoneplot(riskitem=risk_item, milestonedf = milestone_df)
 
 knitr::include_graphics("mileplot.png")
@@ -176,15 +175,13 @@ knitr::include_graphics("mileplot.png")
 ```
 </center>
 
-##### **Lead Discipline:** `r risk_item$DISCIPLINE`
+###### **Lead Discipline:** `r risk_item$DISCIPLINE`
 
-##### `r risk_item$RISK_STATEMENT`
-
+`r risk_item$RISK_STATEMENT` 
 <center>
-
-```{r echo=F, out.width="75%", fig.height=2}
+```{r proj montepies, message=FALSE, warning=FALSE, echo=FALSE,fig.height=1.75, fig.width=7}
 monteframe <- data.frame(Opportunity = c(100), Low = c(100))
-plot_ly() |>
+monte_pie<-plot_ly() |>
   add_pie(
     monteframe$Opportunity,
     value = monteframe$Opportunity,
@@ -193,7 +190,8 @@ plot_ly() |>
     name = " ",
     domain = list(row = 0, column = 0),
     hole = 0.7,
-    marker = list(colors = "#1F78B4")
+    marker = list(colors = "#1F78B4"),
+    legend=F
   ) |>
   add_pie(
     monteframe$Opportunity,
@@ -203,7 +201,8 @@ plot_ly() |>
     name = " ",
     domain = list(row = 0, column = 1),
     hole = 0.7,
-    marker = list(colors = "#1F78B4")
+    marker = list(colors = "#1F78B4"),
+    legend=F
   ) |>
   add_pie(
     monteframe$Low,
@@ -213,32 +212,29 @@ plot_ly() |>
     name = " ",
     domain = list(row = 0, column = 2),
     hole = 0.7,
-    marker = list(colors = "#33A02C")
-  ) |>
-  layout(
-    title = "",
-    showlegend = F,
-    grid = list(rows = 1, columns = 3),
-    annotations = list(
-      x = c(0.125, 0.49, 0.9, 0.12, 0.485),
-      y = c(1.2, 1.2, 1.2, -0.15,-0.15),
-      text = c("Cost", "Schedule", "Performance", "Mean: $0",
-               "Mean: 0 Days"),
-      xref = "paper",
-      yref = "paper",
-      showarrow = F
-    )
+    marker = list(colors = "#33A02C"),
+    legend=F
   )
 
-
+  pies<-monte_pie |>
+    plotly::layout(title = "",
+                    showlegend = F,
+      margin=list(l=20,r=20,b=20, t=25, pad=0),
+                   grid=list(rows=1, columns=3),
+           showlegend=F,
+           annotations = list(
+      x = c(0.125, 0.49, 0.9, 0.12, 0.485),
+      y = c(1.2, 1.2, 1.2, -0.15,-0.15),
+      xref = "paper",
+      yref = "paper",
+      showarrow = F,
+      text = c("Cost", "Schedule", "Performance", "Mean: $0",
+               "Mean: 0 Days")))
+  pies
 ```
-
 </center>
-
-#### **Event Likelihood:** `r risk_item$LIKELIHOOD_DISC`
-
-#### `r risk_item$PROB_OCCURRENCE_EVIDENCE`
-
+###### **Event Likelihood:** `r risk_item$LIKELIHOOD_DESC`
+`r risk_item$PROB_OCCURRENCE_EVIDENCE`
 ```{r echo=FALSE, results='asis'}
 risk_item_table <- risk_item |>
   select(
@@ -261,37 +257,37 @@ risk_item_table <- risk_item |>
   ) |>
   mutate(
     COST_IMPACT_LOWEST = paste0("<p style = 
-                                'font-family: Arial Narrow;font-size:10pt'>",
+                                'font-family: Arial Narrow;font-size:8pt'>",
                                 "Lowest","</p>", 
                                 formattable::currency(COST_IMPACT_LOWEST)),
     COST_IMPACT_HIGHEST = paste0("<p style = 
-                                'font-family: Arial Narrow;font-size:10pt'>",
+                                'font-family: Arial Narrow;font-size:8pt'>",
                                 "Highest","</p>",
                                  formattable::currency(COST_IMPACT_HIGHEST)),
     COST_IMPACT_MOSTLIKELY = paste0("<p style = 
-                                    'font-family: Arial Narrow;font-size:10pt'>",
+                                    'font-family: Arial Narrow;font-size:8pt'>",
                                     "Most Likely","</p>", 
                                     formattable::currency(COST_IMPACT_MOSTLIKELY)),
     SCHEDULE_IMPACT_HIGHEST = paste0("<p style = 
-                                     'font-family: Arial Narrow;font-size:10pt'>",
+                                     'font-family: Arial Narrow;font-size:8pt'>",
                                      "Highest","</p>",
                                      SCHEDULE_IMPACT_HIGHEST, " days"),
     SCHEDULE_IMPACT_LOWEST = paste0("<p style = 
-                                    'font-family: Arial Narrow;font-size:10pt'>",
+                                    'font-family: Arial Narrow;font-size:8pt'>",
                                     "Lowest","</p>",
                                     SCHEDULE_IMPACT_LOWEST, " days"),
     SCHEDULE_IMPACT_MOSTLIKELY = paste0("<p style = 
-                                        'font-family: Arial Narrow;font-size:10pt'>",
+                                        'font-family: Arial Narrow;font-size:8pt'>",
                                         "Most Likely","</p>",
                                         SCHEDULE_IMPACT_MOSTLIKELY, " days"),
     PERFORMANCE_IMPACT_DESC = paste0("<p style = 
-                                        'font-family: Arial;font-size:10pt; 
+                                        'font-family: Arial;font-size:8pt; 
                                      font-weight: bold'>",
                                         "Performance Impact:","</p>",
                                         PERFORMANCE_IMPACT_DESC, " to ", 
                                      PERFORMANCEIMPACT),
     PERFORMANCEIMPACT = paste0("<p style = 
-                                        'font-family: Arial;font-size:10pt;
+                                        'font-family: Arial;font-size:8pt;
                                font-weight: bold'>",
                                         "Performance Impact Type:","</p>",
                                         PERFORMANCEIMPACT)
@@ -387,11 +383,7 @@ kable(disttable,format = "html", escape=FALSE, col.names=c("Cost Impact",
 
 
 ```
-
-#### Risk Treatments:
-
 `r if(!treat_condit){"Risk treatments have not been completed for this risk item"}`
-
 ```{r echo = FALSE, message = FALSE, eval = treat_condit}
 risk_treat_table$IMPLEMENT_IMG = sprintf("![    ](%s)",
 risk_treat_table$IMPLEMENT_IMG)
@@ -412,6 +404,5 @@ add_header_above(c(
 
 
 ```
-
-##### Risk Manager: `r risk_item$RISK_MANAGER`
+###### Risk Manager: `r risk_item$RISK_MANAGER`
 

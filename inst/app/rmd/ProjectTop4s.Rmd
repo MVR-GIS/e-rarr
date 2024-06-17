@@ -45,8 +45,6 @@ library(utils)
 library(erarr)
 options(scipen = 999)
 
-
-
 erisk_item <- utils::read.csv("../data/RISKLIST_FULL_0320245.csv")
 risk_item_db<-data.frame(erisk_item)
 erisk_project <- utils::read.csv("../data/PROJECTLIST_FULL_03226024.csv")

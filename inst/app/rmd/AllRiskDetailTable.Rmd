@@ -68,6 +68,7 @@ risk_item_db<-data.frame(erisk_item)
 erisk_project <- read_csv("../data/PROJECTLIST_FULL_03226024.csv", show_col_types = FALSE)
 risk_project_db<-data.frame(erisk_project)
 
+
 risk_item_db<-risk_item_db |>
   left_join(risk_project_db|>
               select(PROJECT_ID, PRIMARYMISSION))

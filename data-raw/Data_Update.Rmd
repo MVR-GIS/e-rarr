@@ -1,0 +1,86 @@
+---
+  title: "Update Risk Analysis Report Test Data
+date: "`r Sys.Date()`"
+---
+
+# Introduction
+The purpose of this document is to document the techniques for updating the risk analysis test data used in this package. 
+
+# Manual Export Using SQL Develoer
+This section describes how to process data manually exported from SQLDeveloper. 
+
+```{r import-libraries}
+library(stringr)
+library(readr)
+library(DBI)
+library(ROracle)
+library(keyring)
+```
+
+# Automatic Update Using `ROracle`
+This section describes how to make a direct connection to the project Oracle database and export the data tables from this connection. 
+
+```{r oracle-connection}
+# Use the `keyring` package to save the database username and password in the 
+# system credential store
+key_service <- "egis-db-brandonroad"
+user_name <- "BrandonRoad"
+# Set once on each computer prior to building book
+keyring::key_set(service = key_service, username = user_name)
+
+# Make Oracle connection
+drv  <- DBI::dbDriver("Oracle")
+host <- "egis-db"
+port <- "1521"
+sid  <- "B5SDEDP1"
+connect_string <- paste0(
+  "(DESCRIPTION=",
+  "(ADDRESS=(PROTOCOL=tcp)(HOST=", host, ")(PORT=", port, "))",
+  "(CONNECT_DATA=(SID=", sid, ")))")
+ 
+con_roracle <- ROracle::dbConnect(drv, 
+                                  username = user_name, 
+                                  password = keyring::key_get(key_service, user_name),
+                                  dbname   = connect_string)
+```
+
+```{r import-oracle-tables, echo=FALSE, warning=FALSE, message=FALSE}
+# Import tables from Oracle
+
+erisk_project            <- ROracle::dbReadTable(con_roracle, 
+                                             "ERR_PROJECTLIST_FULL")
+milestonedf      <- ROracle::dbReadTable(con_roracle, 
+                                             "ERR_PHASEMILESTONE")
+erisk_item            <- ROracle::dbReadTable(con_roracle, 
+                                             "ERR_RISKLIST_FULL")
+risk_transact          <- ROracle::dbReadTable(con_roracle, 
+                                             "ERR_RISKTRANSACTIONLIST_FULL")
+risk_treat <- ROracle::dbReadTable(con_roracle, 
+                                             "ERR_RISKTREATMENTLIST_FULL")
+erisk_orgs      <- ROracle::dbReadTable(con_roracle, 
+                                             "ERR_TBLUSACEORGS")
+
+# Disconnect from the database
+ROracle::dbDisconnect(con_roracle)
+```
+
+```{r save-package-data}
+
+
+
+
+write.csv(erisk_project,"C:/workspace/erarr/inst/app/data/erisk_project.csv")
+write.csv(milestonedf,"C:/workspace/erarr/inst/app/data/milestonedf.csv")
+write.csv(erisk_item,"C:/workspace/erarr/inst/app/data/erisk_item.csv")
+write.csv(risk_transact,"C:/workspace/erarr/inst/app/data/risk_transact.csv")
+write.csv(risk_treat,"C:/workspace/erarr/inst/app/data/risk_treat.csv")
+write.csv(erisk_orgs,"C:/workspace/erarr/inst/app/data/erisk_orgs.csv")
+
+usethis::use_data(erisk_project,
+                  milestonedf,
+                  erisk_item,
+                  risk_transact,
+                  risk_treat,
+                  erisk_orgs,
+                  overwrite = TRUE)
+```

@@ -13,10 +13,13 @@ library(dplyr)
 library(shinycssloaders)
 library(shinyjs)
 library(shinyalert)
+library(bslib)
 
-erisk_item <-
-  read_csv("./inst/app/data/RISKLIST_FULL_0320245.csv", show_col_types = FALSE, col_types=cols(P2_SUB_IDENTIFIER =  col_double()))
+erisk_item <-read_csv("./inst/app/data/RISKLIST_FULL_0320245.csv", show_col_types = FALSE, col_types=cols(P2_SUB_IDENTIFIER =  col_double()))
 risk_item_db <- data.frame(erisk_item)
+
+
+
 
 shiny::addResourcePath(prefix = "www", directoryPath = "./inst/app/www")
 
@@ -56,6 +59,13 @@ riskpies <- risk_item_db |>
   mutate(RISK_NAME_ID = paste(RISK_IDENTIFIER,RISK_NAME))
 
 
+conditional <- function(condition, success) {
+  if (condition)
+    success 
+  else
+    TRUE
+}
+
 
 app_server <- function(input, output, session) {
 
@@ -77,7 +87,8 @@ app_server <- function(input, output, session) {
   
   projects <- reactive({
     RiskImpactTable |>
-      filter(RiskImpactTable$USACE_ORGANIZATION == input$districtInput)
+      filter(RiskImpactTable$USACE_ORGANIZATION == input$districtInput,
+    conditional(input$P2Input != "" ,RiskImpactTable$P2_NUMBER == input$P2Input))
   })
   
   
@@ -94,8 +105,8 @@ app_server <- function(input, output, session) {
   P2s <- reactive({
     RiskImpactTable |>
       filter(
-        RiskImpactTable$USACE_ORGANIZATION == input$districtInput |
-          RiskImpactTable$PROJECT_NAME == input$projectInput
+        RiskImpactTable$USACE_ORGANIZATION == input$districtInput,
+        conditional(input$projectInput != "", RiskImpactTable$PROJECT_NAME == input$projectInput)
       )
   })
   
@@ -106,7 +117,7 @@ app_server <- function(input, output, session) {
     updateSelectizeInput(
       inputId = "P2Input",
       choices = c("", P2s),
-      selected = ""
+      selected = input$P2Input
     )
   })
   
@@ -114,6 +125,9 @@ app_server <- function(input, output, session) {
   filter(P2_SUB_IDENTIFIER != "")|>
   select(PROJECT_NAME, P2_NUMBER)|>
   unique()
+  
+  
+  
   
   observe({
     if (input$projectInput %in% projsub$PROJECT_NAME || input$P2Input %in% projsub$P2_NUMBER){
@@ -140,7 +154,7 @@ app_server <- function(input, output, session) {
     RiskImpactTable |>
       filter(
         RiskImpactTable$P2_NUMBER == input$P2Input |
-          RiskImpactTable$PROJECT_NAME == input$projectInput
+        RiskImpactTable$PROJECT_NAME == input$projectInput
       )
   })
   
@@ -161,38 +175,48 @@ app_server <- function(input, output, session) {
       choices = c("",riskitems),
       selected = "")
   })
-  
-  
-  
-  
 
-  observeEvent(risks(), {
-    cats <-sort(unique(risks()$RISKCATEGORY))
-    discs <-sort(unique(risks()$DISCIPLINE))
-    phases <-sort(unique(risks()$LIFECYCLEPHASENAME))
-    updateSelectInput(
-      inputId = "catInput",
-      choices = c("", cats),
-      selected = ""
-    )
-    updateSelectInput(
-      inputId = "disInput",
-      choices = c("", discs),
-      selected = ""
-    )
-    updateSelectInput(
-      inputId = "phaseInput",
-      choices = c("", phases),
-      selected = ""
-    )
+  
+    observeEvent(riskitems(), {
+      phases <-sort(unique(risks()$LIFECYCLEPHASENAME))
+      updateSelectInput(
+        inputId = "phaseInput",
+        choices = c("", phases),
+        selected = ""
+      )
   })
   
+  
 
+
+    
+  disciplines<- reactive({
+    RiskImpactTable |>
+      filter(
+        RiskImpactTable$P2_NUMBER == input$P2Input |
+        RiskImpactTable$PROJECT_NAME == input$projectInput,
+        conditional(input$SubIDInput != "", RiskImpactTable$P2_SUB_IDENTIFIER == input$SubIDInput),
+        conditional(input$phaseInput !="", RiskImpactTable$LIFECYCLEPHASENAME == input$phaseInput),
+        conditional(input$mileInput !="", RiskImpactTable$MILESTONE == input$mileInput)
+      )
+  })
+
+  
+  observeEvent(disciplines(), {
+    discs <- sort(unique(disciplines()$DISCIPLINE))
+  updateSelectInput(
+    inputId = "disInput",
+    choices = c("", discs),
+    selected = ""
+  )
+  })
+  
   milestones <- reactive({
     RiskImpactTable |>
       filter(
         RiskImpactTable$P2_NUMBER == input$P2Input |
           RiskImpactTable$PROJECT_NAME == input$projectInput,
+        conditional(input$SubIDInput != "", RiskImpactTable$P2_SUB_IDENTIFIER == input$SubIDInput),
         RiskImpactTable$LIFECYCLEPHASENAME == input$phaseInput
       )
   })
@@ -219,13 +243,6 @@ app_server <- function(input, output, session) {
   
 
 
-  conditional <- function(condition, success) {
-    if (condition)
-      success 
-    else
-      TRUE
-  }
-  
    
 in_react_frame<-reactiveVal(riskpies)
   
@@ -235,10 +252,10 @@ in_react_frame<-reactiveVal(riskpies)
              conditional(input$projectInput != "", riskpies$PROJECT_NAME == input$projectInput),
              conditional(input$SubIDInput != "", riskpies$P2_SUB_IDENTIFIER == input$SubIDInput),
              conditional(input$P2Input != "", riskpies$P2_NUMBER == input$P2Input),
-             conditional(input$catInput !="", riskpies$RISKCATEGORY == input$catInput),
-             conditional(input$disInput !="", riskpies$DISCIPLINE == input$disInput),
              conditional(input$phaseInput !="", riskpies$LIFECYCLEPHASENAME == input$phaseInput),
-             conditional(input$mileInput != "", riskpies$MILESTONE == input$mileInput))|>
+             conditional(input$mileInput != "", riskpies$MILESTONE == input$mileInput),
+             conditional(input$disInput !="", riskpies$DISCIPLINE == input$disInput),
+)|>
       select(
         RISK_IDENTIFIER,
         USACE_ORGANIZATION,
@@ -288,10 +305,18 @@ in_react_frame<-reactiveVal(riskpies)
     )
   })
   
-  
   output$pie = plotly::renderPlotly({
     pie_plots(cost_pie(), schedule_pie(), perform_pie())
   })
+  
+  observeEvent(input$riskInput,{
+    if (input$riskInput ==""){
+      disable("RiskItemCard")
+    } else{
+      enable("RiskItemCard")
+    }
+  })
+    
   
 
 observeEvent(input$RiskItem, {
@@ -346,10 +371,15 @@ observeEvent(input$Proj, {
        p2sub= input$SubIDInput
      ), output_dir ="./inst/app/www"
    )
-   showModal(modalDialog(title="Risk Report",
-                         tags$iframe(src="www/AllRiskDetailTable.html", width = 1200,  
-                                     height = 900,  style = "border:none:"), easyClose=TRUE,
-                         size = "xl"))
+   shinyalert::shinyalert(html = TRUE, text = tagList(tags$iframe(
+     src="www/AllRiskDetailTable.html", width = 1200, height = 1000,  
+     style = "border:none;")),
+     size = "l",confirmButtonText = "Close Report",
+     closeOnClickOutside = TRUE)
+   # showModal(modalDialog(title="Risk Report",
+   #                       tags$iframe(src="www/AllRiskDetailTable.html", width = 1200,  
+   #                                   height = 1000,  style = "border:none:"), easyClose=TRUE,
+   #                       size = "xl"))
  })
  
 observeEvent(input$Proj4s, {
