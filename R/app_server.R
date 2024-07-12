@@ -20,7 +20,6 @@ risk_item_db <- data.frame(erisk_item)
 
 
 
-
 shiny::addResourcePath(prefix = "www", directoryPath = "./inst/app/www")
 
 RiskImpactTable <-risk_item_db |> dplyr::select("PROJECT_NAME",
