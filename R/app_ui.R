@@ -3,11 +3,10 @@
 #' @param request Internal parameter for `{shiny}`.
 #'     DO NOT REMOVE.
 #' @noRd
-
-
 # @import shiny
 # @import plotly
 # @import shinyjs
+
 
 RiskImpactTable <- risk_item_db |>
   dplyr::select(
@@ -41,6 +40,7 @@ app_ui <- function(request) {
                           data-bs-animation: FALSE;}
                           .action-button {border-radius: 12px;}
                           "))),
+
     fluidPage(
       shinyjs::useShinyjs(),
       theme = bslib::bs_theme(bootswatch = "cosmo", version=5),
@@ -195,6 +195,7 @@ app_ui <- function(request) {
                                   height = 165,
                                   full_screen = FALSE,id="RiskItemCard",
                                   card_header("Risk Item Report",
+                                              tooltip(bsicons::bs_icon("info-circle"), "Select a Risk Item", placement="right", id="tooltip"),
                                               shiny::downloadButton(
                                                 outputId="download_RiskItem",
                                                 label="Download",
@@ -204,9 +205,9 @@ app_ui <- function(request) {
                                                 border-color: transparent;"
                                               )),
                                   card_body(
-                                    tooltip(trigger = tags$button(id = "RiskItem", class="action-button",tags$img(src="www/RiskItem.png", height='165px', max_width = '100%')),
-                                            "Select a risk item", id="tooltip"
-                                  )))
+                                  tags$button(id = "RiskItem", class="action-button",tags$img(src="www/RiskItem.png", height='165px', max_width = '100%'))
+                                            
+                                  ))
                                 ,
                                 
                       )

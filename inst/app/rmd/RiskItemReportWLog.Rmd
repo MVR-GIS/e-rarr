@@ -3,38 +3,34 @@ title: ""
 runtime: shiny
 output: html_document
 params:
-  riskID: ECV-1 Flooding of Construction Site
+  riskID: "PRM-1 Sponsor's Inability to Execute PPA due to funding"
   projID: Lee County Conservation Board CAP Sec 204
   p2ID: 	""
 ---
 
 ```{css, echo=FALSE}
-h4 {
-  font-weight: bold;
+h2, h3, h4 {
+  text-align: center;
 }
 
+body{ /* Normal  */
+      font-size: 12px;
+  }
 
-
-table {
-width: 100%;
-  border-bottom-style: none
-}
-
-
-th {vertical-align: top;    
+th {    vertical-align: top;    
     white-space: nowrap;
     padding: 5px;
-    border-bottom: 1px solid #ddd;
+    
 }
 td {    vertical-align: top;
   padding: 5px;
 }
 
 
-
 @media print {
 body {-webkit-print-color-adjust: exact;}
-
+  .font-size{ 9pt;
+  }
   .item-box {
     page-break-inside: avoid;
   }
@@ -47,6 +43,7 @@ body {-webkit-print-color-adjust: exact;}
   }
 
 }
+
 ```
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, include=FALSE}
@@ -64,13 +61,13 @@ library(DT)
 library(erarr)
 library(usethis)
 options(scipen = 999)
-erisk_item <-utils::read.csv("../data/RISKLIST_FULL_0320245.csv")
+erisk_item <-utils::read.csv("./inst/app/data/erisk_item.csv")
 risk_item_db<-data.frame(erisk_item)
-erisk_project <- utils::read.csv("../data/PROJECTLIST_FULL_03226024.csv")
+erisk_project <- utils::read.csv("./inst/app/data/erisk_project.csv")
 risk_project_db<-data.frame(erisk_project)
-risk_transact <- erarr::risk_transact
+risk_transact <- utils::read.csv("./inst/app/data/erisk_project.csv")
 risk_transact <- data.frame(risk_transact)
-milestonedf<- utils::read.csv("../data/PHASEMILESTONE.csv")
+milestonedf<- utils::read.csv("./inst/app/data/risk_transact.csv")
 milestone_df<-data.frame(milestonedf)
 checkimagepath<-"../www/check.png"
 headers<-c("Cost Impact", "Schedule Impact","Performance Impact")
