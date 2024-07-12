@@ -65,13 +65,13 @@ library(webshot)
 library(erarr)
 library(usethis)
 options(scipen = 999)
-erisk_item<- erarr::erisk_item
+erisk_item <- utils::read.csv("../data/erisk_item.csv")
 risk_item_db<-data.frame(erisk_item)
-erisk_project <- erarr::erisk_project
+erisk_project <- utils::read.csv("../data/erisk_project.csv")
 risk_project_db<-data.frame(erisk_project)
-risk_transact <- erarr::risk_transact
+risk_transact <- utils::read.csv("../data/risk_transact.csv")
 risk_transact <- data.frame(risk_transact)
-milestonedf<- erarr::milestonedf
+milestonedf<- utils::read.csv("../data/milestonedf.csv")
 milestone_df<-data.frame(erarr::milestonedf)
 checkimagepath<-"../www/check.png"
 headers<-c("Cost Impact", "Schedule Impact","Performance Impact")

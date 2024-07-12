@@ -1,0 +1,84 @@
+"","DISTRICT_ID","DISTRICT_CODE","DISTRICT_NAME","MSC","LIVESTAT","EROC","MSC_ID","SME","ID","UPDATED_FIELD_INFO"
+"1",1,"LRB","Buffalo District","LRD","live","H5",4,"yes",102,NA
+"2",2,"LRC","Chicago District","LRD","live","H6",4,"yes",103,NA
+"3",3,"LRE","Detroit District","LRD","live","H7",4,"yes",104,NA
+"4",4,"LRH","Huntington District","LRD","live","H1",4,"yes",105,NA
+"5",5,"LRL","Louisville District","LRD","live","H2",4,"yes",106,NA
+"6",6,"LRN","Nashville District","LRD","live","H3",4,"yes",107,NA
+"7",7,"LRP","Pittsburgh District","LRD","live","H4",4,"yes",108,NA
+"8",8,"MVK","Vicksburg District","MVD","live","B4",5,"yes",109,NA
+"9",9,"MVM","Memphis District","MVD","live","B1",5,"yes",110,NA
+"10",10,"MVN","New Orleans District","MVD","live","B2",5,"yes",111,NA
+"11",11,"MVP","St. Paul District","MVD","live","B6",5,"yes",112,NA
+"12",12,"MVR","Rock Island District","MVD","live","B5",5,"yes",113,NA
+"13",13,"MVS","St. Louis District","MVD","live","B3",5,"yes",114,NA
+"14",14,"NAB","Baltimore District","NAD","live","E1",6,"yes",115,NA
+"15",15,"NAE","New England District","NAD","live","E6",6,"yes",116,NA
+"16",16,"NAN","New York District","NAD","live","E3",6,"yes",117,NA
+"17",17,"NAO","Norfolk District","NAD","live","E4",6,"yes",118,NA
+"18",18,"NAP","Philadelphia District","NAD","live","E5",6,"yes",119,NA
+"19",19,"NWK","Kansas City District","NWD","live","G5",7,"yes",120,NA
+"20",20,"NWO","Omaha District","NWD","live","G6",7,"yes",121,NA
+"21",21,"NWP","Portland District","NWD","live","G2",7,"yes",122,NA
+"22",22,"NWS","Seattle District","NWD","live","G3",7,"yes",123,NA
+"23",23,"NWW","Walla Walla District","NWD","live","G4",7,"yes",124,NA
+"24",24,"POA","Alaska District","POD","live","J4",8,"yes",125,NA
+"25",25,"POH","Honolulu District","POD","live","J3",8,"yes",126,NA
+"26",26,"SAC","Charleston District","SAD","live","K2",9,"yes",127,NA
+"27",27,"SAJ","Jacksonville District","SAD","live","K3",9,"yes",128,NA
+"28",28,"SAM","Mobile District","SAD","live","K5",9,"yes",129,NA
+"29",29,"SAS","Savannah District","SAD","live","K6",9,"yes",130,NA
+"30",30,"SAW","Wilmington District","SAD","live","K7",9,"yes",131,NA
+"31",31,"SPA","Albuquerque District","SPD","live","L4",10,"yes",132,NA
+"32",32,"SPK","Sacramento District","SPD","live","L2",10,"yes",133,NA
+"33",33,"SPL","Los Angeles District","SPD","live","L1",10,"yes",134,NA
+"34",34,"SPN","San Francisco District","SPD","live","L3",10,"yes",135,NA
+"35",35,"SWF","Ft. Worth District","SWD","live","M2",11,"yes",136,NA
+"36",36,"SWG","Galveston District","SWD","live","M3",11,"yes",137,NA
+"37",37,"SWL","Little Rock District","SWD","live","M4",11,"yes",138,NA
+"38",38,"SWT","Tulsa District","SWD","live","M5",11,"yes",139,NA
+"39",39,"ERDC","Engineer Research and Development Center","ERDC","live","U4",12,"yes",140,NA
+"40",40,"IWR","Institute for Water Resources","IWR","live","Q0",3,"yes",141,NA
+"41",41,"HQ","Headquarters U.S. Army Corps of Engineers","HQ","live","S0",2,"yes",142,NA
+"42",42,"HEC","Hydrologic Engineering Center","IWR","live","Q0",3,"yes",143,NA
+"43",43,"NAU","Europe District","NAD","live","E7",6,"yes",144,NA
+"44",44,"POF","Far East District","POD","live","J1",8,"yes",145,NA
+"45",45,"POJ","Japan Engineer District","POD","live","J2",8,"yes",146,NA
+"46",46,"AED","Afghanistan Engineer District - North","TAD","del","N2",13,"yes",147,NA
+"47",47,"AES","Afghanistan Engineer District - South","TAD","live","N2",13,"yes",148,NA
+"48",48,"GRD","Gulf Region District","TAD","live","P0",13,"yes",149,NA
+"49",49,"TAM","Middle East District","TAD","live","N0",13,"yes",150,NA
+"50",50,"Other","Other District","Other","del",NA,0,"yes",151,NA
+"51",51,"HNC","Engineering and Support Center, Huntsville","HNC","live","A0",1,"yes",152,NA
+"52",52,"LRD","Great Lakes & Ohio River Division","LRD","live","H0",4,"yes",153,NA
+"53",53,"MVD","Mississippi Valley Division","MVD","live","B0",5,"yes",154,NA
+"54",54,"NAD","North Atlantic Division","NAD","live","E0",6,"yes",155,NA
+"55",55,"NWD","Northwestern Division","NWD","live","G0",7,"yes",156,NA
+"56",56,"POD","Pacific Ocean Division","POD","live","J0",8,"yes",157,NA
+"57",57,"SAD","South Atlantic Division","SAD","live","K0",9,"yes",158,NA
+"58",58,"SPD","South Pacific Division","SPD","live","L0",10,"yes",159,NA
+"59",59,"SWD","Southwestern Division","SWD","live","M0",11,"yes",160,NA
+"60",60,"TAD","Transatlantic Division","TAD","live","N0",13,"yes",161,NA
+"61",61,"WCS","Waterborne Commerce Statistics Center","IWR","live","Q0",3,"yes",162,NA
+"62",63,"RMC","Risk Management Center","IWR","live","Q0",3,"yes",163,NA
+"63",64,"NDC","Navigation and Civil Works Decision Support Center","IWR","live","Q0",3,"yes",164,NA
+"64",65,"PCX-CSR","Coastal Storm Risk Management Planning Center of Expertise","PCX","live",NA,15,"no",165,NA
+"65",66,"PCX-DDN","Deep Draft Navigation Planning Center of Expertise","PCX","live",NA,15,"no",166,NA
+"66",67,"PCX","Planning Center of Expertise","PCX","live",NA,15,"no",167,NA
+"67",68,"PCX-ECO","Ecosystem Restoration Planning Center of Expertise","PCX","live",NA,15,"no",168,NA
+"68",69,"PCX-FRM","Flood Risk Management Planning Center of Expertise","PCX","live",NA,15,"no",169,NA
+"69",70,"PCXIN","Inland Navigation Planning Center of Expertise","PCX","live",NA,15,"no",170,NA
+"70",71,"PCX-WMR","Water Management and Reallocation Planning Center of Expertise","PCX","live",NA,15,"no",171,NA
+"71",72,"AGC","Army Geospatial Center","AGC","live",NA,18,"no",172,NA
+"72",73,"CX-CPC","Collaboration and Public Participation Center of Expertise CPCX","CX","live",NA,16,"no",173,NA
+"73",74,"CX-ATR","Civil Works Cost Engineering and Agency Technical Review","CX","live",NA,16,"no",174,NA
+"74",75,"CX-HYD","Hydroelectric Design Center","CX","live",NA,16,"no",175,NA
+"75",76,"CX-JAL","Joint Airborne Lidar Bathymetry Center","CX","live",NA,16,"no",176,NA
+"76",77,"CX-MDC","Marine Design Center","CX","live",NA,16,"no",177,NA
+"77",78,"CX-RES","Real Estate Systems National Center","CX","live",NA,16,"no",178,NA
+"78",79,"CX-GIS","Water Resources Remote Sensing/Geographic Information Systems Center","CX","live",NA,16,"no",179,NA
+"79",80,"PCOP","Planning Community of Practice","PCoP","live",NA,17,"no",180,NA
+"80",81,"CRSubCoP","Cultural Resources Sub-CoP","PCoP","live",NA,17,"no",181,NA
+"81",82,"EconSubCoP","Economics Sub-CoP","PCoP","live",NA,17,"no",182,NA
+"82",83,"EcoSubCoP","Ecosystem Restoration Sub-CoP","PCoP","live",NA,17,"no",183,NA
+"83",84,"PlanSubCoP","Plan Formulation Sub-CoP","PCoP","live",NA,17,"no",184,NA
