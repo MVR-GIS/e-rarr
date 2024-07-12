@@ -45,10 +45,10 @@ erisk_orgs      <- ROracle::dbReadTable(con_roracle,
 # Disconnect from the database
 ROracle::dbDisconnect(con_roracle)
 
-usethis::use_data(erisk_project,
-                  milestonedf,
-                  erisk_item,
-                  risk_transact,
-                  risk_treat,
-                  erisk_orgs,
-                  overwrite = TRUE)
+# usethis::use_data(erisk_project,
+#                   milestonedf,
+#                   erisk_item,
+#                   risk_transact,
+#                   risk_treat,
+#                   erisk_orgs,
+#                   overwrite = TRUE)
