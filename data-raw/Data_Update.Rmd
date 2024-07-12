@@ -59,6 +59,8 @@ risk_treat <- ROracle::dbReadTable(con_roracle,
                                              "ERR_RISKTREATMENTLIST_FULL")
 erisk_orgs      <- ROracle::dbReadTable(con_roracle, 
                                              "ERR_TBLUSACEORGS")
+risk_modeled <-ROracle::dbReadTable(con_roracle, 
+                                             "ERR_RISKMODELED")
 
 # Disconnect from the database
 ROracle::dbDisconnect(con_roracle)
@@ -75,6 +77,7 @@ write.csv(erisk_item,"C:/workspace/erarr/inst/app/data/erisk_item.csv")
 write.csv(risk_transact,"C:/workspace/erarr/inst/app/data/risk_transact.csv")
 write.csv(risk_treat,"C:/workspace/erarr/inst/app/data/risk_treat.csv")
 write.csv(erisk_orgs,"C:/workspace/erarr/inst/app/data/erisk_orgs.csv")
+write.csv(risk_modeled,"C:/workspace/erarr/inst/app/data/erisk_modeled.csv")
 
 usethis::use_data(erisk_project,
                   milestonedf,
@@ -82,5 +85,6 @@ usethis::use_data(erisk_project,
                   risk_transact,
                   risk_treat,
                   erisk_orgs,
+                  risk_modeled,
                   overwrite = TRUE)
 ```
