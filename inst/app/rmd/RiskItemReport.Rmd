@@ -129,7 +129,8 @@ risk_item<-filter(RiskImpactTable, RiskImpactTable$RISK_NAME_ID == params$riskID
                   RiskImpactTable$P2_NUMBER.x == params$p2ID)
 risk_treatment<-filter(risk_treat, risk_treat$PROJECT_NAME == params$projID, 
                        risk_treat$RISK_NAME_ID == params$riskID)
-
+risk_model<-filter(risk_modeled, risk_modeled$PROJECT_ID == risk_item$PROJECT_ID, 
+                       risk_modeled$RISK_ID == risk_item$RISK_ID)
 ```
 
 
@@ -179,90 +180,90 @@ knitr::include_graphics("mileplot.png")
 ###### **Lead Discipline:** `r risk_item$DISCIPLINE`
 
 `r risk_item$RISK_STATEMENT` 
+
+`r if(!monte_condit){"Monte carlo simulations have not been completed for this risk item"}`
 <center>
 ```{r proj montepies, message=FALSE, warning=FALSE, echo=FALSE,fig.height=1.75, fig.width=7, eval=monte_condit}
 monteframe <- data.frame(risk_model)
-monteframe =monteframe |> 
-  mutate(
-      'costcolor' = case_when(
-        COST_RISKRANKING == 1 ~ 'rgb(31,120,180)',
-        COST_RISKRANKING == 2 ~ 'rgb(51,160,44)',
-        COST_RISKRANKING == 3 ~ 'rgb(255,127,0)',
-        COST_RISKRANKING == 4 ~ 'rgb(227,26,28)'
-      ),
-      'schedulecolor' = case_when(
-        SCHEDULE_RISKRANKING == 1 ~ 'rgb(31,120,180)',
-        SCHEDULE_RISKRANKING == 2 ~ 'rgb(51,160,44)',
-        SCHEDULE_RISKRANKING == 3 ~ 'rgb(255,127,0)',
-        SCHEDULE_RISKRANKING == 4 ~ 'rgb(227,26,28)'
-      ),
-         'outcomecolor' = case_when(
-        OUTCOME_RISKRANKING == 1 ~ 'rgb(31,120,180)',
-        OUTCOME_RISKRANKING == 2 ~ 'rgb(51,160,44)',
-        OUTCOME_RISKRANKING == 3 ~ 'rgb(255,127,0)',
-        OUTCOME_RISKRANKING == 4 ~ 'rgb(227,26,28)'
-      )
-    )
-
-ranking = c("Opportunity", "Low", "Moderate","High")
+ranking = c("Opportunity", "Low", "Medium","High")
+colors = c('rgb(31,120,180)','rgb(51,160,44)','rgb(255,127,0)','rgb(227,26,28)')
 cost_values = c(monteframe$COST_PROBOPP,monteframe$COST_PROBLOW,monteframe$COST_PROBMOD,monteframe$COST_PROBHIGH)
-cost_monte_table <- data.frame(ranking, cost_values)
-schedule_monte_table <-data.frame(ranking,"schedule_values"= c(monteframe$SCHEDULE_PROBOPP,monteframe$SCHEDULE_PROBLOW,monteframe$SCHEDULE_PROBMOD,monteframe$SCHEDULE_PROBHIGH))
-performance_monte_table<-data.frame(ranking,"performance_values" = c(monteframe$OUTCOME_PROBOPP,monteframe$OUTCOME_PROBLOW,monteframe$OUTCOME_PROBMOD,monteframe$OUTCOME_PROBHIGH))
-
-
+schedule_values= c(monteframe$SCHEDULE_PROBOPP,monteframe$SCHEDULE_PROBLOW,monteframe$SCHEDULE_PROBMOD,monteframe$SCHEDULE_PROBHIGH)
+performance_values = c(monteframe$OUTCOME_PROBOPP,monteframe$OUTCOME_PROBLOW,monteframe$OUTCOME_PROBMOD,monteframe$OUTCOME_PROBHIGH)
+monte_pies = data.frame(ranking,colors, round(cost_values,2), round(schedule_values,2),round(performance_values,2))
+names(monte_pies) = c("ranking", "colors","cost_values", "schedule_values","performance_values")
+cost_label <- monte_pies |>
+  slice_max(cost_values)|>
+  select(ranking,colors)
+schedule_label <- monte_pies|>
+  slice_max(schedule_values)|>
+  select(ranking,colors)
+performance_label <- monte_pies|>
+  slice_max(performance_values)|>
+  select(ranking, colors)
 
 
 monte_pie<-plot_ly() |>
   add_pie(
-    cost_monte_table,
-    value = ~cost_monte_table$cost_values,
-    labels =~cost_monte_table$ranking,
-    title = "Opportunity",
+    monte_pies,
+    value = ~monte_pies$cost_values,
+    labels =~monte_pies$ranking,
+    title = list(text = paste(cost_label$ranking),font= list(size = 13, color=cost_label$colors)),
     textinfo = 'none',
     name = " ",
+    marker = list(colors = ~monte_pies$colors),
     domain = list(row = 0, column = 0),
     hole = 0.7
   ) |>
+  layout(annotations = list(
+      x = c(0.12, 0.10),
+      y = c(1.2,-0.15),
+      xref = "paper",
+      yref = "paper",
+      showarrow = F,
+      text = c("Cost",paste("Mean:",formattable::currency(monteframe$COST_MEAN,digits = 0)))))|>
   add_pie(
-    schedule_monte_table,
-    value = ~schedule_monte_table$values,
-    labels =~schedule_monte_table$ranking,
-    title = "Opportunity",
+    monte_pies,
+    value = ~monte_pies$schedule_values,
+    labels =~monte_pies$ranking,
+    title = list(text = paste(schedule_label$ranking),font = list(size = 13,color = schedule_label$colors)),
     textinfo = 'none',
     name = " ",
     domain = list(row = 0, column = 1),
     hole = 0.7,
-    marker = list(colors = "#1F78B4"),
+    marker = list(colors = ~monte_pies$colors),
     legend=F
-  ) |>
+  )|>
+  layout(annotations = list(x=c(0.49,0.485), y=c(1.2,-0.15), xref="paper", yref = "paper", showarrow = F,
+                                                text = c("Schedule",paste("Mean:", monteframe$SCHEDULE_MEAN,"Days")))) |>
   add_pie(
-    performance_monte_table,
-    value = ~performance_monte_table$values,
-    labels =~performance_monte_table$ranking,
-    title = "Low",
+    monte_pies,
+    value = ~monte_pies$performance_values,
+    labels =~monte_pies$ranking,
+    title = list(text=paste(performance_label$ranking), font = list(size = 13,color = performance_label$colors)),
     textinfo = 'none',
     name = " ",
     domain = list(row = 0, column = 2),
     hole = 0.7,
-    marker = list(colors = "#33A02C"),
+    marker = list(colors = ~monte_pies$colors),
     legend=F
-  )
+  )|>
+  layout(annotations = list(x=c(0.9), y=c(1.2), xref ="paper", yref="paper",showarrow = F,text = c("Performance")))
 
   pies<-monte_pie |>
     plotly::layout(title = "",
                     showlegend = F,
       margin=list(l=20,r=20,b=20, t=25, pad=0),
                    grid=list(rows=1, columns=3),
-           showlegend=F,
-           annotations = list(
-      x = c(0.125, 0.49, 0.9, 0.12, 0.485),
-      y = c(1.2, 1.2, 1.2, -0.15,-0.15),
-      xref = "paper",
-      yref = "paper",
-      showarrow = F,
-      text = c("Cost", "Schedule", "Performance", "Mean: $0",
-               "Mean: 0 Days")))
+           showlegend=F)
+      #      annotations = list(
+      # x = c(0.10, 0.49, 0.9, 0.12, 0.485),
+      # y = c(1.2, 1.2, 1.2, -0.15,-0.15),
+      # xref = "paper",
+      # yref = "paper",
+      # showarrow = F,
+      # text = c("Cost", "Schedule", "Performance", paste("Mean:",formattable::currency(monteframe$COST_MEAN,digits = 0)),
+      #          paste("Mean:", monteframe$SCHEDULE_MEAN,"Days"))))
   pies
 ```
 </center>
