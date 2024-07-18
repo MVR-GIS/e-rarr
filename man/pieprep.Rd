@@ -17,6 +17,6 @@ values must be one of: "High", "Medium", "Low", or
 A data.frame of colors for each risk rank.
 }
 \description{
-Preps data for pie charts. Sets the color for each Cost or 
-Schedule risk rank.
+Preps data for pie charts. Counts the values and sets the 
+color for each of the rank levels in the specified 'rankcol`.
 }
