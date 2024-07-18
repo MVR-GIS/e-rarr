@@ -8,5 +8,6 @@
 
 library(testthat)
 library(erarr)
+library(readr)
 
 test_check("erarr")
