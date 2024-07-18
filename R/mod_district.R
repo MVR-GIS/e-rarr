@@ -6,9 +6,8 @@
 #'
 #' @noRd 
 #'
-#' @importFrom shiny NS tagList 
+#' @importFrom shiny NS selectizeInput
 #' 
-
 
 district_ui<- function(id){
   ns<-NS(id)

@@ -10,7 +10,7 @@
 #'
 #' @return A data.frame of colors for each risk rank.
 #'
-#' @importFrom dplyr group_by summarize filter arrange mutate
+#' @importFrom dplyr group_by summarize filter arrange mutate case_when n
 #' @importFrom rlang .data enquo
 #' @export
 #'
