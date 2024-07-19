@@ -62,22 +62,20 @@ erisk_orgs      <- ROracle::dbReadTable(con_roracle,
 risk_modeled <-ROracle::dbReadTable(con_roracle, 
                                              "ERR_RISKMODELED")
 
+
+
 # Disconnect from the database
 ROracle::dbDisconnect(con_roracle)
 ```
 
 ```{r save-package-data}
-
-
-
-
-write.csv(erisk_project,"C:/workspace/erarr/inst/app/data/erisk_project.csv")
-write.csv(milestonedf,"C:/workspace/erarr/inst/app/data/milestonedf.csv")
-write.csv(erisk_item,"C:/workspace/erarr/inst/app/data/erisk_item.csv")
-write.csv(risk_transact,"C:/workspace/erarr/inst/app/data/risk_transact.csv")
-write.csv(risk_treat,"C:/workspace/erarr/inst/app/data/risk_treat.csv")
-write.csv(erisk_orgs,"C:/workspace/erarr/inst/app/data/erisk_orgs.csv")
-write.csv(risk_modeled,"C:/workspace/erarr/inst/app/data/erisk_modeled.csv")
+readr::write_csv(erisk_project,"C:/workspace/erarr/inst/app/data/erisk_project.csv")
+readr::write_csv(milestonedf,"C:/workspace/erarr/inst/app/data/milestonedf.csv")
+readr::write_csv(erisk_item,"C:/workspace/erarr/inst/app/data/erisk_item.csv")
+readr::write_csv(risk_transact,"C:/workspace/erarr/inst/app/data/risk_transact.csv")
+readr::write_csv(risk_treat,"C:/workspace/erarr/inst/app/data/risk_treat.csv")
+readr::write_csv(erisk_orgs,"C:/workspace/erarr/inst/app/data/erisk_orgs.csv")
+readr::write_csv(risk_modeled,"C:/workspace/erarr/inst/app/data/erisk_modeled.csv")
 
 usethis::use_data(erisk_project,
                   milestonedf,
