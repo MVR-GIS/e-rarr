@@ -8,7 +8,9 @@
 #'
 #' @examples
 #' list_to_li(c("a", "b"))
+#' 
 #' @importFrom shiny tags tagAppendAttributes tagList
+#' 
 list_to_li <- function(list, class = NULL) {
   if (is.null(class)) {
     tagList(
@@ -34,6 +36,8 @@ list_to_li <- function(list, class = NULL) {
     tagList(res)
   }
 }
+
+
 #' Turn an R list into corresponding HTML paragraph tags
 #'
 #' @param list an R list
@@ -44,6 +48,7 @@ list_to_li <- function(list, class = NULL) {
 #'
 #' @examples
 #' list_to_p(c("This is the first paragraph", "this is the second paragraph"))
+#' 
 #' @importFrom shiny tags tagAppendAttributes tagList
 #'
 list_to_p <- function(list, class = NULL) {
@@ -71,6 +76,7 @@ list_to_p <- function(list, class = NULL) {
     tagList(res)
   }
 }
+
 
 #' @importFrom shiny tags tagAppendAttributes tagList
 named_to_li <- function(list, class = NULL) {
@@ -114,6 +120,7 @@ named_to_li <- function(list, class = NULL) {
   }
 }
 
+
 #' Remove a tag attribute
 #'
 #' @param tag the tag
@@ -125,6 +132,8 @@ named_to_li <- function(list, class = NULL) {
 #' @examples
 #' a <- shiny::tags$p(src = "plop", "pouet")
 #' tagRemoveAttributes(a, "src")
+#' #' @importFrom shiny tagList
+#' 
 tagRemoveAttributes <- function(tag, ...) {
   attrs <- as.character(list(...))
   for (i in seq_along(attrs)) {
@@ -147,6 +156,7 @@ tagRemoveAttributes <- function(tag, ...) {
 #' b <- shiny::actionButton("go_filter", "go")
 #' undisplay(b)
 #' @importFrom shiny tagList
+#' 
 undisplay <- function(tag) {
   # if not already hidden
   if (
@@ -329,6 +339,8 @@ col_1 <- function(...) {
 #'
 #'   shinyApp(ui, server)
 #' }
+#' @importFrom shiny tag
+#' 
 make_action_button <- function(tag, inputId = NULL) {
   # some obvious checks
   if (!inherits(tag, "shiny.tag")) stop("Must provide a shiny tag.")

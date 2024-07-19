@@ -14,20 +14,27 @@ BugReports: https://github.com/MVR-GIS/erarr/issues
 Depends: 
     R (>= 2.10)
 Imports: 
+    bsicons,
     bslib,
     config,
     dplyr,
     DT,
+    forcats,
+    ggplot2,
     golem,
     plotly,
     readr,
     rlang,
-    shinyjs,
     rmarkdown,
+    scales,
     shiny,
+    shinyalert,
     shinycssloaders,
+    shinyjs,
+    stringr,
     waiter
 Suggests: 
+    htmlwidgets,
     knitr,
     spelling,
     testthat (>= 3.0.0)
@@ -36,4 +43,4 @@ VignetteBuilder:
 Encoding: UTF-8
 Language: en-US
 LazyData: true
-RoxygenNote: 7.3.1
+RoxygenNote: 7.3.2

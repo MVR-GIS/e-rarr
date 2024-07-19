@@ -7,35 +7,17 @@
 pie_plots(cost_pie, schedule_pie, perform_pie)
 }
 \arguments{
-\item{riskitem}{data frame; A data frame of a filtered risk item.}
+\item{cost_pie}{data frame; A data frame of filtered cost risks}
 
-\item{milestonedf}{data frame; A data frame of phase-milestone pairings}
+\item{schedule_pie}{data frame;}
+
+\item{perform_pie}{data frame;}
 }
 \value{
-A ggplot of current milestone on timeline of all project milestones.
+A plotly plot containing 3 pie charts of project risk.
 }
 \description{
-Preps data for pie charts
-}
-\examples{
-erisk_item <- read_csv("inst/app/data/RISKLIST_FULL.csv",show_col_types = FALSE)
-risk_item_db<-data.frame(erisk_item)
-erisk_project <- read_csv("inst/app/data/PROJECTLIST_FULL.csv",show_col_types = FALSE)
-risk_project_db<-data.frame(erisk_project)
-
-
-
-erisk_ItemProj<-left_join(risk_item_db, risk_project_db, by = "PROJECT_ID")
-
-
-RiskImpactTable<-risk_item_db[,c("PROJECT_NAME", "RISK_NAME", "USACE_ORGANIZATION","P2_NUMBER")]
-riskpies <- erisk_ItemProj |>
-  select("P2_NUMBER.x", "RISK_IDENTIFIER","PROJECT_NAME.x","RISK_NAME","RISKCATEGORY",
-         "DISCIPLINE", "USACE_ORGANIZATION.x", "COST_RANK_DESC", "SCHEDULE_RANK_DESC", "PERFORMANCE_RANK_DESC")
-
-
-
-#example
-milestone_plot<-pieplot_prep(riskdf=risk_item, rankcol)
-
+Creates a figure of three pie charts for the specified 
+data frames of Cost, Schedule, and Performance risks according to risk 
+category ("High", "Medium", "Low", "Opportunity").
 }
