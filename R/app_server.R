@@ -11,13 +11,11 @@ library(shiny)
 library(readr)
 library(dplyr)
 library(shinycssloaders)
-library(shinyjs)
 library(shinyalert)
 library(bslib)
 
-erisk_item <-read_csv("./inst/app/data/RISKLIST_FULL_0320245.csv", show_col_types = FALSE, col_types=cols(P2_SUB_IDENTIFIER =  col_double()))
+erisk_item <-read.csv("./inst/app/data/erisk_item.csv")
 risk_item_db <- data.frame(erisk_item)
-
 
 
 
@@ -316,6 +314,9 @@ in_react_frame<-reactiveVal(riskpies)
       enable("RiskItemCard")
     }
   })
+  
+
+
     
   
 

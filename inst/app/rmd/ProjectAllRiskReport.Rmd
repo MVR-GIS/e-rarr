@@ -54,10 +54,9 @@ library(english)
 library(DT)
 library(webshot)
 options(scipen = 999)
-
-erisk_item <- erarr::erisk_item
+erisk_item <- read.csv("../data/erisk_item.csv")
 risk_item_db<-data.frame(erisk_item)
-erisk_project <- erarr::erisk_project
+erisk_project <- read_csv("../data/erisk_project.csv", show_col_types = FALSE)
 risk_project_db<-data.frame(erisk_project)
 
 risk_item_db<-risk_item_db |>

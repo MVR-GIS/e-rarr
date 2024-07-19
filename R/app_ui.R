@@ -2,28 +2,11 @@
 #'
 #' @param request Internal parameter for `{shiny}`.
 #'     DO NOT REMOVE.
-#' @import shiny
-#' @import plotly
-#' @import shinyjs
 #' @noRd
+# @import shiny
+# @import plotly
+# @import shinyjs
 
-library(shinycssloaders)
-library(shinyjs)
-library(readr)
-library(dplyr)
-library(bslib)
-library(bsicons)
-library(shinyalert)
-
-
-
-erisk_item <-
-  read_csv("./inst/app/data/RISKLIST_FULL_0320245.csv", show_col_types = FALSE, col_types=cols(P2_SUB_IDENTIFIER = col_double()))
-risk_item_db <- data.frame(erisk_item)
-erisk_project <-
-  read_csv("./inst/app/data/PROJECTLIST_FULL_03226024.csv", show_col_types=FALSE)
-risk_project_db <- data.frame(erisk_project)
-shiny::addResourcePath(prefix = "www", directoryPath = "./inst/app/www")
 
 RiskImpactTable <- risk_item_db |>
   dplyr::select(
@@ -40,7 +23,7 @@ RiskImpactTable <- risk_item_db |>
   ) |>
   mutate(P2_SUB_IDENTIFIER = ifelse(is.na(P2_SUB_IDENTIFIER), "", P2_SUB_IDENTIFIER))|>
   mutate(RISK_NAME_ID = paste(RISK_IDENTIFIER,RISK_NAME))
- 
+
 
 
 app_ui <- function(request) {
@@ -57,6 +40,7 @@ app_ui <- function(request) {
                           data-bs-animation: FALSE;}
                           .action-button {border-radius: 12px;}
                           "))),
+
     fluidPage(
       shinyjs::useShinyjs(),
       theme = bslib::bs_theme(bootswatch = "cosmo", version=5),
@@ -211,6 +195,7 @@ app_ui <- function(request) {
                                   height = 165,
                                   full_screen = FALSE,id="RiskItemCard",
                                   card_header("Risk Item Report",
+                                              tooltip(bsicons::bs_icon("info-circle"), "Select a Risk Item", placement="right", id="tooltip"),
                                               shiny::downloadButton(
                                                 outputId="download_RiskItem",
                                                 label="Download",
@@ -220,9 +205,9 @@ app_ui <- function(request) {
                                                 border-color: transparent;"
                                               )),
                                   card_body(
-                                    tooltip(trigger = tags$button(id = "RiskItem", class="action-button",tags$img(src="www/RiskItem.png", height='165px', max_width = '100%')),
-                                            "Select a risk item", id="tooltip"
-                                  )))
+                                  tags$button(id = "RiskItem", class="action-button",tags$img(src="www/RiskItem.png", height='165px', max_width = '100%'))
+                                            
+                                  ))
                                 ,
                                 
                       )
