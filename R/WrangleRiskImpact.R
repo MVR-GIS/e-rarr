@@ -10,17 +10,16 @@
 #' #example
 #' milestone_plot<-pieplot_prep(riskdf=risk_item, rankcol)
 #'
-#' @importFrom dplyr mutate select arrange
-#' @importFrom rlang .data enquo
+#' @importFrom rlang enquo
 #' @export
 #'
 impactcolumn <- function(risk_item_table, impacttype) {
   colName <- as.name(impacttype)
   colnameq <- rlang::enquo(colName)
   
-
   
-  if (paste("risk_item_table$NO_",colnameq,"_IMPACT") == 1) {
+  
+  if (paste("risk_item_table$NO_", colnameq, "_IMPACT") == 1) {
     "No cost impact is anticipated"
   } else if (risk_item_table$COST_IMPACT_DISTTYPE == 299) {
     risk_item_table$COST_IMPACT_MOSTLIKELY
@@ -39,4 +38,3 @@ impactcolumn <- function(risk_item_table, impacttype) {
     )
   }
 }
-

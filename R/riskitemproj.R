@@ -14,16 +14,16 @@
 #'
 #'
 #' #example
-#' riskitemproj<-riskitemproj(riskdf, projdf)
+#' riskitemproj <- riskitemproj(riskdf, projdf)
 #'
-#' @importFrom dplyr mutate select left_join
+#' @importFrom dplyr select left_join
 #' @export
 #'
-riskitemproj<- function(riskdf,projdf){
-  riskdf<-data.frame(riskdf)
-  projdf<-data.frame(projdf)
-eriskitemproj<-riskdf |>
-    left_join(projdf|>
+riskitemproj <- function(riskdf, projdf) {
+  riskdf <- data.frame(riskdf)
+  projdf <- data.frame(projdf)
+  eriskitemproj <- riskdf |>
+    left_join(projdf |>
                 select(PROJECT_ID, PRIMARYMISSION))
-return (eriskitemproj)
+  return (eriskitemproj)
 }
