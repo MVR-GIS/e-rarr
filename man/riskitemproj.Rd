@@ -24,6 +24,6 @@ projdf <- read_csv("inst/app/data/PROJECTLIST_FULL.csv",show_col_types = FALSE)
 
 
 #example
-riskitemproj<-riskitemproj(riskdf, projdf)
+riskitemproj <- riskitemproj(riskdf, projdf)
 
 }
