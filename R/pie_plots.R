@@ -41,6 +41,7 @@ pie_plots<- function(cost_pie,schedule_pie,perform_pie){
       title=list(text='<b> Cost <br> </b>', font = list(size = 15)),
       name= " ",
       textinfo='value',
+      hoverinfo = 'label+percent',
       sort=FALSE,
       textfont = list(color = '#FFFFFF', size=15),
       domain = list(row = 0, column = 0),
@@ -55,6 +56,7 @@ pie_plots<- function(cost_pie,schedule_pie,perform_pie){
       sort = FALSE,
       name= " ",
       textinfo='value',
+      hoverinfo = 'label+percent',
       title =list(text='<b> Schedule <br> </b>', font = list(size = 15)),
       domain = list(row = 0, column = 1),
       marker = list(
@@ -68,6 +70,7 @@ pie_plots<- function(cost_pie,schedule_pie,perform_pie){
       title = list(text='<b> Performance <br> </b>', font = list(size = 15)),
       name= " ",
       textinfo='value',
+      hoverinfo = 'label+percent',
       textfont = list(color = '#FFFFFF', size=15),
       sort = FALSE,
       domain = list(row = 0, column = 2),
