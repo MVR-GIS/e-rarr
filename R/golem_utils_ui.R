@@ -132,7 +132,7 @@ named_to_li <- function(list, class = NULL) {
 #' @examples
 #' a <- shiny::tags$p(src = "plop", "pouet")
 #' tagRemoveAttributes(a, "src")
-#' #' @importFrom shiny tagList
+#' @importFrom shiny tagList
 #' 
 tagRemoveAttributes <- function(tag, ...) {
   attrs <- as.character(list(...))

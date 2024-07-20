@@ -2,10 +2,14 @@
 #'
 #' @param input,output,session Internal parameters for {shiny}.
 #'     DO NOT REMOVE.
-#' @import shiny
 #' @noRd
 #'
-#'
+#' @importFrom dplyr select mutate filter
+#' @importFrom shiny addResourcePath reactive observe observeEvent 
+#'                   updateSelectizeInput reactiveVal isTruthy req
+#' @importFrom shinyjs show hide disable enable
+#' @importFrom DT renderDT datatable 
+#' @importFrom shinyalert shinyalert
 #'
 library(shiny)
 library(readr)
@@ -13,6 +17,7 @@ library(dplyr)
 library(shinycssloaders)
 library(shinyalert)
 library(bslib)
+library(shinyjs)
 
 erisk_item <-read.csv("./inst/app/data/erisk_item.csv")
 risk_item_db <- data.frame(erisk_item)
@@ -21,39 +26,40 @@ risk_item_db <- data.frame(erisk_item)
 
 shiny::addResourcePath(prefix = "www", directoryPath = "./inst/app/www")
 
-RiskImpactTable <-risk_item_db |> dplyr::select("PROJECT_NAME",
-                                               "RISK_IDENTIFIER",
-                                               "RISK_NAME",
-                                               "USACE_ORGANIZATION",
-                                               "P2_NUMBER",
-                                               "LIFECYCLEPHASENAME",
-                                               "MILESTONE",
-                                               "RISKCATEGORY",
-                                               "DISCIPLINE",
-                                               "P2_SUB_IDENTIFIER")|>
-  mutate(P2_SUB_IDENTIFIER = ifelse(is.na(P2_SUB_IDENTIFIER), "", P2_SUB_IDENTIFIER))|>
+RiskImpactTable <- risk_item_db |> 
+  dplyr::select("PROJECT_NAME",
+                "RISK_IDENTIFIER",
+                 "RISK_NAME",
+                 "USACE_ORGANIZATION",
+                 "P2_NUMBER",
+                 "LIFECYCLEPHASENAME",
+                 "MILESTONE",
+                 "RISKCATEGORY",
+                 "DISCIPLINE",
+                 "P2_SUB_IDENTIFIER") |>
+  mutate(P2_SUB_IDENTIFIER = ifelse(is.na(P2_SUB_IDENTIFIER), "", 
+                                    P2_SUB_IDENTIFIER)) |>
   mutate(RISK_NAME_ID = paste(RISK_IDENTIFIER,RISK_NAME))
 
 RiskImpactTable <- risk_item_db
 
 riskpies <- risk_item_db |>
-  dplyr::select(
-    "P2_NUMBER",
-    "RISK_IDENTIFIER",
-    "PROJECT_NAME",
-    "RISK_NAME",
-    "RISKCATEGORY",
-    "DISCIPLINE",
-    "USACE_ORGANIZATION",
-    "COST_RANK_DESC",
-    "SCHEDULE_RANK_DESC",
-    "PERFORMANCE_RANK_DESC",
-    "LIFECYCLEPHASENAME",
-    "MILESTONE",
-    "P2_SUB_IDENTIFIER"
-  )|>
-  mutate_if(is.character, as.factor)|>
-  mutate(P2_SUB_IDENTIFIER = ifelse(is.na(P2_SUB_IDENTIFIER), "", P2_SUB_IDENTIFIER))|>
+  dplyr::select("P2_NUMBER",
+                "RISK_IDENTIFIER",
+                "PROJECT_NAME",
+                "RISK_NAME",
+                "RISKCATEGORY",
+                "DISCIPLINE",
+                "USACE_ORGANIZATION",
+                "COST_RANK_DESC",
+                "SCHEDULE_RANK_DESC",
+                "PERFORMANCE_RANK_DESC",
+                "LIFECYCLEPHASENAME",
+                "MILESTONE",
+                "P2_SUB_IDENTIFIER") |>
+  mutate_if(is.character, as.factor) |>
+  mutate(P2_SUB_IDENTIFIER = ifelse(is.na(P2_SUB_IDENTIFIER), "", 
+                                    P2_SUB_IDENTIFIER)) |>
   mutate(RISK_NAME_ID = paste(RISK_IDENTIFIER,RISK_NAME))
 
 
@@ -74,21 +80,20 @@ app_server <- function(input, output, session) {
   
   observe({
     updateSelectizeInput(session,'districtInput',
-                         choices =c("", sort(unique(num()))), 
-                         options=list(maxOptions = 40
-                                      ,server = TRUE,placeholder = 'Select a District'
-                                      ))
+                         choices = c("", sort(unique(num()))), 
+                         options = list(maxOptions = 40, 
+                                        server = TRUE, 
+                                        placeholder = 'Select a District')
+                         )
   })
   
 
-  
-  
   projects <- reactive({
     RiskImpactTable |>
       filter(RiskImpactTable$USACE_ORGANIZATION == input$districtInput,
-    conditional(input$P2Input != "" ,RiskImpactTable$P2_NUMBER == input$P2Input))
+             conditional(input$P2Input != "" , 
+                         RiskImpactTable$P2_NUMBER == input$P2Input))
   })
-  
   
 
   observeEvent(projects(), {
@@ -102,12 +107,10 @@ app_server <- function(input, output, session) {
   
   P2s <- reactive({
     RiskImpactTable |>
-      filter(
-        RiskImpactTable$USACE_ORGANIZATION == input$districtInput,
-        conditional(input$projectInput != "", RiskImpactTable$PROJECT_NAME == input$projectInput)
-      )
+      filter(RiskImpactTable$USACE_ORGANIZATION == input$districtInput,
+             conditional(input$projectInput != "", 
+                         RiskImpactTable$PROJECT_NAME == input$projectInput))
   })
-  
   
   
   observeEvent(P2s(), {
@@ -125,19 +128,14 @@ app_server <- function(input, output, session) {
   unique()
   
   
-  
-  
   observe({
-    if (input$projectInput %in% projsub$PROJECT_NAME || input$P2Input %in% projsub$P2_NUMBER){
+    if (input$projectInput %in% projsub$PROJECT_NAME || 
+        input$P2Input %in% projsub$P2_NUMBER){
       shinyjs::show("SubIDInput")
     } else 
       shinyjs::hide("SubIDInput")
   })
 
-
-  
-  
-  
   
   observeEvent(risks(), {
     P2sub <- sort(risks()$P2_SUB_IDENTIFIER)
@@ -152,25 +150,25 @@ app_server <- function(input, output, session) {
     RiskImpactTable |>
       filter(
         RiskImpactTable$P2_NUMBER == input$P2Input |
-        RiskImpactTable$PROJECT_NAME == input$projectInput
+          RiskImpactTable$PROJECT_NAME == input$projectInput
       )
   })
   
   riskitems <- reactive({
     RiskImpactTable |>
-      filter(
-        RiskImpactTable$P2_NUMBER == input$P2Input |
-          RiskImpactTable$PROJECT_NAME == input$projectInput,
-        conditional(input$SubIDInput != "", RiskImpactTable$P2_SUB_IDENTIFIER == input$SubIDInput)
+      filter(RiskImpactTable$P2_NUMBER == input$P2Input |
+               RiskImpactTable$PROJECT_NAME == input$projectInput,
+             conditional(input$SubIDInput != "", 
+                         RiskImpactTable$P2_SUB_IDENTIFIER == input$SubIDInput)
       )
   })
   
 
-  observeEvent(riskitems(),{
+  observeEvent(riskitems(), {
     riskitems <- riskitems()$RISK_NAME_ID
     updateSelectizeInput(
       inputId = "riskInput",
-      choices = c("",riskitems),
+      choices = c("", riskitems),
       selected = "")
   })
 
@@ -185,36 +183,37 @@ app_server <- function(input, output, session) {
   })
   
   
-
-
-    
   disciplines<- reactive({
     RiskImpactTable |>
       filter(
         RiskImpactTable$P2_NUMBER == input$P2Input |
-        RiskImpactTable$PROJECT_NAME == input$projectInput,
-        conditional(input$SubIDInput != "", RiskImpactTable$P2_SUB_IDENTIFIER == input$SubIDInput),
-        conditional(input$phaseInput !="", RiskImpactTable$LIFECYCLEPHASENAME == input$phaseInput),
-        conditional(input$mileInput !="", RiskImpactTable$MILESTONE == input$mileInput)
+          RiskImpactTable$PROJECT_NAME == input$projectInput,
+        conditional(input$SubIDInput != "", 
+                    RiskImpactTable$P2_SUB_IDENTIFIER == input$SubIDInput),
+        conditional(input$phaseInput !="", 
+                    RiskImpactTable$LIFECYCLEPHASENAME == input$phaseInput),
+        conditional(input$mileInput != "", 
+                    RiskImpactTable$MILESTONE == input$mileInput)
       )
   })
 
   
   observeEvent(disciplines(), {
     discs <- sort(unique(disciplines()$DISCIPLINE))
-  updateSelectInput(
-    inputId = "disInput",
-    choices = c("", discs),
-    selected = ""
-  )
+    updateSelectInput(
+      inputId = "disInput",
+      choices = c("", discs),
+      selected = ""
+    )
   })
   
   milestones <- reactive({
     RiskImpactTable |>
       filter(
         RiskImpactTable$P2_NUMBER == input$P2Input |
-          RiskImpactTable$PROJECT_NAME == input$projectInput,
-        conditional(input$SubIDInput != "", RiskImpactTable$P2_SUB_IDENTIFIER == input$SubIDInput),
+        RiskImpactTable$PROJECT_NAME == input$projectInput,
+        conditional(input$SubIDInput != "", 
+                    RiskImpactTable$P2_SUB_IDENTIFIER == input$SubIDInput),
         RiskImpactTable$LIFECYCLEPHASENAME == input$phaseInput
       )
   })
@@ -222,7 +221,7 @@ app_server <- function(input, output, session) {
   observe({
     if (is.null(input$phaseInput) || input$phaseInput == ""){
       shinyjs::hide("mileInput")
-    } else{
+    } else {
       shinyjs::show("mileInput")
     }
   })
@@ -239,21 +238,25 @@ app_server <- function(input, output, session) {
     )
   })
   
-
-
    
-in_react_frame<-reactiveVal(riskpies)
+in_react_frame <- reactiveVal(riskpies)
   
-  filtered_frame<-reactive({
-    in_react_frame()|>
-      filter(conditional(input$districtInput != "",riskpies$USACE_ORGANIZATION == input$districtInput),
-             conditional(input$projectInput != "", riskpies$PROJECT_NAME == input$projectInput),
-             conditional(input$SubIDInput != "", riskpies$P2_SUB_IDENTIFIER == input$SubIDInput),
-             conditional(input$P2Input != "", riskpies$P2_NUMBER == input$P2Input),
-             conditional(input$phaseInput !="", riskpies$LIFECYCLEPHASENAME == input$phaseInput),
-             conditional(input$mileInput != "", riskpies$MILESTONE == input$mileInput),
-             conditional(input$disInput !="", riskpies$DISCIPLINE == input$disInput),
-)|>
+  filtered_frame <- reactive({
+    in_react_frame() |>
+      filter(conditional(input$districtInput != "",
+                         riskpies$USACE_ORGANIZATION == input$districtInput),
+             conditional(input$projectInput != "", 
+                         riskpies$PROJECT_NAME == input$projectInput),
+             conditional(input$SubIDInput != "", 
+                         riskpies$P2_SUB_IDENTIFIER == input$SubIDInput),
+             conditional(input$P2Input != "", 
+                         riskpies$P2_NUMBER == input$P2Input),
+             conditional(input$phaseInput !="", 
+                         riskpies$LIFECYCLEPHASENAME == input$phaseInput),
+             conditional(input$mileInput != "", 
+                         riskpies$MILESTONE == input$mileInput),
+             conditional(input$disInput !="", 
+                         riskpies$DISCIPLINE == input$disInput)) |>
       select(
         RISK_IDENTIFIER,
         USACE_ORGANIZATION,
@@ -294,8 +297,8 @@ in_react_frame<-reactiveVal(riskpies)
         "Discipline",
         "Cost Rank",
         "Schedule Rank",
-        "Performance Rank"
-      ),extensions = 'Buttons',
+        "Performance Rank"),
+      extensions = 'Buttons',
       options = list(dom='Bfrtip',
                      buttons = c('csv', 'excel','pdf','print')),
       rownames = FALSE,
@@ -321,45 +324,47 @@ in_react_frame<-reactiveVal(riskpies)
   
 
 observeEvent(input$RiskItem, {
-   req(
-     isTruthy(input$riskInput),
-     isTruthy(input$projectInput) || isTruthy(input$P2Input)
-   ) 
+   req(isTruthy(input$riskInput),
+       isTruthy(input$projectInput) || isTruthy(input$P2Input)) 
    rmarkdown::render(
      "./inst/app/rmd/RiskItemReport.Rmd",
      params = list(
        projID = input$projectInput,
        riskID = input$riskInput,
-       p2ID = input$P2Input
-     ),output_dir ="./inst/app/www"
+       p2ID   = input$P2Input),
+     output_dir ="./inst/app/www"
    )
    
-   
-   shinyalert::shinyalert(html = TRUE, 
-                          text = tagList(tags$iframe(
-                            src="www/RiskItemReport.html", width = 900,  
-               height = 1000,  style = "border:none;")),size = "l",
-               confirmButtonText = "Close Report",
-               closeOnClickOutside = TRUE)
+   shinyalert::shinyalert(
+                 html = TRUE, 
+                 text = tagList(tags$iframe(src="www/RiskItemReport.html", 
+                                            width = 900,  
+                                            height = 1000,  
+                                            style = "border:none;")), 
+                 size = "l",
+                 confirmButtonText = "Close Report",
+                 closeOnClickOutside = TRUE)
  })
- 
  
 
 observeEvent(input$Proj, {
   req(isTruthy(input$projectInput) || isTruthy(input$P2Input))
   rmarkdown::render(
     "./inst/app/rmd/ProjectAllRiskReport.Rmd",
-    params = list(
-      projID = input$projectInput,
-      p2ID = input$P2Input,
-      p2sub = input$SubIDInput
-    ),output_dir ="./inst/app/www"
+    params = list(projID = input$projectInput, 
+                  p2ID = input$P2Input,
+                  p2sub = input$SubIDInput),
+    output_dir ="./inst/app/www"
   )
- shinyalert::shinyalert(html = TRUE, text = tagList(tags$iframe(
-   src="www/ProjectAllRiskReport.html", width = 900, height = 1000,  
-   style = "border:none;")),
-                        size = "l",confirmButtonText = "Close Report",
-                        closeOnClickOutside = TRUE)
+ shinyalert::shinyalert(
+               html = TRUE, 
+               text = tagList(tags$iframe(src="www/ProjectAllRiskReport.html", 
+                                          width = 900, 
+                                          height = 1000, 
+                                          style = "border:none;")),
+               size = "l", 
+               confirmButtonText = "Close Report", 
+               closeOnClickOutside = TRUE)
    })
 
  observeEvent(input$AllRisk, {
@@ -469,8 +474,6 @@ observeEvent(input$Proj4s, {
     }
   )
   
-  
-  
-  
-  
+
+
 }
