@@ -3,13 +3,20 @@
 #' @param request Internal parameter for `{shiny}`.
 #'     DO NOT REMOVE.
 #' @noRd
-# @import shiny
-# @import plotly
-# @import shinyjs
-
+#' 
+#' @importFrom shiny fluidPage navbarPage conditionalPanel mainPanel 
+#'                   sidebarPanel tabPanel tabsetPanel sidebarLayout 
+#'                   selectizeInput downloadButton
+#'                   tag tags tagList div img h6
+#' @importFrom shinyjs useShinyjs hidden
+#' @importFrom dplyr select mutate filter
+#' @importFrom bslib bs_theme layout_column_wrap card card_header card_body 
+#'                   tooltip
+#' @importFrom plotly plotlyOutput
+#' @importFrom DT DTOutput
 
 RiskImpactTable <- risk_item_db |>
-  dplyr::select(
+  select(
     "PROJECT_NAME",
     "RISK_IDENTIFIER",
     "RISK_NAME",
@@ -21,7 +28,8 @@ RiskImpactTable <- risk_item_db |>
     "DISCIPLINE",
     "P2_SUB_IDENTIFIER"
   ) |>
-  mutate(P2_SUB_IDENTIFIER = ifelse(is.na(P2_SUB_IDENTIFIER), "", P2_SUB_IDENTIFIER))|>
+  mutate(P2_SUB_IDENTIFIER = ifelse(is.na(P2_SUB_IDENTIFIER), "", 
+                                    P2_SUB_IDENTIFIER))|>
   mutate(RISK_NAME_ID = paste(RISK_IDENTIFIER,RISK_NAME))
 
 
@@ -218,23 +226,3 @@ app_ui <- function(request) {
                  ), selected = "Project")
     )
   )}
-
-#' Add external Resources to the Application
-#'
-#' This function is internally used to add external
-#' resources inside the Shiny application.
-#'
-#' @import shiny
-#' @importFrom golem add_resource_path activate_js favicon bundle_resources
-#' @noRd
-golem_add_external_resources <- function() {
-  add_resource_path("www",
-                    app_sys("app/www"))
-  
-  tags$head(favicon(ext = 'png'),
-            bundle_resources(path = app_sys("app/www"),
-                             app_title = "erisk")
-            # Add here other external resources
-            # for example, you can add shinyalert::useShinyalert())
-  )
-  }
