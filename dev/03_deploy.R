@@ -33,7 +33,15 @@ golem::add_shinyserver_file()
 
 ## Docker ----
 ## If you want to deploy via a generic Dockerfile
-golem::add_dockerfile(port = 3838)
+#golem::add_dockerfile(port = 3838)
+golem::add_dockerfile_with_renv(port = 3838)
+
+# In Terminal on computer with docker installed, run the following:
+# docker build -f Dockerfile --progress=plain -t erarr_base .
+# docker build -f Dockerfile --progress=plain -t erarr:latest .
+# docker run -p 3838:3838 erarr:latest
+# then go to 127.0.0.1:3838
+
 
 ## If you want to deploy to ShinyProxy
 golem::add_dockerfile_with_renv_shinyproxy()
