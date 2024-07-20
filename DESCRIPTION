@@ -1,14 +1,22 @@
 Package: erarr
 Title: A package to support the Enterprise Risk Analysis Reporting
     Application
-Version: 0.0.0.9000
-Authors@R: 
-    person("Barrie", "Chileen Martinez",
-           email = "barrie.chileen@gmail.com",
-           role = c("aut","cre"),
-           comment = c(ORCID = "0000-0002-6960-8167"))
+Version: 0.1.1
+Authors@R: c(
+    person("Barrie", "Chileen Martinez", 
+           email = "barrie.chileen@gmail.com", 
+           role = c("aut", "cre"),
+           comment = c(ORCID = "0000-0002-6960-8167")),
+    person("Michael", "Dougherty", 
+           email = "Michael.P.Dougherty@usace.army.mil", 
+           role = c("ctb"),
+           comment = c(ORCID = "0000-0002-1465-5927")),
+    person("Kayleigh", "Thomas",
+           email = "Kayleigh.A.Thomas@usace.army.mil",
+           role = c("ctb"))
+    )
 Description: PKG_DESC.
-License: MIT + file LICENSE
+License: file LICENSE
 URL: https://github.com/MVR-GIS/erarr
 BugReports: https://github.com/MVR-GIS/erarr/issues
 Depends: 
@@ -26,20 +34,17 @@ Imports:
     readr,
     rlang,
     rmarkdown,
-    scales,
     shiny,
     shinyalert,
     shinycssloaders,
     shinyjs,
-    stringr,
-    waiter
+    stringr
 Suggests: 
     htmlwidgets,
     knitr,
     spelling,
     testthat (>= 3.0.0)
-VignetteBuilder: 
-    knitr
+VignetteBuilder: knitr
 Encoding: UTF-8
 Language: en-US
 LazyData: true
