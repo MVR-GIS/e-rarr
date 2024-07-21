@@ -1,5 +1,5 @@
 ---
-title: ""
+title: "Risk Item Report"
 runtime: shiny
 output: html_document
 params: 
@@ -26,7 +26,6 @@ td {    vertical-align: top;
   padding: 5px;
 }
 
-
 @media print {
 body {-webkit-print-color-adjust: exact;}
   .font-size{ 9pt;
@@ -41,127 +40,124 @@ body {-webkit-print-color-adjust: exact;}
   .page-break {
   page-break-after: always;
   }
-
 }
-
 ```
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, include=FALSE}
 library(readr) 
 library(magrittr) 
-library(dplyr) 
+library(dplyr)
+library(knitr)
 library(kableExtra) 
 library(rlang)
 library(plotly)
 library(ggplot2)
 library(ggrepel)
-library(dplyr)
-library(knitr)
+library(formattable)
 library(crosstalk)
 library(tidyverse)
 library(english)
 library(DT)
-library(erarr)
 library(usethis)
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, include=FALSE}
 options(scipen = 999)
 erisk_item <- utils::read.csv("../data/erisk_item.csv")
-risk_item_db<-data.frame(erisk_item)
+risk_item_db <-data.frame(erisk_item)
 erisk_project <- utils::read.csv("../data/erisk_project.csv")
-risk_project_db<-data.frame(erisk_project)
+risk_project_db <-data.frame(erisk_project)
 risk_transact <- utils::read.csv("../data/risk_transact.csv")
 risk_transact <- data.frame(risk_transact)
-milestonedf<- utils::read.csv("../data/milestonedf.csv")
-milestone_df<-data.frame(erarr::milestonedf)
-risk_modeled<-utils::read.csv("../data/erisk_modeled.csv")
-checkimagepath<-"../www/check.png"
-headers<-c("Cost Impact", "Schedule Impact","Performance Impact")
+milestonedf <- utils::read.csv("../data/milestonedf.csv")
+milestone_df <-data.frame(erarr::milestonedf)
+risk_modeled <-utils::read.csv("../data/erisk_modeled.csv")
+checkimagepath <-"../www/check.png"
+headers <- c("Cost Impact", "Schedule Impact","Performance Impact")
 
+erisk_ItemProj <- left_join(risk_item_db, risk_project_db, 
+                            by = c("PROJECT_ID"), relationship = "many-to-many") 
 
-
-erisk_ItemProj<-left_join(risk_item_db, risk_project_db, by =c("PROJECT_ID"), relationship = "many-to-many") 
-
-erisk_ItemProj<-erisk_ItemProj |>
+erisk_ItemProj <- erisk_ItemProj |>
   mutate(RISK_NAME_ID = paste(RISK_IDENTIFIER,RISK_NAME))                 
 
-risk_item_filt<- risk_item_db |>
-  mutate(RISK_NAME_ID = paste(RISK_IDENTIFIER,RISK_NAME))|>
+risk_item_filt <- risk_item_db |>
+  mutate(RISK_NAME_ID = paste(RISK_IDENTIFIER,RISK_NAME)) |>
   select(RISK_ID, PROJECT_ID,RISK_NAME, RISK_NAME_ID , PROJECT_NAME, P2_NUMBER)
 
-
-
-
-RiskImpactTable<-erisk_ItemProj |>
-  select("RISK_ID","RISK_NAME_ID","RISK_NAME","RISK_IDENTIFIER","P2_NUMBER.x", "PROJECT_ID",
-         "PROJECT_NAME.x", "RISK_NAME","RISKCATEGORY", 
-         "DISCIPLINE", 
-         "RISK_STATEMENT","LIKELIHOOD_DESC", "PROB_OCCURRENCE_EVIDENCE",  
-         "COST_IMPACT_LOWEST", "COST_IMPACT_MOSTLIKELY", "COST_IMPACT_HIGHEST",
-         "COST_IMPACT_EVIDENCE","SCHEDULE_IMPACT_LOWEST", 
+RiskImpactTable <- erisk_ItemProj |>
+  select("RISK_ID", "RISK_NAME_ID", "RISK_NAME", "RISK_IDENTIFIER", 
+         "P2_NUMBER.x", "PROJECT_ID", "PROJECT_NAME.x", "RISK_NAME", 
+         "RISKCATEGORY", "DISCIPLINE", "RISK_STATEMENT", "LIKELIHOOD_DESC", 
+         "PROB_OCCURRENCE_EVIDENCE", "COST_IMPACT_LOWEST", 
+         "COST_IMPACT_MOSTLIKELY", "COST_IMPACT_HIGHEST", 
+         "COST_IMPACT_EVIDENCE", "SCHEDULE_IMPACT_LOWEST", 
          "SCHEDULE_IMPACT_MOSTLIKELY", "SCHEDULE_IMPACT_HIGHEST", 
          "SCHEDULE_IMPACT_EVIDENCE", "LIFECYCLEPHASENAME.x", 
-         "PERFORMANCEIMPACT_DESC", "PERFORMANCEIMPACT","PERFORMANCE_IMPACT_DESC" 
-         ,"PROJECTPHASEID", 
-         "MILESTONE", "RISK_MANAGER", "COST_IMPACT_DISTTYPE", 
-         "SCHEDULE_IMPACT_DISTTYPE", "NO_PERFORMANCE_IMPACT", "NO_COST_IMPACT",
-         "NO_SCHEDULE_IMPACT")
+         "PERFORMANCEIMPACT_DESC", "PERFORMANCEIMPACT", 
+         "PERFORMANCE_IMPACT_DESC", "PROJECTPHASEID", "MILESTONE", 
+         "RISK_MANAGER", "COST_IMPACT_DISTTYPE", "SCHEDULE_IMPACT_DISTTYPE", 
+         "NO_PERFORMANCE_IMPACT", "NO_COST_IMPACT", "NO_SCHEDULE_IMPACT")
 
-risk_transact<-left_join(risk_transact, risk_item_filt, by=c("PROJECT_ID", 
-                                                             "RISK_ID",
-                                                             "PROJECT_NAME"), relationship = "many-to-many")     
-risk_treat<-left_join(risk_treat, risk_item_filt, by=c("PROJECT_ID", "RISK_ID",
-                                                       "PROJECT_NAME"), relationship = "many-to-many")
-
-
-
+risk_transact <- left_join(risk_transact, risk_item_filt, 
+                           by = c("PROJECT_ID", "RISK_ID", "PROJECT_NAME"), 
+                           relationship = "many-to-many")     
+risk_treat <- left_join(risk_treat, risk_item_filt, 
+                        by = c("PROJECT_ID", "RISK_ID", "PROJECT_NAME"), 
+                        relationship = "many-to-many")
 ```
 
 ```{r echo=FALSE, eval = params$projID != ""}
-risk_item<-filter(RiskImpactTable, RiskImpactTable$RISK_NAME_ID == params$riskID,
-                  RiskImpactTable$PROJECT_NAME.x == params$projID)
-risk_treatment<-filter(risk_treat, risk_treat$PROJECT_NAME == params$projID, 
-                       risk_treat$RISK_NAME_ID == params$riskID)
-risk_model<-filter(risk_modeled, risk_modeled$PROJECT_ID == risk_item$PROJECT_ID, 
-                       risk_modeled$RISK_ID == risk_item$RISK_ID)
+risk_item <- filter(RiskImpactTable, 
+                    RiskImpactTable$RISK_NAME_ID == params$riskID, 
+                    RiskImpactTable$PROJECT_NAME.x == params$projID)
+risk_treatment <- filter(risk_treat, 
+                         risk_treat$PROJECT_NAME == params$projID, 
+                         risk_treat$RISK_NAME_ID == params$riskID)
+risk_model <- filter(risk_modeled, 
+                     risk_modeled$PROJECT_ID == risk_item$PROJECT_ID, 
+                     risk_modeled$RISK_ID == risk_item$RISK_ID)
 ```
 
 ```{r echo=FALSE, eval = params$p2ID != ""}
-risk_item<-filter(RiskImpactTable, RiskImpactTable$RISK_NAME_ID == params$riskID, 
-                  RiskImpactTable$P2_NUMBER.x == params$p2ID)
-risk_treatment<-filter(risk_treat, risk_treat$PROJECT_NAME == params$projID, 
-                       risk_treat$RISK_NAME_ID == params$riskID)
-risk_model<-filter(risk_modeled, risk_modeled$PROJECT_ID == risk_item$PROJECT_ID, 
-                       risk_modeled$RISK_ID == risk_item$RISK_ID)
+risk_item <- filter(RiskImpactTable, 
+                    RiskImpactTable$RISK_NAME_ID == params$riskID, 
+                    RiskImpactTable$P2_NUMBER.x == params$p2ID)
+risk_treatment <- filter(risk_treat, 
+                         risk_treat$PROJECT_NAME == params$projID, 
+                         risk_treat$RISK_NAME_ID == params$riskID)
+risk_model <- filter(risk_modeled, 
+                     risk_modeled$PROJECT_ID == risk_item$PROJECT_ID, 
+                     risk_modeled$RISK_ID == risk_item$RISK_ID)
 ```
 
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE}
-risk_treat_table<-risk_treatment |>
-  select(RISK_TREATMENT_ID,PROPOSED_RISK_TREATMENT,COST_IMPACT_RISK_TREATMENT,
+risk_treat_table <- risk_treatment |>
+  select(RISK_TREATMENT_ID, PROPOSED_RISK_TREATMENT, COST_IMPACT_RISK_TREATMENT, 
          SCHEDULE_IMPACT_RISK_TREATMENT, IMPLEMENTED, RISK_NAME) |>
-  mutate(IMPLEMENT_IMG = case_when(
-    IMPLEMENTED == 1 ~ checkimagepath,
-    IMPLEMENTED == 0 ~ " ")) |>
-  select(RISK_TREATMENT_ID,PROPOSED_RISK_TREATMENT,COST_IMPACT_RISK_TREATMENT,
+  mutate(IMPLEMENT_IMG = case_when(IMPLEMENTED == 1 ~ checkimagepath, 
+                                   IMPLEMENTED == 0 ~ " ")) |>
+  select(RISK_TREATMENT_ID, PROPOSED_RISK_TREATMENT, COST_IMPACT_RISK_TREATMENT, 
          SCHEDULE_IMPACT_RISK_TREATMENT, IMPLEMENT_IMG) |>
-  mutate(PROPOSED_RISK_TREATMENT = paste0(( "Measure "), 
+  mutate(PROPOSED_RISK_TREATMENT = paste0(("Measure "), 
                                           str_to_title(english::english(
-                                            RISK_TREATMENT_ID)),": ",
-                                          PROPOSED_RISK_TREATMENT )) |>
-  mutate(SCHEDULE_IMPACT_RISK_TREATMENT = 
-           paste(SCHEDULE_IMPACT_RISK_TREATMENT, "Days"))
+                                                       RISK_TREATMENT_ID)), 
+                                          ": ", 
+                                          PROPOSED_RISK_TREATMENT)) |>
+  mutate(SCHEDULE_IMPACT_RISK_TREATMENT = paste(SCHEDULE_IMPACT_RISK_TREATMENT, 
+                                                "Days"))
 
-treat_condit <- ifelse(nrow(risk_treat_table)>0,TRUE,FALSE)
+treat_condit <- ifelse(nrow(risk_treat_table) > 0, TRUE, FALSE)
 
-monte_condit <- ifelse(nrow(risk_model)>0,TRUE,FALSE)
+monte_condit <- ifelse(nrow(risk_model) > 0, TRUE, FALSE)
 ```
 
 ###### Report Created On: `r format(Sys.time(), '%d %B, %Y')`
 ```{r echo=FALSE, warning=FALSE, message=FALSE, results='asis'}
-
-header<-paste("Project:",risk_item$PROJECT_NAME.x," ",(risk_item$RISK_IDENTIFIER))
-
-
-cat("####",header)
+header <- paste("Project:", risk_item$PROJECT_NAME.x, 
+                " ", (risk_item$RISK_IDENTIFIER))
+cat("####", header)
 ```
 
 ##### Risk Phase:`r risk_item$LIFECYCLEPHASENAME`, Category:`r risk_item$RISKCATEGORY`
@@ -170,10 +166,9 @@ cat("####",header)
 
 <center>
 ```{r milestoneplot, fig.height=1.40, fig.width=8, echo=FALSE, message=FALSE}
-mileplot<-erarr::milestoneplot(riskitem=risk_item, milestonedf = milestone_df)
-
+mileplot <- erarr::milestoneplot(riskitem = risk_item, 
+                                 milestonedf = milestone_df)
 knitr::include_graphics("mileplot.png")
-
 ```
 </center>
 
@@ -185,30 +180,40 @@ knitr::include_graphics("mileplot.png")
 <center>
 ```{r proj montepies, message=FALSE, warning=FALSE, echo=FALSE,fig.height=1.75, fig.width=7, eval=monte_condit}
 monteframe <- data.frame(risk_model)
-ranking = c("Opportunity", "Low", "Medium","High")
-colors = c('rgb(31,120,180)','rgb(51,160,44)','rgb(255,127,0)','rgb(227,26,28)')
-cost_values = c(monteframe$COST_PROBOPP,monteframe$COST_PROBLOW,monteframe$COST_PROBMOD,monteframe$COST_PROBHIGH)
-schedule_values= c(monteframe$SCHEDULE_PROBOPP,monteframe$SCHEDULE_PROBLOW,monteframe$SCHEDULE_PROBMOD,monteframe$SCHEDULE_PROBHIGH)
-performance_values = c(monteframe$OUTCOME_PROBOPP,monteframe$OUTCOME_PROBLOW,monteframe$OUTCOME_PROBMOD,monteframe$OUTCOME_PROBHIGH)
-monte_pies = data.frame(ranking,colors, round(cost_values,2), round(schedule_values,2),round(performance_values,2))
-names(monte_pies) = c("ranking", "colors","cost_values", "schedule_values","performance_values")
+ranking = c("Opportunity", "Low", "Medium", "High")
+colors = c('rgb(31,120,180)', 'rgb(51,160,44)', 'rgb(255,127,0)', 
+           'rgb(227,26,28)')
+cost_values = c(monteframe$COST_PROBOPP, monteframe$COST_PROBLOW, 
+                monteframe$COST_PROBMOD, monteframe$COST_PROBHIGH)
+schedule_values= c(monteframe$SCHEDULE_PROBOPP, monteframe$SCHEDULE_PROBLOW, 
+                   monteframe$SCHEDULE_PROBMOD, monteframe$SCHEDULE_PROBHIGH)
+performance_values = c(monteframe$OUTCOME_PROBOPP, monteframe$OUTCOME_PROBLOW, 
+                       monteframe$OUTCOME_PROBMOD, monteframe$OUTCOME_PROBHIGH)
+monte_pies = data.frame(ranking, colors, 
+                        round(cost_values, 2), 
+                        round(schedule_values, 2), 
+                        round(performance_values, 2))
+names(monte_pies) = c("ranking", "colors", "cost_values", "schedule_values", 
+                      "performance_values")
 cost_label <- monte_pies |>
-  slice_max(cost_values)|>
-  select(ranking,colors)
-schedule_label <- monte_pies|>
-  slice_max(schedule_values)|>
-  select(ranking,colors)
-performance_label <- monte_pies|>
-  slice_max(performance_values)|>
+  slice_max(cost_values) |>
   select(ranking, colors)
 
+schedule_label <- monte_pies |>
+  slice_max(schedule_values) |>
+  select(ranking, colors)
 
-monte_pie<-plot_ly() |>
+performance_label <- monte_pies |>
+  slice_max(performance_values) |>
+  select(ranking, colors)
+
+monte_pie <- plot_ly() |>
   add_pie(
     monte_pies,
-    value = ~monte_pies$cost_values,
-    labels =~monte_pies$ranking,
-    title = list(text = paste(cost_label$ranking),font= list(size = 13, color=cost_label$colors)),
+    value  = ~monte_pies$cost_values,
+    labels = ~monte_pies$ranking,
+    title = list(text = paste(cost_label$ranking), 
+                 font= list(size = 13, color = cost_label$colors)),
     textinfo = 'none',
     name = " ",
     marker = list(colors = ~monte_pies$colors),
@@ -216,104 +221,120 @@ monte_pie<-plot_ly() |>
     hole = 0.7
   ) |>
   layout(annotations = list(
-      x = c(0.12, 0.10),
-      y = c(1.2,-0.15),
-      xref = "paper",
-      yref = "paper",
-      showarrow = F,
-      text = c("Cost",paste("Mean:",formattable::currency(monteframe$COST_MEAN,digits = 0)))))|>
+    x = c(0.12, 0.10), y = c(1.2, -0.15), 
+    xref = "paper", yref = "paper", 
+    showarrow = F, 
+    text = c("Cost", 
+             paste("Mean:", formattable::currency(monteframe$COST_MEAN, 
+                                                  digits = 0))))
+  ) |>
   add_pie(
     monte_pies,
-    value = ~monte_pies$schedule_values,
-    labels =~monte_pies$ranking,
-    title = list(text = paste(schedule_label$ranking),font = list(size = 13,color = schedule_label$colors)),
+    value  = ~monte_pies$schedule_values,
+    labels = ~monte_pies$ranking,
+    title = list(text = paste(schedule_label$ranking), 
+                 font = list(size = 13, color = schedule_label$colors)),
     textinfo = 'none',
     name = " ",
     domain = list(row = 0, column = 1),
     hole = 0.7,
     marker = list(colors = ~monte_pies$colors),
-    legend=F
-  )|>
-  layout(annotations = list(x=c(0.49,0.485), y=c(1.2,-0.15), xref="paper", yref = "paper", showarrow = F,
-                                                text = c("Schedule",paste("Mean:", monteframe$SCHEDULE_MEAN,"Days")))) |>
+    legend = F
+  ) |>
+  layout(annotations = list(
+    x = c(0.49, 0.485), y = c(1.2, -0.15), 
+    xref = "paper", yref = "paper", 
+    showarrow = F,
+    text = c("Schedule", 
+             paste("Mean:", monteframe$SCHEDULE_MEAN, "Days")))
+  ) |>
   add_pie(
     monte_pies,
-    value = ~monte_pies$performance_values,
-    labels =~monte_pies$ranking,
-    title = list(text=paste(performance_label$ranking), font = list(size = 13,color = performance_label$colors)),
+    value  = ~monte_pies$performance_values,
+    labels = ~monte_pies$ranking,
+    title = list(text = paste(performance_label$ranking), 
+                 font = list(size = 13, color = performance_label$colors)),
     textinfo = 'none',
     name = " ",
     domain = list(row = 0, column = 2),
     hole = 0.7,
     marker = list(colors = ~monte_pies$colors),
-    legend=F
-  )|>
-  layout(annotations = list(x=c(0.9), y=c(1.2), xref ="paper", yref="paper",showarrow = F,text = c("Performance")))
+    legend = F
+  ) |>
+  layout(annotations = list(
+    x = c(0.9), y = c(1.2), 
+    xref ="paper", yref = "paper", 
+    showarrow = F, 
+    text = c("Performance")))
 
-  pies<-monte_pie |>
+  pies <- monte_pie |>
     plotly::layout(title = "",
-                    showlegend = F,
-      margin=list(l=20,r=20,b=20, t=25, pad=0),
-                   grid=list(rows=1, columns=3),
-           showlegend=F)
-      #      annotations = list(
+                  showlegend = F,
+                  margin = list(l = 20, r = 20, b = 20, t = 25, pad = 0),
+                                grid = list(rows = 1, columns = 3), 
+                  showlegend = F)
+      #           annotations = list(
       # x = c(0.10, 0.49, 0.9, 0.12, 0.485),
       # y = c(1.2, 1.2, 1.2, -0.15,-0.15),
       # xref = "paper",
       # yref = "paper",
       # showarrow = F,
-      # text = c("Cost", "Schedule", "Performance", paste("Mean:",formattable::currency(monteframe$COST_MEAN,digits = 0)),
+      # text = c("Cost", "Schedule", "Performance", 
+      #          paste("Mean:", 
+      #                formattable::currency(monteframe$COST_MEAN, 
+      #                                      digits = 0)),
       #          paste("Mean:", monteframe$SCHEDULE_MEAN,"Days"))))
+  
   pies
 ```
 </center>
+
 ###### **Event Likelihood:** `r risk_item$LIKELIHOOD_DESC`
 `r risk_item$PROB_OCCURRENCE_EVIDENCE`
 ```{r echo=FALSE, results='asis'}
 risk_item_table <- risk_item |>
-  select(
-    NO_COST_IMPACT,
-    NO_SCHEDULE_IMPACT,
-    NO_PERFORMANCE_IMPACT,
-    COST_IMPACT_MOSTLIKELY,
-    SCHEDULE_IMPACT_MOSTLIKELY,
-    COST_IMPACT_LOWEST,
-    COST_IMPACT_HIGHEST,
-    COST_IMPACT_EVIDENCE,
-    SCHEDULE_IMPACT_LOWEST,
-    SCHEDULE_IMPACT_HIGHEST,
-    SCHEDULE_IMPACT_EVIDENCE,
-    PERFORMANCE_IMPACT_DESC,
-    PERFORMANCEIMPACT,
-    PERFORMANCEIMPACT_DESC,
-    SCHEDULE_IMPACT_DISTTYPE,
-    COST_IMPACT_DISTTYPE
+  select(NO_COST_IMPACT,
+         NO_SCHEDULE_IMPACT,
+         NO_PERFORMANCE_IMPACT,
+         COST_IMPACT_MOSTLIKELY,
+         SCHEDULE_IMPACT_MOSTLIKELY,
+         COST_IMPACT_LOWEST,
+         COST_IMPACT_HIGHEST,
+         COST_IMPACT_EVIDENCE,
+         SCHEDULE_IMPACT_LOWEST,
+         SCHEDULE_IMPACT_HIGHEST,
+         SCHEDULE_IMPACT_EVIDENCE,
+         PERFORMANCE_IMPACT_DESC,
+         PERFORMANCEIMPACT,
+         PERFORMANCEIMPACT_DESC,
+         SCHEDULE_IMPACT_DISTTYPE,
+         COST_IMPACT_DISTTYPE
   ) |>
   mutate(
     COST_IMPACT_LOWEST = paste0("<p style = 
                                 'font-family: Arial Narrow;font-size:8pt'>",
                                 "Lowest","</p>", 
-                                formattable::currency(COST_IMPACT_LOWEST)),
+                                currency(COST_IMPACT_LOWEST)),
     COST_IMPACT_HIGHEST = paste0("<p style = 
                                 'font-family: Arial Narrow;font-size:8pt'>",
                                 "Highest","</p>",
-                                 formattable::currency(COST_IMPACT_HIGHEST)),
+                                 currency(COST_IMPACT_HIGHEST)),
     COST_IMPACT_MOSTLIKELY = paste0("<p style = 
                                     'font-family: Arial Narrow;font-size:8pt'>",
                                     "Most Likely","</p>", 
-                                    formattable::currency(COST_IMPACT_MOSTLIKELY)),
+                                    currency(COST_IMPACT_MOSTLIKELY)),
     SCHEDULE_IMPACT_HIGHEST = paste0("<p style = 
-                                     'font-family: Arial Narrow;font-size:8pt'>",
-                                     "Highest","</p>",
-                                     SCHEDULE_IMPACT_HIGHEST, " days"),
+                                   'font-family: Arial Narrow;font-size:8pt'>",
+                                   "Highest","</p>",
+                                   SCHEDULE_IMPACT_HIGHEST, " days"),
     SCHEDULE_IMPACT_LOWEST = paste0("<p style = 
                                     'font-family: Arial Narrow;font-size:8pt'>",
                                     "Lowest","</p>",
                                     SCHEDULE_IMPACT_LOWEST, " days"),
     SCHEDULE_IMPACT_MOSTLIKELY = paste0("<p style = 
-                                        'font-family: Arial Narrow;font-size:8pt'>",
-                                        "Most Likely","</p>",
-                                        SCHEDULE_IMPACT_MOSTLIKELY, " days"),
+                                    'font-family: Arial Narrow;font-size:8pt'>",
+                                    "Most Likely","</p>",
+                                    SCHEDULE_IMPACT_MOSTLIKELY, " days"),
     PERFORMANCE_IMPACT_DESC = paste0("<p style = 
                                         'font-family: Arial;font-size:8pt; 
                                      font-weight: bold'>",
@@ -327,11 +348,11 @@ risk_item_table <- risk_item |>
                                         PERFORMANCEIMPACT)
   )
 
-####Modularize assess for each cost schedule and performance build function
+#### Modularize assess for each cost schedule and performance build function
 
 costcolumn <-
   if (risk_item_table$NO_COST_IMPACT == 1) {
-    c("No cost impact is anticipated","","","")
+    c("No cost impact is anticipated", "", "", "")
   } else if (risk_item_table$COST_IMPACT_DISTTYPE == 299) {
     c(risk_item_table$COST_IMPACT_MOSTLIKELY,
       "",
@@ -355,7 +376,7 @@ costcolumn <-
 
 schedulecolumn <-
   if (risk_item_table$NO_PERFORMANCE_IMPACT == 1) {
-    c("No schedule impact is anticipated","","","")
+    c("No schedule impact is anticipated", "", "", "")
   } else if (risk_item_table$SCHEDULE_IMPACT_DISTTYPE == 299) {
     c(risk_item_table$SCHEDULE_IMPACT_MOSTLIKELY,
     "",
@@ -379,7 +400,7 @@ schedulecolumn <-
 
 performancecolumn <-
   if (risk_item_table$NO_PERFORMANCE_IMPACT == 1) {
-    c("No performance impact is anticipated","","","")
+    c("No performance impact is anticipated", "", "", "")
   } else {
     c(
       risk_item_table$PERFORMANCE_IMPACT_DESC,
@@ -390,12 +411,14 @@ performancecolumn <-
   }
 
 
-disttable<-data.frame(costcolumn, schedulecolumn,performancecolumn)
+disttable <- data.frame(costcolumn, schedulecolumn, performancecolumn)
 
-kable(disttable,format = "html", escape=FALSE, col.names=c("Cost Impact",
-                                                            "Schedule Impact",
-                                                            "Performance Impact"))|>
-  kable_styling()
+kable(disttable, 
+      format = "html", 
+      escape = FALSE, 
+      col.names = c("Cost Impact", "Schedule Impact", "Performance Impact")
+) |>
+kable_styling()
 
 # knitr::kables(
 #   list(
@@ -414,29 +437,20 @@ kable(disttable,format = "html", escape=FALSE, col.names=c("Cost Impact",
 #        kable_styling()
 #   )
 # )
-
-
 ```
+
 `r if(!treat_condit){"Risk treatments have not been completed for this risk item"}`
 ```{r echo = FALSE, message = FALSE, eval = treat_condit}
-risk_treat_table$IMPLEMENT_IMG = sprintf("![    ](%s)",
-risk_treat_table$IMPLEMENT_IMG)
+risk_treat_table$IMPLEMENT_IMG = sprintf("![    ](%s)", 
+                                         risk_treat_table$IMPLEMENT_IMG)
 
-
-kbl(
-risk_treat_table,
-format = "html",
-col.names = NULL,
-align = "llccc"
+kbl(risk_treat_table,
+    format = "html",
+    col.names = NULL,
+    align = "llccc"
 ) |>
 kable_styling() |>
-add_header_above(c(
-"Measures" = 2,
-"Impacts" = 2,
-"Implemented" = 1
-))
-
-
+add_header_above(c("Measures" = 2, "Impacts" = 2, "Implemented" = 1))
 ```
 ###### Risk Manager: `r risk_item$RISK_MANAGER`
 
