@@ -1,10 +1,10 @@
 ---
-title: ""
+title: "All Risk Report"
 output: html_document
 runtime: shiny
 params:
-  projID: St. Augustine Back Bay CSRM
-  p2ID: 	505374
+  projID: "St. Augustine Back Bay CSRM"
+  p2ID: 	""
   p2sub: ""
 ---
 
@@ -148,7 +148,7 @@ cat("###", header, header2)
 ```{r proj risk pies, message=FALSE, warning=FALSE, echo=FALSE,fig.height=2, fig.width=7}
 cost_pie     <- erarr::pieprep(proj_risks, "COST_RANK_DESC")
 schedule_pie <- erarr::pieprep(proj_risks, "SCHEDULE_RANK_DESC")
-erform_pie   <- erarr::pieprep(proj_risks, "PERFORMANCE_RANK_DESC")
+perform_pie   <- erarr::pieprep(proj_risks, "PERFORMANCE_RANK_DESC")
 ```
 
 ```{r pie plots, message=FALSE, warning=FALSE, echo=FALSE,fig.height=2, fig.width=7}
