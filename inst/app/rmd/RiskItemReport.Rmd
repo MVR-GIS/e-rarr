@@ -52,13 +52,9 @@ library(kableExtra)
 library(rlang)
 library(plotly)
 library(ggplot2)
-library(ggrepel)
 library(formattable)
-library(crosstalk)
-library(tidyverse)
 library(english)
-library(DT)
-library(usethis)
+library(stringr)
 ```
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, include=FALSE}
