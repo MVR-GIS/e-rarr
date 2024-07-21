@@ -42,6 +42,7 @@ library(dplyr)
 library(magrittr) 
 library(tidyr)
 library(rlang)
+library(plotly)
 library(ggplot2)
 library(ggrepel)
 library(kableExtra) 
@@ -143,11 +144,12 @@ cat("###", header, header2)
 #### All Project Risk Impacts
 <center>
 ```{r proj risk pies, message=FALSE, warning=FALSE, echo=FALSE,fig.height=2, fig.width=7}
-#make pie plots 
 cost_pie     <- erarr::pieprep(proj_risks, "COST_RANK_DESC")
 schedule_pie <- erarr::pieprep(proj_risks, "SCHEDULE_RANK_DESC")
 erform_pie   <- erarr::pieprep(proj_risks, "PERFORMANCE_RANK_DESC")
+```
 
+```{r pie plots, message=FALSE, warning=FALSE, echo=FALSE,fig.height=2, fig.width=7}
 erarr::pie_plots(cost_pie, schedule_pie, perform_pie)
 ```
 </center>
