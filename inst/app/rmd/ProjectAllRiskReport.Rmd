@@ -42,10 +42,12 @@ library(dplyr)
 library(magrittr) 
 library(tidyr)
 library(rlang)
+library(formattable)
 library(plotly)
 library(ggplot2)
 library(ggrepel)
-library(kableExtra) 
+library(kableExtra)
+
 library(english)
 library(webshot)
 ```
