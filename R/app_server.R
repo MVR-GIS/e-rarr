@@ -183,7 +183,7 @@ app_server <- function(input, output, session) {
   })
   
   
-  disciplines<- reactive({
+  disciplines <- reactive({
     RiskImpactTable |>
       filter(
         RiskImpactTable$P2_NUMBER == input$P2Input |
@@ -226,9 +226,6 @@ app_server <- function(input, output, session) {
     }
   })
   
-  
-  
-  
   observeEvent(milestones(), {
     miles <- sort(unique(milestones()$MILESTONE))
     updateSelectInput(
@@ -239,7 +236,7 @@ app_server <- function(input, output, session) {
   })
   
    
-in_react_frame <- reactiveVal(riskpies)
+  in_react_frame <- reactiveVal(riskpies)
   
   filtered_frame <- reactive({
     in_react_frame() |>
@@ -288,18 +285,17 @@ in_react_frame <- reactiveVal(riskpies)
   output$overviewtab = DT::renderDT({
     DT::datatable(
       filtered_frame(),
-      colnames = c(
-        "Risk Identifier",
-        "USACE Organization",
-        "Project Name",
-        "Risk Name ",
-        "Risk Category",
-        "Discipline",
-        "Cost Rank",
-        "Schedule Rank",
-        "Performance Rank"),
+      colnames = c("Risk Identifier",
+                   "USACE Organization",
+                   "Project Name",
+                   "Risk Name ",
+                   "Risk Category",
+                   "Discipline",
+                   "Cost Rank",
+                   "Schedule Rank",
+                   "Performance Rank"),
       extensions = 'Buttons',
-      options = list(dom='Bfrtip',
+      options = list(dom ='Bfrtip',
                      buttons = c('csv', 'excel','pdf','print')),
       rownames = FALSE,
       filter = "top"
@@ -323,88 +319,95 @@ in_react_frame <- reactiveVal(riskpies)
     
   
 
-observeEvent(input$RiskItem, {
-   req(isTruthy(input$riskInput),
-       isTruthy(input$projectInput) || isTruthy(input$P2Input)) 
-   rmarkdown::render(
-     "./inst/app/rmd/RiskItemReport.Rmd",
-     params = list(
-       projID = input$projectInput,
-       riskID = input$riskInput,
-       p2ID   = input$P2Input),
-     output_dir ="./inst/app/www"
-   )
-   
-   shinyalert::shinyalert(
-                 html = TRUE, 
-                 text = tagList(tags$iframe(src="www/RiskItemReport.html", 
-                                            width = 900,  
-                                            height = 1000,  
-                                            style = "border:none;")), 
-                 size = "l",
-                 confirmButtonText = "Close Report",
-                 closeOnClickOutside = TRUE)
- })
- 
-
-observeEvent(input$Proj, {
-  req(isTruthy(input$projectInput) || isTruthy(input$P2Input))
-  rmarkdown::render(
-    "./inst/app/rmd/ProjectAllRiskReport.Rmd",
-    params = list(projID = input$projectInput, 
-                  p2ID = input$P2Input,
-                  p2sub = input$SubIDInput),
-    output_dir ="./inst/app/www"
-  )
- shinyalert::shinyalert(
-               html = TRUE, 
-               text = tagList(tags$iframe(src="www/ProjectAllRiskReport.html", 
-                                          width = 900, 
-                                          height = 1000, 
-                                          style = "border:none;")),
-               size = "l", 
-               confirmButtonText = "Close Report", 
-               closeOnClickOutside = TRUE)
-   })
-
- observeEvent(input$AllRisk, {
-   req(isTruthy(input$projectInput) || isTruthy(input$P2Input))
-   rmarkdown::render(
-     "./inst/app/rmd/AllRiskDetailTable.Rmd",
-     params = list(
-       projID = input$projectInput,
-       p2ID = input$P2Input,
-       p2sub= input$SubIDInput
-     ), output_dir ="./inst/app/www"
-   )
-   shinyalert::shinyalert(html = TRUE, text = tagList(tags$iframe(
-     src="www/AllRiskDetailTable.html", width = 1200, height = 1000,  
-     style = "border:none;")),
-     size = "l",confirmButtonText = "Close Report",
-     closeOnClickOutside = TRUE)
-   # showModal(modalDialog(title="Risk Report",
-   #                       tags$iframe(src="www/AllRiskDetailTable.html", width = 1200,  
-   #                                   height = 1000,  style = "border:none:"), easyClose=TRUE,
-   #                       size = "xl"))
- })
- 
-observeEvent(input$Proj4s, {
-   req(isTruthy(input$projectInput) || isTruthy(input$P2Input))
-   rmarkdown::render(
-     "./inst/app/rmd/ProjectTop4s.Rmd",
-     params = list(
-       projID = input$projectInput,
-       p2ID = input$P2Input,
-       p2sub= input$SubIDInput
-     ), output_dir ="./inst/app/www"
-   )
-   shinyalert::shinyalert(html = TRUE, text = tagList(tags$iframe(
-     src="www/ProjectTop4s.html", width = 1000, height = 900,  
-     style = "border:none;")),
-     size = "l",confirmButtonText = "Close Report",
-     closeOnClickOutside = TRUE)
- })
+  observeEvent(input$RiskItem, {
+    req(isTruthy(input$riskInput),
+        isTruthy(input$projectInput) || isTruthy(input$P2Input)) 
+    rmarkdown::render(
+      "./inst/app/rmd/RiskItemReport.Rmd",
+      params = list(projID = input$projectInput,
+                    riskID = input$riskInput,
+                    p2ID   = input$P2Input),
+      output_dir ="./inst/app/www"
+    )
+    shinyalert::shinyalert(
+      html = TRUE, 
+      text = tagList(tags$iframe(src="www/RiskItemReport.html", 
+                                 width = 900,  
+                                 height = 1000,  
+                                 style = "border:none;")), 
+      size = "l",
+      confirmButtonText = "Close Report",
+      closeOnClickOutside = TRUE
+    )
+  })
   
+
+  observeEvent(input$Proj, {
+    req(isTruthy(input$projectInput) || isTruthy(input$P2Input))
+    rmarkdown::render(
+      "./inst/app/rmd/ProjectAllRiskReport.Rmd",
+      params = list(projID = input$projectInput, 
+                    p2ID   = input$P2Input,
+                    p2sub  = input$SubIDInput),
+      output_dir ="./inst/app/www"
+    )
+    shinyalert::shinyalert(
+      html = TRUE, 
+      text = tagList(tags$iframe(src="www/ProjectAllRiskReport.html", 
+                                 width = 900, 
+                                 height = 1000, 
+                                 style = "border:none;")),
+      size = "l", 
+      confirmButtonText = "Close Report", 
+      closeOnClickOutside = TRUE
+    )
+  })
+
+  observeEvent(input$AllRisk, {
+    req(isTruthy(input$projectInput) || isTruthy(input$P2Input))
+    rmarkdown::render(
+      "./inst/app/rmd/AllRiskDetailTable.Rmd",
+      params = list(projID = input$projectInput,
+                    p2ID   = input$P2Input,
+                    p2sub  = input$SubIDInput), 
+      output_dir ="./inst/app/www"
+    )
+    shinyalert::shinyalert(
+      html = TRUE, 
+      text = tagList(tags$iframe(src = "www/AllRiskDetailTable.html", 
+                                 width = 1200, 
+                                 height = 1000, 
+                                 style = "border:none;")),
+      size = "l", 
+      confirmButtonText = "Close Report",
+      # showModal(modalDialog(title = "Risk Report",
+      #                       tags$iframe(src = "www/AllRiskDetailTable.html", 
+      #                                   width = 1200,  
+      #                                   height = 1000,  
+      #                                   style = "border:none:"), 
+      #                       easyClose = TRUE,
+      #                       size = "xl")),
+      closeOnClickOutside = TRUE
+    )
+  })
+ 
+  observeEvent(input$Proj4s, {
+    req(isTruthy(input$projectInput) || isTruthy(input$P2Input))
+    rmarkdown::render(
+      "./inst/app/rmd/ProjectTop4s.Rmd",
+      params = list(
+        projID = input$projectInput,
+        p2ID = input$P2Input,
+        p2sub= input$SubIDInput), 
+      output_dir ="./inst/app/www"
+    )
+    shinyalert::shinyalert(html = TRUE, text = tagList(tags$iframe(
+      src="www/ProjectTop4s.html", width = 1000, height = 900,  
+      style = "border:none;")),
+      size = "l",confirmButtonText = "Close Report",
+      closeOnClickOutside = TRUE
+    )
+  })
   
   output$download_Proj <- downloadHandler(
     # For PDF output, change this to "report.pdf"
@@ -415,8 +418,9 @@ observeEvent(input$Proj4s, {
       rmarkdown::render(
         paste0("./inst/app/rmd/ProjectAllRiskReport.Rmd"),
         output_file = file,
-        params = list(projID = input$projectInput, p2ID = input$P2Input,
-                      p2sub= input$SubIDInput),
+        params = list(projID = input$projectInput, 
+                      p2ID   = input$P2Input,
+                      p2sub  = input$SubIDInput),
         envir = new.env(),
         intermediates_dir = tempdir()
       )
@@ -432,8 +436,9 @@ observeEvent(input$Proj4s, {
       rmarkdown::render(
         paste0("./inst/app/rmd/AllRiskDetailTable.Rmd"),
         output_file = file,
-        params = list(projID = input$projectInput, p2ID = input$P2Input,
-                      p2sub= input$SubIDInput),
+        params = list(projID = input$projectInput, 
+                      p2ID   = input$P2Input,
+                      p2sub  = input$SubIDInput),
         envir = new.env(),
         intermediates_dir = tempdir()
       )
@@ -449,8 +454,9 @@ observeEvent(input$Proj4s, {
       rmarkdown::render(
         paste0("./inst/app/rmd/ProjectTop4s.Rmd"),
         output_file = file,
-        params = list(projID = input$projectInput, p2ID = input$P2Input,
-                      p2sub= input$SubIDInput),
+        params = list(projID = input$projectInput, 
+                      p2ID   = input$P2Input,
+                      p2sub  = input$SubIDInput),
         envir = new.env(),
         intermediates_dir = tempdir()
       )
@@ -466,7 +472,8 @@ observeEvent(input$Proj4s, {
       rmarkdown::render(
         paste0("./inst/app/rmd/RiskItemReport.Rmd"),
         output_file = file,
-        params = list(projID = input$projectInput, p2ID = input$P2Input,
+        params = list(projID = input$projectInput, 
+                      p2ID   = input$P2Input,
                       riskID = input$riskInput),
         envir = new.env(),
         intermediates_dir = tempdir()
