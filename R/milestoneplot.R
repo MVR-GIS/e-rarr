@@ -8,14 +8,15 @@
 #' @return A ggplot of current milestone on timeline of all project milestones.
 #'
 #' @examples
-#' #Get milestone data and risk item
-#' milestonedf<-read.csv("inst/app/data/PHASEMILESTONE.csv")
-#' milestone_df<-data.frame(milestonedf)
+#' # Get milestone data and risk item
+#' milestonedf <- read.csv("inst/app/data/PHASEMILESTONE.csv")
+#' milestone_df <- data.frame(milestonedf)
 #'
 #' riskitem <- risk_item
 #'
-#' #example
-#' milestone_plot<-milestoneplot(riskitem=risk_item, milestonedf = milestone_df)
+#' # example
+#' milestone_plot <- milestoneplot(riskitem = risk_item, 
+#'                                 milestonedf = milestone_df)
 #'
 #' @importFrom dplyr filter mutate arrange
 #' @importFrom rlang .data
@@ -29,8 +30,8 @@
 
 milestoneplot<- function(riskitem, milestonedf){
 projphases<- milestonedf |>
-  filter(PHASEID == riskitem$PROJECTPHASEID)|>
-  mutate('yval' = rep(0.1))|>
+  filter(PHASEID == riskitem$PROJECTPHASEID) |>
+  mutate('yval' = rep(0.1)) |>
   arrange(ORDERBY)
 
 #, vjust=1.4
@@ -39,7 +40,7 @@ mileplot <- ggplot(projphases,
                    aes(x = factor(MILESTONE), level = ORDERBY, y = yval)) +
   geom_segment(x = 1, y = 0.1, xend = length(projphases$ORDERBY), yend = 0.1, 
                linewidth = 1, color = "grey") +
-  geom_point(size = 7,color = "grey", fill = "snow1", 
+  geom_point(size = 7, color = "grey", fill = "snow1", 
              shape = 21, stroke = .75) +
   geom_point(aes(x = riskitem$MILESTONE, y = 0.1), 
              colour = "#1F78B4", fill = "#1F78B4", shape = 16, size = 4) +
@@ -56,6 +57,6 @@ mileplot <- ggplot(projphases,
         panel.background = element_blank(),
         plot.margin = unit(c(0, 0, 0 ,0), "mm")
         )
-mileplot < -ggsave("mileplot.png", dpi = 600)
+mileplot <- ggsave("mileplot.png", dpi = 600)
 return(mileplot)
 }
