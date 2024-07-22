@@ -9,7 +9,7 @@
 #'
 #' @examples
 #' #Get milestone data and risk item
-#' milestonedf<-read.csv("inst/app/data/PHASEMILESTONE.csv")
+#' milestonedf<-read.csv("inst/app/data/phase_milestone.csv")
 #' milestone_df<-data.frame(milestonedf)
 #'
 #' riskitem <- risk_item
