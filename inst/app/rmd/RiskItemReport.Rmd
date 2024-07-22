@@ -3,7 +3,7 @@ title: ""
 runtime: shiny
 output: html_document
 params: 
-  riskID: "RLE-2 Real Estate Estate Acquisition"
+  riskID: "RLE-3 Real Estate Plan approval delayed"
   projID: LaGrange New 1200-Foot Lock
   p2ID: 	""
 ---
@@ -65,7 +65,7 @@ options(scipen = 999)
 risk_item_db <- readr::read_csv("../data/erisk_item.csv")
 risk_project_db <- readr::read_csv("../data/erisk_project.csv")
 risk_transact <- readr::read_csv("../data/risk_transact.csv")
-milestone_df<- readr::read_csv("../data/milestonedf.csv")
+milestone_df<- readr::read_csv("../data/phase_milestone.csv")
 risk_modeled<-readr::read_csv("../data/erisk_modeled.csv")
 risk_treatment<-readr::read_csv("../data/risk_treat.csv")
 checkimagepath<-"../www/check.png"
@@ -190,7 +190,8 @@ monte_pie<-plot_ly() |>
     monte_pies,
     value = ~monte_pies$cost_values,
     labels =~monte_pies$ranking,
-    title = list(text = paste(cost_label$ranking),font= list(size = 13, color=cost_label$colors)),
+    title = list(text = paste(cost_label$ranking),
+                 font= list(size = 13, color=cost_label$colors)),
     textinfo = 'none',
     hoverinfo = 'label+percent',
     name = " ",
@@ -204,7 +205,8 @@ monte_pie<-plot_ly() |>
       xref = "paper",
       yref = "paper",
       showarrow = F,
-      text = c("Cost",paste("Mean:",formattable::currency(risk_model$COST_MEAN,digits = 0)))))|>
+      text = c("Cost",paste("Mean:",
+                            formattable::currency(risk_model$COST_MEAN,digits = 0)))))|>
   add_pie(
     monte_pies,
     value = ~monte_pies$schedule_values,
