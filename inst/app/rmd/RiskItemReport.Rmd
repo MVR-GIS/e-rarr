@@ -3,12 +3,12 @@ title: ""
 runtime: shiny
 output: html_document
 params: 
-  riskID: "RLE-3 Real Estate Plan approval delayed"
+  riskID: "RLE-2 Real Estate Estate Acquisition"
   projID: LaGrange New 1200-Foot Lock
   p2ID: 	""
 ---
 
-```{css, echo=FALSE}
+```{css, echo=FALSE, eval=FALSE}
 h2, h3, h4 {
   text-align: center;
 }
@@ -62,6 +62,7 @@ library(DT)
 library(readr)
 library(erarr)
 options(scipen = 999)
+
 risk_item_db <- readr::read_csv("../data/erisk_item.csv")
 risk_project_db <- readr::read_csv("../data/erisk_project.csv")
 risk_transact <- readr::read_csv("../data/risk_transact.csv")
@@ -75,16 +76,16 @@ headers<-c("Cost Impact", "Schedule Impact","Performance Impact")
 
 #erisk_ItemProj<-left_join(risk_item_db, risk_project_db, by =c("PROJECT_ID"), relationship = "many-to-many") 
 
-erisk_ItemProj<-risk_item_db |>
+erisk_ItemProj <- risk_item_db |>
   mutate(RISK_NAME_ID = paste(RISK_IDENTIFIER,RISK_NAME))                 
 
-risk_item_filt<- risk_item_db |>
+risk_item_filt <- risk_item_db |>
   mutate(RISK_NAME_ID = paste(RISK_IDENTIFIER,RISK_NAME))|>
   select(RISK_ID, PROJECT_ID,RISK_NAME, RISK_NAME_ID,P2_NUMBER)
 
 
 
-RiskImpactTable<-erisk_ItemProj |>
+RiskImpactTable <- erisk_ItemProj |>
   select("RISK_ID","RISK_NAME_ID","RISK_NAME","RISK_IDENTIFIER","P2_NUMBER", "PROJECT_ID",
          "PROJECT_NAME", "RISK_NAME","RISKCATEGORY", 
          "DISCIPLINE", 
@@ -95,7 +96,7 @@ RiskImpactTable<-erisk_ItemProj |>
          "SCHEDULE_IMPACT_EVIDENCE", "LIFECYCLEPHASENAME", 
          "PERFORMANCEIMPACT_DESC", "PERFORMANCEIMPACT","PERFORMANCE_IMPACT_DESC" 
          ,"PROJECTPHASEID", 
-         "MILESTONE", "RISK_MANAGER", "COST_IMPACT_DISTTYPE", 
+         "MILESTONE","PROJECTMILESTONEID","RISK_MANAGER", "COST_IMPACT_DISTTYPE", 
          "SCHEDULE_IMPACT_DISTTYPE", "NO_PERFORMANCE_IMPACT", "NO_COST_IMPACT",
          "NO_SCHEDULE_IMPACT")
 
@@ -141,7 +142,7 @@ monte_condit <- ifelse(nrow(risk_model>0),TRUE,FALSE)
 ###### Report Created On: `r format(Sys.time(), '%d %B, %Y')`
 ```{r echo=FALSE, warning=FALSE, message=FALSE, results='asis'}
 
-header<-paste("Project:",risk_item$PROJECT_NAME.x," ",(risk_item$RISK_IDENTIFIER))
+header<-paste("Project:",risk_item$PROJECT_NAME," ",(risk_item$RISK_IDENTIFIER))
 
 
 cat("####",header)
@@ -310,10 +311,12 @@ risk_item_table <- risk_item |>
                                         "Performance Impact Description:","</p>",
                                         PERFORMANCEIMPACT_DESC)
   )
+```
+
 
 
 ####Modularize assess for each cost schedule and performance build function
-
+```{r Creating Risk Table Columns, echo=FALSE, results='asis'}
 costcolumn <-
   if (risk_item_table$NO_COST_IMPACT == 1) {
     c("No cost impact is anticipated","","","")
@@ -337,7 +340,10 @@ costcolumn <-
       risk_item_table$COST_IMPACT_EVIDENCE
     )
   }
+```
 
+
+```{r schedule column, echo=FALSE, results='asis'}
 schedulecolumn <-
   if (risk_item_table$NO_SCHEDULE_IMPACT == 1) {
     c("No schedule impact is anticipated","","","")
@@ -359,6 +365,11 @@ schedulecolumn <-
     )
   }
 
+```
+
+
+
+```{r performance column, echo=FALSE, results='asis'}
 performancecolumn <-
   if (risk_item_table$NO_PERFORMANCE_IMPACT == 1) {
     c("No performance impact is anticipated","","","")
@@ -380,23 +391,7 @@ kable(disttable,format = "html", escape=FALSE, col.names=c("Cost Impact",
                                                             "Performance Impact"))|>
   kable_styling()
 
-# knitr::kables(
-#   list(
-#     knitr::kable(costcolumn,
-#                  format = "html",
-#                  col.names = "Cost Impact",escape=FALSE) |>
-#        kable_styling(),
-#     knitr::kable(schedulecolumn,
-#                  format = "html",
-#                  col.names = "Schedule Impact",escape=FALSE) |>
-#        kable_styling(),
-# 
-#     knitr::kable(performancecolumn,
-#                  format = "html",
-#                  col.names = "Performance Impact",escape=FALSE) |>
-#        kable_styling()
-#   )
-# )
+
 
 
 ```
