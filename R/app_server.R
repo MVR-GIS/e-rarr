@@ -2,7 +2,8 @@
 #'
 #' @param input,output,session Internal parameters for {shiny}.
 #'     DO NOT REMOVE.
-#' @import shiny
+#' @importFrom shiny addResourcePath
+#' @importFrom shinyjs disable, enable
 #' @noRd
 #'
 #'
@@ -193,9 +194,12 @@ app_server <- function(input, output, session) {
       filter(
         RiskImpactTable$P2_NUMBER == input$P2Input |
         RiskImpactTable$PROJECT_NAME == input$projectInput,
-        conditional(input$SubIDInput != "", RiskImpactTable$P2_SUB_IDENTIFIER == input$SubIDInput),
-        conditional(input$phaseInput !="", RiskImpactTable$LIFECYCLEPHASENAME == input$phaseInput),
-        conditional(input$mileInput !="", RiskImpactTable$MILESTONE == input$mileInput)
+        conditional(input$SubIDInput != "",
+                    RiskImpactTable$P2_SUB_IDENTIFIER == input$SubIDInput),
+        conditional(input$phaseInput !="",
+                    RiskImpactTable$LIFECYCLEPHASENAME == input$phaseInput),
+        conditional(input$mileInput !="", 
+                    RiskImpactTable$MILESTONE == input$mileInput)
       )
   })
 
@@ -214,7 +218,8 @@ app_server <- function(input, output, session) {
       filter(
         RiskImpactTable$P2_NUMBER == input$P2Input |
           RiskImpactTable$PROJECT_NAME == input$projectInput,
-        conditional(input$SubIDInput != "", RiskImpactTable$P2_SUB_IDENTIFIER == input$SubIDInput),
+        conditional(input$SubIDInput != "",
+                    RiskImpactTable$P2_SUB_IDENTIFIER == input$SubIDInput),
         RiskImpactTable$LIFECYCLEPHASENAME == input$phaseInput
       )
   })
@@ -309,9 +314,9 @@ in_react_frame<-reactiveVal(riskpies)
   
   observeEvent(input$riskInput,{
     if (input$riskInput ==""){
-      disable("RiskItemCard")
+      shinyjs::disable("RiskItemCard")
     } else{
-      enable("RiskItemCard")
+      shinyjs::enable("RiskItemCard")
     }
   })
   
