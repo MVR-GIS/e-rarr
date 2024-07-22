@@ -1,10 +1,10 @@
 # Get risks
-erisk_item <- read_csv(system.file("app", "data", "RISKLIST_FULL.csv",
+erisk_item <- read_csv(system.file("app", "data", "erisk_item.csv",
                                    package = "erarr"), 
                        show_col_types = FALSE)
 risk_item_db <- data.frame(erisk_item)
 # Get projects
-erisk_project <- read_csv(system.file("app", "data", "PROJECTLIST_FULL.csv",
+erisk_project <- read_csv(system.file("app", "data", "erisk_project.csv",
                                       package = "erarr"),
                           show_col_types = FALSE)
 risk_project_db <- data.frame(erisk_project)

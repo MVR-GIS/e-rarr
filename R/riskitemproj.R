@@ -9,8 +9,8 @@
 #' @return A ggplot of current milestone on timeline of all project milestones.
 #'
 #' @examples
-#' riskdf<- read_csv("inst/app/data/RISKLIST_FULL.csv",show_col_types = FALSE)
-#' projdf <- read_csv("inst/app/data/PROJECTLIST_FULL.csv",show_col_types = FALSE)
+#' riskdf<- read_csv("inst/app/data/erisk_item.csv",show_col_types = FALSE)
+#' projdf <- read_csv("inst/app/data/erisk_project.csv",show_col_types = FALSE)
 #'
 #'
 #' #example
