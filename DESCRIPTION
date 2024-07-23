@@ -32,13 +32,15 @@ Imports:
     readr,
     rlang,
     rmarkdown,
+    scales,
     shiny,
     shinyalert,
     shinycssloaders,
     shinyjs,
     stringr,
     tidyr,
-    webshot
+    webshot,
+    waiter
 Suggests: 
     htmlwidgets,
     knitr,

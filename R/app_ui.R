@@ -91,7 +91,7 @@ app_ui <- function(request) {
                        multiple = F,
                        options=list(placeholder = 'Enter P2 Number')
                      ),
-                     hidden(
+                     shinyjs::hidden(
                      selectizeInput(
                        "SubIDInput",
                        "Sub ID",
@@ -117,7 +117,7 @@ app_ui <- function(request) {
                        selected = NULL,
                        multiple = F,
                        options=list(placeholder = 'Enter Phase')),
-                     hidden(
+                     shinyjs::hidden(
                      selectizeInput(
                        "mileInput",
                        "Milestone",
