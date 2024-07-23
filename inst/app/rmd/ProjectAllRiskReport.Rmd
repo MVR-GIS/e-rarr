@@ -1,10 +1,10 @@
 ---
-title: ""
+title: "All Risk Report"
 output: html_document
 runtime: shiny
 params:
-  projID: St. Augustine Back Bay CSRM
-  p2ID: 	505374
+  projID: "St. Augustine Back Bay CSRM"
+  p2ID: 	""
   p2sub: ""
 ---
 
@@ -34,66 +34,71 @@ body {-webkit-print-color-adjust: exact;}
   }
 
 }
-
-
-
 ```
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, include=FALSE}
 library(readr) 
+library(dplyr)
 library(magrittr) 
-library(dplyr) 
-library(kableExtra) 
+library(tidyr)
 library(rlang)
-# library(plotly)
+library(formattable)
+library(plotly)
 library(ggplot2)
 library(ggrepel)
-library(dplyr)
-library(tidyverse)
+library(kableExtra)
+
 library(english)
-library(DT)
 library(webshot)
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, include=FALSE}
 options(scipen = 999)
 erisk_item <- read.csv("../data/erisk_item.csv")
-risk_item_db<-data.frame(erisk_item)
+risk_item_db <- data.frame(erisk_item)
 erisk_project <- read_csv("../data/erisk_project.csv", show_col_types = FALSE)
-risk_project_db<-data.frame(erisk_project)
+risk_project_db <- data.frame(erisk_project)
 
-risk_item_db<-risk_item_db |>
-  left_join(risk_project_db|>
+risk_item_db <- risk_item_db |>
+  left_join(risk_project_db |>
               select(PROJECT_ID, PRIMARYMISSION))
 
 RiskDeets <- risk_item_db |>
-  select("PROJECT_ID","P2_NUMBER","RISK_IDENTIFIER","P2_SUB_IDENTIFIER", "PROJECT_NAME","RISK_NAME","RISKCATEGORY","RISK_STATEMENT" ,"LIFECYCLEPHASENAME","MILESTONE","LIKELIHOOD","DISCIPLINE", "PERFORMANCEIMPACT", "PERFORMANCE_RANK_DESC", "PERFORMANCEIMPACT_RISK_RANKING","COST_IMPACT_MOSTLIKELY", "COST_RANK_DESC","COST_RISK_RANKING", "SCHEDULE_IMPACT_MOSTLIKELY", "SCHEDULE_RANK_DESC", "SCHEDULE_RISK_RANKING", "PRIMARYMISSION", "USACE_ORGANIZATION")
-
-
+  select("PROJECT_ID", "P2_NUMBER", "RISK_IDENTIFIER", "P2_SUB_IDENTIFIER", 
+         "PROJECT_NAME", "RISK_NAME", "RISKCATEGORY", "RISK_STATEMENT", 
+         "LIFECYCLEPHASENAME", "MILESTONE", "LIKELIHOOD", "DISCIPLINE", 
+         "PERFORMANCEIMPACT", "PERFORMANCE_RANK_DESC", 
+         "PERFORMANCEIMPACT_RISK_RANKING", "COST_IMPACT_MOSTLIKELY", 
+         "COST_RANK_DESC", "COST_RISK_RANKING", "SCHEDULE_IMPACT_MOSTLIKELY", 
+         "SCHEDULE_RANK_DESC", "SCHEDULE_RISK_RANKING", "PRIMARYMISSION", 
+         "USACE_ORGANIZATION")
 ```
 
 ```{r echo=FALSE, eval = params$projID != ""}
-Risk_List_Proj <-filter(RiskDeets, RiskDeets$PROJECT_NAME == params$projID)
-Risk_List_Proj$COST_IMPACT_MOSTLIKELY <- as.character(formattable::currency(Risk_List_Proj$COST_IMPACT_MOSTLIKELY))
+Risk_List_Proj <- RiskDeets |>
+  filter(RiskDeets$PROJECT_NAME == params$projID)
+Risk_List_Proj$COST_IMPACT_MOSTLIKELY <- 
+  as.character(formattable::currency(Risk_List_Proj$COST_IMPACT_MOSTLIKELY))
 
-proj_risks<-filter(Risk_List_Proj, Risk_List_Proj$PROJECT_NAME == params$projID)
-proj_risk_item<- slice_head(Risk_List_Proj)
-
+proj_risks <- filter(Risk_List_Proj, 
+                     Risk_List_Proj$PROJECT_NAME == params$projID)
+proj_risk_item <- slice_head(Risk_List_Proj)
 ```
 
 ```{r echo=FALSE, eval = params$p2ID != ""}
-Risk_List_Proj <-filter(RiskDeets, RiskDeets$P2_NUMBER == params$p2ID)
-Risk_List_Proj$COST_IMPACT_MOSTLIKELY <- as.character(formattable::currency(Risk_List_Proj$COST_IMPACT_MOSTLIKELY))
+Risk_List_Proj <- filter(RiskDeets, RiskDeets$P2_NUMBER == params$p2ID)
+Risk_List_Proj$COST_IMPACT_MOSTLIKELY <- 
+  as.character(formattable::currency(Risk_List_Proj$COST_IMPACT_MOSTLIKELY))
 
-proj_risks<-filter(Risk_List_Proj, Risk_List_Proj$P2_NUMBER == params$p2ID)
-proj_risk_item<- slice_head(Risk_List_Proj)
-
+proj_risks <- filter(Risk_List_Proj, Risk_List_Proj$P2_NUMBER == params$p2ID)
+proj_risk_item <- slice_head(Risk_List_Proj)
 ```
 
 ```{r echo=FALSE,  eval = params$p2sub != ""}
 Risk_List_Proj<-filter(Risk_List_Proj,
                   Risk_List_Proj$P2_SUB_IDENTIFIER == params$p2sub)
-proj_risks<-filter(proj_risks,
-                       proj_risks$P2_SUB_IDENTIFIER == params$p2sub
-                       )
-
+proj_risks <- filter(proj_risks,
+                     proj_risks$P2_SUB_IDENTIFIER == params$p2sub)
 ```
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, include=FALSE}
@@ -120,25 +125,18 @@ proj_risks <- proj_risks %>%
     'performancecolor' = case_when(
       PERFORMANCE_RANK_DESC == "No Risk" ~ '#FFFFFF',
       PERFORMANCE_RANK_DESC == "Opportunity" ~ 'rgb(31,120,180)',
-      PERFORMANCE_RANK_DESC == 'Low' ~
-        'rgb(51,160,44)',
+      PERFORMANCE_RANK_DESC == 'Low' ~ 'rgb(51,160,44)',
       PERFORMANCE_RANK_DESC == 'Medium' ~ 'rgb(255,127,0)',
       PERFORMANCE_RANK_DESC == 'High' ~ 'rgb(227,26,28)'
     )
   )
-
-         
-
 ```
 ###### Report Created On: `r format(Sys.time(), '%d %B, %Y')`
 ```{r, echo=FALSE, warning=FALSE, message=FALSE,results='asis'}
+header <- paste("Project:", proj_risk_item$PROJECT_NAME)
+header2 <- if (params$p2sub != "") {paste("SubID:", params$p2sub)}
 
-header<-paste("Project:",proj_risk_item$PROJECT_NAME)
-header2<-if (params$p2sub != ""){
-  paste("SubID:",params$p2sub)}
-
-cat("###",header,header2)
-
+cat("###", header, header2)
 ```
 
 ##### `r proj_risk_item$PRIMARYMISSION` `r proj_risk_item$LIFECYCLEPHASENAME`
@@ -148,35 +146,47 @@ cat("###",header,header2)
 #### All Project Risk Impacts
 <center>
 ```{r proj risk pies, message=FALSE, warning=FALSE, echo=FALSE,fig.height=2, fig.width=7}
-#make pie plots 
-   cost_pie<- erarr::pieprep(proj_risks, "COST_RANK_DESC")
-   
- schedule_pie<-erarr::pieprep(proj_risks, "SCHEDULE_RANK_DESC")
-  perform_pie<- erarr::pieprep(proj_risks, "PERFORMANCE_RANK_DESC")
+cost_pie     <- erarr::pieprep(proj_risks, "COST_RANK_DESC")
+schedule_pie <- erarr::pieprep(proj_risks, "SCHEDULE_RANK_DESC")
+perform_pie   <- erarr::pieprep(proj_risks, "PERFORMANCE_RANK_DESC")
+```
 
-  erarr::pie_plots(cost_pie,schedule_pie,perform_pie)
+```{r pie plots, message=FALSE, warning=FALSE, echo=FALSE,fig.height=2, fig.width=7}
+erarr::pie_plots(cost_pie, schedule_pie, perform_pie)
 ```
 </center>
 
 ```{r proj risk log, echo = FALSE, warning=FALSE}
+risk_log_tables <- proj_risks |>
+  select(RISK_IDENTIFIER, RISK_NAME, COST_RISK_RANKING, SCHEDULE_RISK_RANKING, 
+         PERFORMANCEIMPACT_RISK_RANKING, costcolor, schedulecolor, 
+         performancecolor)
 
-
-risk_log_tables<-proj_risks |>
-  select(RISK_IDENTIFIER, RISK_NAME, COST_RISK_RANKING, SCHEDULE_RISK_RANKING, PERFORMANCEIMPACT_RISK_RANKING, costcolor, schedulecolor, performancecolor )
-
-
-risk_log_tables|>
+risk_log_tables |>
   mutate(
-    COST_RISK_RANKING = cell_spec(COST_RISK_RANKING,color=costcolor, align = 'c', background = costcolor),
-    SCHEDULE_RISK_RANKING = cell_spec(SCHEDULE_RISK_RANKING,color=schedulecolor,align = 'c', background = schedulecolor),
-    PERFORMANCEIMPACT_RISK_RANKING = cell_spec(PERFORMANCEIMPACT_RISK_RANKING,color=performancecolor, align = 'c', background = performancecolor) ) |>
-  select(RISK_IDENTIFIER, RISK_NAME,COST_RISK_RANKING, SCHEDULE_RISK_RANKING, PERFORMANCEIMPACT_RISK_RANKING) |>
-  separate(RISK_IDENTIFIER,c("code", "rnkorder"), sep="-", remove = FALSE) |>
-  dplyr::arrange(code,as.numeric(rnkorder))|>
-  select(RISK_IDENTIFIER, RISK_NAME,COST_RISK_RANKING, SCHEDULE_RISK_RANKING, PERFORMANCEIMPACT_RISK_RANKING) |>
-  kbl(format = "html", escape = F, col.names =c("Risk ID","Risk","Cost","Schedule","Performance"), align="ccccc", row.names = FALSE)|>
-  kable_styling(bootstrap_options = c( "hover", "condensed", "responsive"))
-
-
-                                                    
+    COST_RISK_RANKING = cell_spec(COST_RISK_RANKING, 
+                                  color = costcolor, 
+                                  align = 'c', 
+                                  background = costcolor),
+    SCHEDULE_RISK_RANKING = cell_spec(SCHEDULE_RISK_RANKING, 
+                                      color = schedulecolor, 
+                                      align = 'c', 
+                                      background = schedulecolor),
+    PERFORMANCEIMPACT_RISK_RANKING = cell_spec(PERFORMANCEIMPACT_RISK_RANKING, 
+                                               color = performancecolor, 
+                                               align = 'c', 
+                                               background = performancecolor) 
+    ) |>
+  select(RISK_IDENTIFIER, RISK_NAME,COST_RISK_RANKING, SCHEDULE_RISK_RANKING, 
+         PERFORMANCEIMPACT_RISK_RANKING) |>
+  separate(RISK_IDENTIFIER, c("code", "rnkorder"), sep = "-", remove = FALSE) |>
+  arrange(code, as.numeric(rnkorder)) |>
+  select(RISK_IDENTIFIER, RISK_NAME, COST_RISK_RANKING, SCHEDULE_RISK_RANKING, 
+         PERFORMANCEIMPACT_RISK_RANKING) |>
+  kbl(format = "html", 
+      escape = F, 
+      col.names = c("Risk ID", "Risk", "Cost", "Schedule", "Performance"), 
+      align = "ccccc", 
+      row.names = FALSE) |>
+  kable_styling(bootstrap_options = c("hover", "condensed", "responsive"))
 ```

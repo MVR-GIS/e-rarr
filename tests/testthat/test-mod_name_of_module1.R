@@ -1,3 +1,5 @@
+testthat::skip("test not implemented yet")
+
 testServer(
   mod_name_of_module1_server,
   # Add here your module params

@@ -18,13 +18,14 @@ A ggplot of current milestone on timeline of all project milestones.
 Creates a milestone chart
 }
 \examples{
-#Get milestone data and risk item
-milestonedf<-read.csv("inst/app/data/phase_milestone.csv")
-milestone_df<-data.frame(milestonedf)
+# Get milestone data and risk item
+milestonedf <- read.csv("inst/app/data/PHASEMILESTONE.csv")
+milestone_df <- data.frame(milestonedf)
 
 riskitem <- risk_item
 
-#example
-milestone_plot<-milestoneplot(riskitem=risk_item, milestonedf = milestone_df)
+# example
+milestone_plot <- milestoneplot(riskitem = risk_item, 
+                                milestonedf = milestone_df)
 
 }

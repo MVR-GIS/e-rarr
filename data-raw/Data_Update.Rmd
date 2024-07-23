@@ -62,8 +62,6 @@ erisk_orgs      <- ROracle::dbReadTable(con_roracle,
 risk_modeled <-ROracle::dbReadTable(con_roracle, 
                                              "ERR_RISKMODELED")
 
-
-
 # Disconnect from the database
 ROracle::dbDisconnect(con_roracle)
 ```
