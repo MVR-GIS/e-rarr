@@ -105,13 +105,6 @@ risk_treat<-left_join(risk_treatment, risk_item_filt, by=c("PROJECT_ID", "RISK_I
 
 risk_modeled <-left_join(risk_modeled, risk_item_filt, by=c("PROJECT_ID", "RISK_ID"), 
                          keep=FALSE)
-
-risk_transact <- left_join(risk_transact, risk_item_filt, 
-                           by = c("PROJECT_ID", "RISK_ID", "PROJECT_NAME"), 
-                           relationship = "many-to-many")     
-risk_treat <- left_join(risk_treat, risk_item_filt, 
-                        by = c("PROJECT_ID", "RISK_ID", "PROJECT_NAME"), 
-                        relationship = "many-to-many")
 ```
 
 ```{r echo=FALSE, eval = params$projID != ""}
