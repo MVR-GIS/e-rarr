@@ -60,7 +60,8 @@ riskpies <- risk_item_db |>
   mutate_if(is.character, as.factor) |>
   mutate(P2_SUB_IDENTIFIER = ifelse(is.na(P2_SUB_IDENTIFIER), "", 
                                     P2_SUB_IDENTIFIER)) |>
-  mutate(RISK_NAME_ID = paste(RISK_IDENTIFIER,RISK_NAME))
+  mutate(RISK_NAME_ID = paste(RISK_IDENTIFIER,RISK_NAME))|>
+  mutate(RISK_NAME_ID =str_trim(RISK_NAME_ID, side = c("right")))
 
 
 conditional <- function(condition, success) {

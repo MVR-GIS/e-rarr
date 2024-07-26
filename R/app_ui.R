@@ -14,6 +14,7 @@
 #'                   tooltip
 #' @importFrom plotly plotlyOutput
 #' @importFrom DT DTOutput
+#' @importFrom stringr str_trim
 
 RiskImpactTable <- risk_item_db |>
   select(
@@ -30,7 +31,8 @@ RiskImpactTable <- risk_item_db |>
   ) |>
   mutate(P2_SUB_IDENTIFIER = ifelse(is.na(P2_SUB_IDENTIFIER), "", 
                                     P2_SUB_IDENTIFIER))|>
-  mutate(RISK_NAME_ID = paste(RISK_IDENTIFIER,RISK_NAME))
+  mutate(RISK_NAME_ID = paste(RISK_IDENTIFIER,RISK_NAME))|>
+  mutate(RISK_NAME_ID =str_trim(RISK_NAME_ID, side = c("right")))
 
 
 
