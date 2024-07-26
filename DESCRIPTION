@@ -28,22 +28,20 @@ Imports:
     ggrepel,
     golem,
     kableExtra,
+    knitr,
     plotly,
     readr,
     rlang,
     rmarkdown,
-    scales,
     shiny,
     shinyalert,
     shinycssloaders,
     shinyjs,
     stringr,
     tidyr,
-    webshot,
-    waiter
+    webshot
 Suggests: 
     htmlwidgets,
-    knitr,
     spelling,
     testthat (>= 3.0.0)
 VignetteBuilder: 
