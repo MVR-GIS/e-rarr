@@ -21,8 +21,12 @@ library(shinyjs)
 
 erisk_item <-read.csv("./inst/app/data/erisk_item.csv")
 risk_item_db <- data.frame(erisk_item)
+erisk_project <-read.csv("./inst/app/data/erisk_project.csv")
+erisk_orgs <-read.csv("./inst/app/data/erisk_orgs.csv")
 
 
+erisk_project_orgs <- erisk_project |>
+  left_join(erisk_orgs, by=join_by(DISTRICT_CODE))
 
 shiny::addResourcePath(prefix = "www", directoryPath = "./inst/app/www")
 
@@ -71,9 +75,130 @@ conditional <- function(condition, success) {
     TRUE
 }
 
+filter_data <- function(data, ...) {
+  conditions <- list(...)
+  for (condition in conditions) {
+    if (!is.null(condition)) {
+      data <- data |> filter(condition)
+    }
+  }
+  return(data)
+}
 
+
+### Server Function
 app_server <- function(input, output, session) {
+  
+  
+  update_choices <- function(input_id, choices) {
+    updateSelectizeInput(session, input_id, choices = c("", choices), selected = "")
+  }
+  
 
+
+  observeEvent(input$resetBtn, {
+    shinyjs::reset("sidebarPanel")
+    lapply(c("MSCInput", "districtsInput", "ProgramCodeInput", "ProgramTypeInput",
+             "MissionInput", "phaseInput", "mileInput", "disInput"),
+           function(id) updateSelectizeInput(session, id, selected = ""))
+  })
+
+  
+  
+### Division Level Reports
+  num2 <- reactive({unique(erisk_project_orgs$MSC) 
+  })
+
+  observe({
+    update_choices('MSCInput', sort(num2()))
+    
+  })
+  
+  districts <- reactive({
+    erisk_project_orgs |>
+      filter(conditional(input$MSCInput != "",erisk_project_orgs$MSC == input$MSCInput))
+  })
+  
+  
+  observeEvent(districts(), { update_choices('districtsInput', unique(districts()$USACE_ORGANIZATION)) })
+  
+  
+  programcodes <-reactive({
+    erisk_project_orgs |>
+      filter(conditional(input$MSCInput != "",
+                         erisk_project_orgs$MSC == input$MSCInput),
+             conditional(input$districtsInput != "" , 
+                         erisk_project_orgs$USACE_ORGANIZATION == input$districtsInput))
+  })
+  
+  observeEvent(districts(), { update_choices('ProgramCodeInput', unique(programcodes()$P2_PROGRAM_CODE)) })
+
+
+  programtypes <-reactive({
+    erisk_project_orgs |>
+      filter(conditional(input$MSCInput != "",
+                         erisk_project_orgs$MSC == input$MSCInput),
+             conditional(input$districtsInput != "" , 
+                         erisk_project_orgs$USACE_ORGANIZATION == input$districtsInput),
+             conditional(input$ProgramCodeInput != "" , 
+                         erisk_project_orgs$P2_PROGRAM_CODE == input$ProgramCodeInput))
+  })
+  
+  
+  observeEvent(programtypes(),{
+    update_choices('ProgramTypeInput',unique(programtypes()$PROGRAMTYPENAME))
+  })
+  
+  primarymissions <-reactive({
+    erisk_project_orgs |>
+      filter(conditional(input$MSCInput != "",
+                         erisk_project_orgs$MSC == input$MSCInput),
+             conditional(input$districtsInput != "" , 
+                         erisk_project_orgs$USACE_ORGANIZATION == input$districtsInput),
+             conditional(input$ProgramCodeInput != "" , 
+                         erisk_project_orgs$P2_PROGRAM_CODE == input$ProgramCodeInput),
+             conditional(input$ProgramTypeInput != "" , 
+                        erisk_project_orgs$PROGRAMTYPENAME == input$ProgramTypeInput))
+  })
+  
+  observeEvent(primarymissions(),{
+    update_choices("MissionInput",sort(unique(programtypes()$PRIMARYMISSION)))
+  })
+  
+
+  
+  proj_orgs_table <- reactiveVal(erisk_project_orgs)
+  
+  projframe <- reactive({
+    proj_orgs_table()|>
+      filter(conditional(input$MSCInput != "",
+                         proj_orgs_table()$MSC == input$MSCInput),
+             conditional(input$districtsInput != "",
+                         proj_orgs_table()$USACE_ORGANIZATION == input$districtsInput),
+             conditional(input$ProgramCodeInput != "",
+                         proj_orgs_table()$P2_PROGRAM_CODE == input$ProgramCodeInput),
+             conditional(input$ProgramTypeInput != "",
+                         proj_orgs_table()$PROGRAMTYPENAME == input$ProgramTypeInput),
+             conditional(input$MissionInput != "",
+                         proj_orgs_table()$PRIMARYMISSION == input$MissionInput))|>
+      select(PROJECT_NAME,DISTRICT_CODE,PRIMARYMISSION)
+  })
+  
+  output$projoverview = DT::renderDT({
+    DT::datatable(projframe(),
+                  extensions = 'Buttons',
+                  options = list(dom ='Bfrtip',
+                                 buttons = c('csv', 'excel','pdf','print')),
+                  rownames = FALSE,
+                  filter = "top"
+    )
+  })
+  
+  
+  
+  
+  
+#### Project level/Risk item reports  
   num <- reactive({
     data = RiskImpactTable$USACE_ORGANIZATION
     return(data)
@@ -85,9 +210,8 @@ app_server <- function(input, output, session) {
                          options = list(maxOptions = 40, 
                                         server = TRUE, 
                                         placeholder = 'Select a District')
-                         )
+    )
   })
-  
 
   projects <- reactive({
     RiskImpactTable |>
@@ -236,6 +360,7 @@ app_server <- function(input, output, session) {
     )
   })
   
+  ###Project Level/Risk item reports explore risk page
    
   in_react_frame <- reactiveVal(riskpies)
   
@@ -281,7 +406,7 @@ app_server <- function(input, output, session) {
       pieprep(filt_frame(), "SCHEDULE_RANK_DESC"))
   perform_pie <- reactive(pieprep(filt_frame(), "PERFORMANCE_RANK_DESC"))
   
-  
+
   
   output$overviewtab = DT::renderDT({
     DT::datatable(
@@ -315,11 +440,6 @@ app_server <- function(input, output, session) {
     }
   })
   
-
-
-    
-  
-
   observeEvent(input$RiskItem, {
     req(isTruthy(input$riskInput),
         isTruthy(input$projectInput) || isTruthy(input$P2Input)) 
