@@ -131,7 +131,7 @@ app_server <- function(input, output, session) {
                          erisk_project_orgs$USACE_ORGANIZATION == input$districtsInput))
   })
   
-  observeEvent(districts(), { update_choices('ProgramCodeInput', unique(programcodes()$P2_PROGRAM_CODE)) })
+  observeEvent(districts(), { update_choices('ProgramCodeInput', sort(unique(programcodes()$P2_PROGRAM_CODE))) })
 
 
   programtypes <-reactive({
@@ -146,7 +146,7 @@ app_server <- function(input, output, session) {
   
   
   observeEvent(programtypes(),{
-    update_choices('ProgramTypeInput',unique(programtypes()$PROGRAMTYPENAME))
+    update_choices('ProgramTypeInput',sort(unique(programtypes()$PROGRAMTYPENAME)))
   })
   
   primarymissions <-reactive({
