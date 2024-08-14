@@ -100,29 +100,29 @@ app_ui <- function(request) {
                                  selected = NULL,
                                  options=list(placeholder = 'Primary Mission')),
                      h5("Filter Project Risks"),
-                     selectizeInput(
-                       "phaseInput",
-                       "Phase",
-                       choices = NULL,
-                       selected = NULL,
-                       multiple = F,
-                       options=list(placeholder = 'Enter Phase')),
-                     shinyjs::hidden(
-                       selectizeInput(
-                         "mileInput",
-                         "Milestone",
-                         choices = NULL,
-                         selected = NULL,
-                         multiple = F,
-                         options=list(placeholder = 'Enter Milestone'))),
-                     selectizeInput(
-                       "disInput",
-                       "Discipline",
-                       choices = NULL,
-                       selected = NULL,
-                       multiple = F,
-                       options=list(placeholder = 'Select a Discipline')
-                     ),
+                     # selectizeInput(
+                     #   "phaseInput",
+                     #   "Phase",
+                     #   choices = NULL,
+                     #   selected = NULL,
+                     #   multiple = F,
+                     #   options=list(placeholder = 'Enter Phase')),
+                     # shinyjs::hidden(
+                     #   selectizeInput(
+                     #     "mileInput",
+                     #     "Milestone",
+                     #     choices = NULL,
+                     #     selected = NULL,
+                     #     multiple = F,
+                     #     options=list(placeholder = 'Enter Milestone'))),
+                     # selectizeInput(
+                     #   "disInput",
+                     #   "Discipline",
+                     #   choices = NULL,
+                     #   selected = NULL,
+                     #   multiple = F,
+                     #   options=list(placeholder = 'Select a Discipline')
+                     # ),
                      width=2
                      ), 
                    mainPanel(tabsetPanel(
