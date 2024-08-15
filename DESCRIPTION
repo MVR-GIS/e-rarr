@@ -33,6 +33,7 @@ Imports:
     readr,
     rlang,
     rmarkdown,
+    scales,
     shiny,
     shinyalert,
     shinycssloaders,
@@ -42,6 +43,7 @@ Imports:
     webshot
 Suggests: 
     htmlwidgets,
+    waiter
     spelling,
     testthat (>= 3.0.0)
 VignetteBuilder: 

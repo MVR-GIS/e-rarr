@@ -34,7 +34,7 @@ projphases<- milestonedf |>
   dplyr::mutate('yval' = rep(0.1))
 
 mileplot <- ggplot(projphases, 
-                   aes(x = ID, level = ORDERBY, y = yval)) +
+                  aes(x = ID, level = ORDERBY, y = yval)) +
   geom_segment(x = min(projphases$ID), y = 0.1, xend = max(projphases$ID), yend = 0.1, 
                linewidth = 1, color = "grey") +
   geom_point(size = 7,color = "grey", fill = "snow1", 
@@ -52,7 +52,7 @@ mileplot <- ggplot(projphases,
         axis.ticks.length = unit(0, "pt"),
         panel.background = element_blank(),
         plot.margin = unit(c(0, 0, 0 ,0), "mm")
-        )
+  )
 mileplot <- ggsave("mileplot.png", dpi = 600)
 return(mileplot)
 }
