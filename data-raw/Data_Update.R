@@ -41,6 +41,8 @@ risk_treat <- ROracle::dbReadTable(con_roracle,
                                    "ERR_RISKTREATMENTLIST_FULL")
 erisk_orgs      <- ROracle::dbReadTable(con_roracle, 
                                         "ERR_TBLUSACEORGS")
+erisk_phases <- ROracle::dbReadTable(con_roracle, 
+                                    "ERR_PHASEMILESTONE")
 
 # Disconnect from the database
 ROracle::dbDisconnect(con_roracle)

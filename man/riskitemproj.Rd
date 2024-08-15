@@ -19,8 +19,8 @@ Creates the Risk Item Project table used to develop project
 level reports
 }
 \examples{
-riskdf<- read_csv("inst/app/data/RISKLIST_FULL.csv",show_col_types = FALSE)
-projdf <- read_csv("inst/app/data/PROJECTLIST_FULL.csv",show_col_types = FALSE)
+riskdf<- read_csv("inst/app/data/erisk_item.csv",show_col_types = FALSE)
+projdf <- read_csv("inst/app/data/erisk_project.csv",show_col_types = FALSE)
 
 
 #example

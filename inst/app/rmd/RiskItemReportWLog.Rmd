@@ -186,6 +186,7 @@ monte_pie<-plot_ly() |>
     title = "Opportunity",
     textinfo = 'none',
     name = " ",
+    hoverinfo = "value",
     domain = list(row = 0, column = 0),
     hole = 0.7,
     marker = list(colors = "#1F78B4")
@@ -404,7 +405,7 @@ risk_log<-risk_log %>%
   PERFORMANCEIMPACT_RISK_RANKING ==1 ~'#33A02C', 
   PERFORMANCEIMPACT_RISK_RANKING == 2 ~'#FF7F00',
   PERFORMANCEIMPACT_RISK_RANKING ==  3 ~ '#E31A1C'))%>%
-  mutate(TREAT_IMPLEMENT_IMG = if_else(is.na(TREATMENTS_IMPLEMENTED), "", checkimagepath))
+  mutate(TREAT_IMPLEMENT_IMG = if_else(is.na(treat_condit), "", checkimagepath))
          
          
 

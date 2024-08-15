@@ -8,14 +8,15 @@
 #' @return A ggplot of current milestone on timeline of all project milestones.
 #'
 #' @examples
-#' #Get milestone data and risk item
-#' milestonedf<-read.csv("inst/app/data/PHASEMILESTONE.csv")
-#' milestone_df<-data.frame(milestonedf)
+#' # Get milestone data and risk item
+#' milestonedf <- read.csv("inst/app/data/PHASEMILESTONE.csv")
+#' milestone_df <- data.frame(milestonedf)
 #'
 #' riskitem <- risk_item
 #'
-#' #example
-#' milestone_plot<-milestoneplot(riskitem=risk_item, milestonedf = milestone_df)
+#' # example
+#' milestone_plot <- milestoneplot(riskitem = risk_item, 
+#'                                 milestonedf = milestone_df)
 #'
 #' @importFrom dplyr filter mutate arrange
 #' @importFrom rlang .data
@@ -29,25 +30,21 @@
 
 milestoneplot<- function(riskitem, milestonedf){
 projphases<- milestonedf |>
-  filter(PHASEID == riskitem$PROJECTPHASEID)|>
-  mutate('yval' = rep(0.1))|>
-  arrange(ORDERBY)
-
-#, vjust=1.4
+  dplyr::filter(PHASEID == riskitem$PROJECTPHASEID)|>
+  dplyr::mutate('yval' = rep(0.1))
 
 mileplot <- ggplot(projphases, 
-                   aes(x = factor(MILESTONE), level = ORDERBY, y = yval)) +
-  geom_segment(x = 1, y = 0.1, xend = length(projphases$ORDERBY), yend = 0.1, 
+                  aes(x = ID, level = ORDERBY, y = yval)) +
+  geom_segment(x = min(projphases$ID), y = 0.1, xend = max(projphases$ID), yend = 0.1, 
                linewidth = 1, color = "grey") +
   geom_point(size = 7,color = "grey", fill = "snow1", 
              shape = 21, stroke = .75) +
-  geom_point(aes(x = riskitem$MILESTONE, y = 0.1), 
+  geom_point(aes(x = riskitem$PROJECTMILESTONEID, y = 0.1), 
              colour = "#1F78B4", fill = "#1F78B4", shape = 16, size = 4) +
   geom_text(aes(label = str_wrap(MILESTONE, width=14)), 
             position = position_nudge(y = -0.55), size = 3) +
   scale_y_continuous(limits = c(-1, 1), expand = c(0, 0)) +
   coord_cartesian(clip = "off") +
-  aes(x = fct_inorder(MILESTONE)) +
   theme(line = element_blank(),
         title = element_blank(),
         axis.text.x = element_blank(),
@@ -55,7 +52,7 @@ mileplot <- ggplot(projphases,
         axis.ticks.length = unit(0, "pt"),
         panel.background = element_blank(),
         plot.margin = unit(c(0, 0, 0 ,0), "mm")
-        )
-mileplot < -ggsave("mileplot.png", dpi = 600)
+  )
+mileplot <- ggsave("mileplot.png", dpi = 600)
 return(mileplot)
 }
