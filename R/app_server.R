@@ -6,6 +6,7 @@
 #'
 #' @importFrom dplyr select mutate filter
 #' @importFrom stringr str_detect
+#' @importFrom tidyr pivot_wider
 #' @importFrom shiny addResourcePath reactive observe observeEvent 
 #'                   updateSelectizeInput reactiveVal isTruthy req
 #' @importFrom shinyjs show hide disable enable
@@ -15,6 +16,7 @@
 library(shiny)
 library(readr)
 library(dplyr)
+library(tidyr)
 library(stringr)
 library(shinycssloaders)
 library(shinyalert)
@@ -75,7 +77,9 @@ riskpies <- risk_item_db |>
 risk_proj_orgs <- risk_item_db |>
   left_join(project_orgs|>
             select(PROJECT_ID, PRIMARYMISSION,MSC,DISTRICT_NAME, PROGRAMTYPENAME
-                   ))
+                   ),  by=join_by(PROJECT_ID))
+
+
 
 
 
@@ -221,6 +225,26 @@ app_server <- function(input, output, session) {
     pie_plots(proj_cost_pie(), proj_schedule_pie(), proj_perform_pie())
   })
   
+  
+  proj_costs  <-risk_proj_orgs|>
+    filter(COST_RANK_DESC != 'No Risk')|>
+    group_by(PROJECT_NAME,COST_RANK_DESC)|>
+    summarise(Count = n(),Sum_impact = sum(COST_IMPACT_MOSTLIKELY),.groups = 'drop')|>
+    pivot_wider(names_from = COST_RANK_DESC, values_from = Count, values_fill = list(Count = 0))|>
+    group_by(PROJECT_NAME)|>
+    summarise('Potential Mean Cost Impact'  = sum(Sum_impact), Cost_Opp = sum(Opportunity), Cost_Low = sum(Low),
+              Cost_med = sum(Medium), Cost_High = sum(High))
+    select(PROJECT_NAME, DISTRICT_CODE, PRIMARYMISSION, Opportunity, Low, Medium, High)
+  
+  
+  
+  proj_schedule  <-projframe()|>
+    group_by(PROJECT_NAME,SCHEDULE_RANK_DESC )
+  
+  proj_perform  <-projframe()|>
+    group_by(PROJECT_NAME,PERFORMANCE_RANK_DESC )
+  
+    
   
   output$projoverview = DT::renderDT({
     DT::datatable(projframe(),
