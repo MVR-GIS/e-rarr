@@ -6,6 +6,8 @@
 #'
 #' @importFrom dplyr select mutate filter
 #' @importFrom stringr str_detect
+#' @importFrom tidyr pivot_wider
+
 #' @importFrom shiny addResourcePath reactive observe observeEvent 
 #'                   updateSelectizeInput reactiveVal isTruthy req
 #' @importFrom shinyjs show hide disable enable
@@ -225,23 +227,22 @@ app_server <- function(input, output, session) {
   })
   
   
-  proj_costs  <-risk_proj_orgs|>
-    filter(COST_RANK_DESC != 'No Risk')|>
-    group_by(PROJECT_NAME,COST_RANK_DESC)|>
-    summarise(Count = n(),Sum_impact = sum(COST_IMPACT_MOSTLIKELY),.groups = 'drop')|>
-    pivot_wider(names_from = COST_RANK_DESC, values_from = Count, values_fill = list(Count = 0))|>
-    group_by(PROJECT_NAME)|>
-    summarise('Potential Mean Cost Impact'  = sum(Sum_impact), Cost_Opp = sum(Opportunity), Cost_Low = sum(Low),
-              Cost_med = sum(Medium), Cost_High = sum(High))
-    select(PROJECT_NAME, DISTRICT_CODE, PRIMARYMISSION, Opportunity, Low, Medium, High)
+  # proj_costs  <-risk_proj_orgs|>
+  #   filter(COST_RANK_DESC != 'No Risk')|>
+  #   group_by(PROJECT_NAME,COST_RANK_DESC)|>
+  #   summarise(Count = n(),Sum_impact = sum(COST_IMPACT_MOSTLIKELY),.groups = 'drop')|>
+  #   pivot_wider(names_from = COST_RANK_DESC, values_from = Count, values_fill = list(Count = 0))|>
+  #   group_by(PROJECT_NAME)|>
+  #   summarise('Potential Mean Cost Impact'  = sum(Sum_impact), Cost_Opp = sum(Opportunity), Cost_Low = sum(Low),
+  #             Cost_med = sum(Medium), Cost_High = sum(High))
   
   
-  
-  proj_schedule  <-projframe()|>
-    group_by(PROJECT_NAME,SCHEDULE_RANK_DESC )
-  
-  proj_perform  <-projframe()|>
-    group_by(PROJECT_NAME,PERFORMANCE_RANK_DESC )
+  # 
+  # proj_schedule  <-projframe()|>
+  #   group_by(PROJECT_NAME,SCHEDULE_RANK_DESC )
+  # 
+  # proj_perform  <-projframe()|>
+  #   group_by(PROJECT_NAME,PERFORMANCE_RANK_DESC )
   
     
   
