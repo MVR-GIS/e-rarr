@@ -63,8 +63,6 @@ app_ui <- function(request) {
           ),
           "Risk Analysis Reporting System      "
         ),
-        tabPanel("National"),
-        tabPanel("Division"),
         tabPanel("District",
                  sidebarLayout(
                    sidebarPanel(
@@ -128,6 +126,7 @@ app_ui <- function(request) {
                    mainPanel(tabsetPanel(
                      tabPanel(
                        "Explore Projects",
+                       plotly::plotlyOutput("projpies"),
                        DT::DTOutput("projoverview"), value= "Explore Projects"),
                        tabPanel("Explore Risks"),
                        tabPanel("Reports"))))),
@@ -293,3 +292,4 @@ app_ui <- function(request) {
                  ), selected = "Project")
     )
   )}
+
