@@ -17,4 +17,5 @@
 #' @importFrom english english
 #' @importFrom stringr str_to_title
 #' @importFrom plotly plot_ly add_pie layout 
+#' @importFrom stringr str_trim
 NULL
