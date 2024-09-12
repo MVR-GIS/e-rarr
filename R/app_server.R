@@ -85,7 +85,6 @@ risk_proj_orgs <- risk_item_db |>
 MVR_items<-risk_item_db |>
   filter(DISTRICT_CODE == "MVR")
 
-
 conditional <- function(condition, success) {
   if (condition)
     success 
@@ -394,6 +393,24 @@ app_server <- function(input, output, session) {
   ))
   
   
+  # proj_costs  <-risk_proj_orgs|>
+  #   filter(COST_RANK_DESC != 'No Risk')|>
+  #   group_by(PROJECT_NAME,COST_RANK_DESC)|>
+  #   summarise(Count = n(),Sum_impact = sum(COST_IMPACT_MOSTLIKELY),.groups = 'drop')|>
+  #   pivot_wider(names_from = COST_RANK_DESC, values_from = Count, values_fill = list(Count = 0))|>
+  #   group_by(PROJECT_NAME)|>
+  #   summarise('Potential Mean Cost Impact'  = sum(Sum_impact), Cost_Opp = sum(Opportunity), Cost_Low = sum(Low),
+  #             Cost_med = sum(Medium), Cost_High = sum(High))
+  
+  
+  # 
+  # proj_schedule  <-projframe()|>
+  #   group_by(PROJECT_NAME,SCHEDULE_RANK_DESC )
+  # 
+  # proj_perform  <-projframe()|>
+  #   group_by(PROJECT_NAME,PERFORMANCE_RANK_DESC )
+  
+    
   output$projoverview = DT::renderDT({
     DT::datatable(projects_comb(),
                   extensions = 'Buttons',
@@ -423,7 +440,9 @@ app_server <- function(input, output, session) {
                          options = list(maxOptions = 40, 
                                         server = TRUE, 
                                         placeholder = 'Select a District')
+
     )
+
   })
 
   projects <- reactive({
@@ -503,7 +522,6 @@ app_server <- function(input, output, session) {
   })
   
 
-  
 
   observeEvent(riskitems(),
                {
@@ -516,6 +534,8 @@ app_server <- function(input, output, session) {
                RiskImpactTable$PROJECT_NAME == input$projectInput,
              conditional(input$SubIDInput != "",
                          RiskImpactTable$P2_SUB_IDENTIFIER == input$SubIDInput),
+
+
         conditional(input$phaseInput !="",
                     RiskImpactTable$LIFECYCLEPHASENAME == input$phaseInput),
         conditional(input$mileInput !="", 
@@ -524,6 +544,7 @@ app_server <- function(input, output, session) {
   })
 
   
+
   observeEvent(disciplines(),{
     update_choices("disInput",sort(unique(disciplines()$DISCIPLINE)))
   })
@@ -550,7 +571,7 @@ app_server <- function(input, output, session) {
       update_choices("mileInput",sort(unique(milestones()$MILESTONE)))
     })
   
-  
+
   ###Project Level/Risk item reports explore risk page
    
   in_react_frame <- reactiveVal(riskpies)
@@ -632,6 +653,29 @@ app_server <- function(input, output, session) {
     }
   })
   
+  observeEvent(input$RiskItem, {
+    req(isTruthy(input$riskInput),
+        isTruthy(input$projectInput) || isTruthy(input$P2Input)) 
+    rmarkdown::render(
+      "./inst/app/rmd/RiskItemReport.Rmd",
+      params = list(projID = input$projectInput,
+                    riskID = input$riskInput,
+                    p2ID   = input$P2Input),
+      output_dir ="./inst/app/www"
+    )
+    shinyalert::shinyalert(
+      html = TRUE, 
+      text = tagList(tags$iframe(src="www/RiskItemReport.html", 
+                                 width = 900,  
+                                 height = 1000,  
+                                 style = "border:none;")), 
+      size = "l",
+      confirmButtonText = "Close Report",
+      closeOnClickOutside = TRUE
+    )
+  })
+  
+
   observeEvent(input$RiskItem, {
     req(isTruthy(input$riskInput),
         isTruthy(input$projectInput) || isTruthy(input$P2Input)) 

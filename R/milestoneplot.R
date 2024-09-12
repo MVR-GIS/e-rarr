@@ -41,7 +41,8 @@ mileplot <- ggplot(projphases,
              shape = 21, stroke = .75) +
   geom_point(aes(x = riskitem$PROJECTMILESTONEID, y = 0.1), 
              colour = "#1F78B4", fill = "#1F78B4", shape = 16, size = 4) +
-  geom_text(aes(label = str_wrap(MILESTONE, width=14)), 
+  geom_text(aes(label = str_wrap(riskitem$MILESTONE, width=14)), 
+
             position = position_nudge(y = -0.55), size = 3) +
   scale_y_continuous(limits = c(-1, 1), expand = c(0, 0)) +
   coord_cartesian(clip = "off") +
@@ -52,7 +53,8 @@ mileplot <- ggplot(projphases,
         axis.ticks.length = unit(0, "pt"),
         panel.background = element_blank(),
         plot.margin = unit(c(0, 0, 0 ,0), "mm")
-  )
+        )
+
 mileplot <- ggsave("mileplot.png", dpi = 600)
 return(mileplot)
 }

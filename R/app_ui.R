@@ -35,8 +35,6 @@ RiskImpactTable <- risk_item_db |>
   mutate(RISK_NAME_ID =str_trim(RISK_NAME_ID, side = c("right")))
 
 
-
-
 app_ui <- function(request) {
   tagList(
     # Leave this function for adding external resources
@@ -301,3 +299,4 @@ app_ui <- function(request) {
         ), selected = "Project")
     )
   )}
+

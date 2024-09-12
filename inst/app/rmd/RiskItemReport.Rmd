@@ -59,6 +59,7 @@ library(stringr)
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, include=FALSE}
 options(scipen = 999)
+
 risk_item_db <- readr::read_csv("../data/erisk_item.csv",show_col_types = FALSE)
 risk_project_db <- readr::read_csv("../data/erisk_project.csv",show_col_types = FALSE)
 risk_transact <- readr::read_csv("../data/risk_transact.csv",show_col_types = FALSE)
@@ -85,9 +86,6 @@ risk_item_filt <- risk_item_db |>
 risk_modeled <- risk_modeled|>
    mutate(PROJECT_ID = as.numeric(PROJECT_ID),
           RISK_ID = as.numeric(RISK_ID))
- 
-
-
 
 RiskImpactTable <- erisk_ItemProj |>
   select("RISK_ID","RISK_NAME_ID","RISK_NAME","RISK_IDENTIFIER","P2_NUMBER", "PROJECT_ID",
@@ -328,8 +326,6 @@ risk_item_table <- risk_item |>
 ```
 
 
-
-
 ```{r Creating Risk Table Columns, echo=FALSE, results='asis'}
 ####Modularize assess for each cost schedule and performance build function
 costcolumn <-
@@ -469,3 +465,4 @@ risk_log_table[1:10]|>
 ```
 
 ###### Risk Manager: `r risk_item$RISK_MANAGER`
+

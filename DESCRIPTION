@@ -40,7 +40,8 @@ Imports:
     shinyjs,
     stringr,
     tidyr,
-    webshot
+    webshot,
+    waiter
 Suggests: 
     htmlwidgets,
     waiter
