@@ -14,6 +14,7 @@
 #'                   tooltip
 #' @importFrom plotly plotlyOutput
 #' @importFrom DT DTOutput
+#' @importFrom stringr str_trim
 
 RiskImpactTable <- risk_item_db |>
   select(
@@ -30,9 +31,8 @@ RiskImpactTable <- risk_item_db |>
   ) |>
   mutate(P2_SUB_IDENTIFIER = ifelse(is.na(P2_SUB_IDENTIFIER), "", 
                                     P2_SUB_IDENTIFIER))|>
-  mutate(RISK_NAME_ID = paste(RISK_IDENTIFIER,RISK_NAME))
-
-
+  mutate(RISK_NAME_ID = paste(RISK_IDENTIFIER,RISK_NAME))|>
+  mutate(RISK_NAME_ID =str_trim(RISK_NAME_ID, side = c("right")))
 
 app_ui <- function(request) {
   tagList(
@@ -47,8 +47,8 @@ app_ui <- function(request) {
                           .popover {--bs-popover-max-width: 100%;
                           data-bs-animation: FALSE;}
                           .action-button {border-radius: 12px;}
+                          .navbar-header {padding: 20px;}
                           "))),
-
     fluidPage(
       shinyjs::useShinyjs(),
       theme = bslib::bs_theme(bootswatch = "cosmo", version=5),
@@ -59,11 +59,75 @@ app_ui <- function(request) {
             height = "50px",
             width = "60px"
           ),
-          "Risk Analysis Reporting System"
+          "Risk Analysis Reporting System      "
         ),
-        tabPanel("HQ"),
-        tabPanel("Division"),
-        tabPanel("District"),
+        tabPanel("District",
+                 sidebarLayout(
+                   sidebarPanel(
+                     #class=c"fa-spin"
+                     h5("Filter Projects",div(style = "display:inline-block; float:right",actionButton("resetBtn","Reset Filters", icon =icon("arrows-rotate")))),
+                     selectizeInput('MSCInput',
+                                 'MSC',
+                                 choices = NULL,
+                                 selected = NULL,
+                                 multiple = F,
+                                 options=list(placeholder = 'Select an MSC')), 
+                     selectizeInput(
+                       'districtsInput',
+                       "District",
+                       choices = NULL,
+                       selected = NULL,
+                       multiple = F,
+                       options=list(placeholder = 'Select a District', 
+                                    maxOptions = 40)),
+                     selectizeInput('ProgramCodeInput',
+                                  'Program (Code)',
+                                  choices = NULL,
+                                 selected = NULL,
+                                 options=list(placeholder = 'Program (Code)')),
+                     selectizeInput('ProgramTypeInput',
+                                'Program Type',
+                                 choices = NULL,
+                                 selected = NULL,
+                                options=list(placeholder = 'Program Type')),
+                     selectizeInput('MissionInput',
+                                 'Primary Mission',
+                                 choices = NULL,
+                                 selected = NULL,
+                                 options=list(placeholder = 'Primary Mission')),
+                     h5("Filter Project Risks"),
+                     # selectizeInput(
+                     #   "phaseInput",
+                     #   "Phase",
+                     #   choices = NULL,
+                     #   selected = NULL,
+                     #   multiple = F,
+                     #   options=list(placeholder = 'Enter Phase')),
+                     # shinyjs::hidden(
+                     #   selectizeInput(
+                     #     "mileInput",
+                     #     "Milestone",
+                     #     choices = NULL,
+                     #     selected = NULL,
+                     #     multiple = F,
+                     #     options=list(placeholder = 'Enter Milestone'))),
+                     # selectizeInput(
+                     #   "disInput",
+                     #   "Discipline",
+                     #   choices = NULL,
+                     #   selected = NULL,
+                     #   multiple = F,
+                     #   options=list(placeholder = 'Select a Discipline')
+                     # ),
+                     width=2
+                     ), 
+                   mainPanel(tabsetPanel(
+                     tabPanel(
+                       "Explore Projects",
+                       plotly::plotlyOutput("projpies"),
+                       DT::DTOutput("projoverview"), value= "Explore Projects"),
+                       tabPanel("Explore Risks"),
+                       tabPanel("Reports"))))),
         tabPanel("Project",
                  sidebarLayout(
                    sidebarPanel(
