@@ -71,9 +71,6 @@ riskpies <- risk_item_db |>
   mutate_if(is.character, as.factor) |>
   mutate(P2_SUB_IDENTIFIER = ifelse(is.na(P2_SUB_IDENTIFIER), "", 
                                     P2_SUB_IDENTIFIER)) |>
-<<<<<<< HEAD
-  mutate(RISK_NAME_ID = paste(RISK_IDENTIFIER,RISK_NAME))
-=======
   mutate(RISK_NAME_ID = paste(RISK_IDENTIFIER,RISK_NAME))|>
   mutate(RISK_NAME_ID =str_trim(RISK_NAME_ID, side = c("right")))
 
@@ -81,11 +78,6 @@ risk_proj_orgs <- risk_item_db |>
   left_join(project_orgs|>
             select(PROJECT_ID, PRIMARYMISSION,MSC,DISTRICT_NAME, PROGRAMTYPENAME
                    ),  by=join_by(PROJECT_ID))
-
-
-
-
->>>>>>> main
 
 
 conditional <- function(condition, success) {
@@ -275,11 +267,9 @@ app_server <- function(input, output, session) {
                          options = list(maxOptions = 40, 
                                         server = TRUE, 
                                         placeholder = 'Select a District')
-<<<<<<< HEAD
-                         )
-=======
+
     )
->>>>>>> main
+
   })
 
   projects <- reactive({
@@ -307,18 +297,8 @@ app_server <- function(input, output, session) {
   })
   
   
-<<<<<<< HEAD
-  observeEvent(P2s(), {
-    P2s <- sort(unique(P2s()$P2_NUMBER))
-    updateSelectizeInput(
-      inputId = "P2Input",
-      choices = c("", P2s),
-      selected = input$P2Input
-    )
-=======
   observeEvent(P2s(),{
     update_choices("P2Input",sort(unique(P2s()$P2_NUMBER)))
->>>>>>> main
   })
   
   
@@ -361,50 +341,14 @@ app_server <- function(input, output, session) {
   
   riskitems <- reactive({
     RiskImpactTable |>
-<<<<<<< HEAD
-      filter(RiskImpactTable$P2_NUMBER == input$P2Input |
-               RiskImpactTable$PROJECT_NAME == input$projectInput,
-             conditional(input$SubIDInput != "", 
-                         RiskImpactTable$P2_SUB_IDENTIFIER == input$SubIDInput)
-=======
       filter(
         RiskImpactTable$P2_NUMBER == input$P2Input |
           RiskImpactTable$PROJECT_NAME == input$projectInput,
              conditional(input$SubIDInput != "", RiskImpactTable$P2_SUB_IDENTIFIER == input$SubIDInput)
->>>>>>> main
       )
   })
   
 
-<<<<<<< HEAD
-  observeEvent(riskitems(), {
-    riskitems <- riskitems()$RISK_NAME_ID
-    updateSelectizeInput(
-      inputId = "riskInput",
-      choices = c("", riskitems),
-      selected = "")
-  })
-
-  
-    observeEvent(riskitems(), {
-      phases <-sort(unique(risks()$LIFECYCLEPHASENAME))
-      updateSelectInput(
-        inputId = "phaseInput",
-        choices = c("", phases),
-        selected = ""
-      )
-  })
-  
-  
-  disciplines <- reactive({
-    RiskImpactTable |>
-      filter(
-        RiskImpactTable$P2_NUMBER == input$P2Input |
-        RiskImpactTable$PROJECT_NAME == input$projectInput,
-        conditional(input$SubIDInput != "",
-                    RiskImpactTable$P2_SUB_IDENTIFIER == input$SubIDInput),
-=======
-  
 
   observeEvent(riskitems(),
                {
@@ -417,7 +361,7 @@ app_server <- function(input, output, session) {
                RiskImpactTable$PROJECT_NAME == input$projectInput,
              conditional(input$SubIDInput != "",
                          RiskImpactTable$P2_SUB_IDENTIFIER == input$SubIDInput),
->>>>>>> main
+
         conditional(input$phaseInput !="",
                     RiskImpactTable$LIFECYCLEPHASENAME == input$phaseInput),
         conditional(input$mileInput !="", 
@@ -426,30 +370,15 @@ app_server <- function(input, output, session) {
   })
 
   
-<<<<<<< HEAD
-  observeEvent(disciplines(), {
-    discs <- sort(unique(disciplines()$DISCIPLINE))
-    updateSelectInput(
-      inputId = "disInput",
-      choices = c("", discs),
-      selected = ""
-    )
-=======
+
   observeEvent(disciplines(),{
     update_choices("disInput",sort(unique(disciplines()$DISCIPLINE)))
->>>>>>> main
   })
   
   milestones <- reactive({
     RiskImpactTable |>
-<<<<<<< HEAD
-      filter(
-        RiskImpactTable$P2_NUMBER == input$P2Input |
-        RiskImpactTable$PROJECT_NAME == input$projectInput,
-=======
       filter(RiskImpactTable$P2_NUMBER == input$P2Input |
                RiskImpactTable$PROJECT_NAME == input$projectInput,
->>>>>>> main
         conditional(input$SubIDInput != "", 
                     RiskImpactTable$P2_SUB_IDENTIFIER == input$SubIDInput),
         RiskImpactTable$LIFECYCLEPHASENAME == input$phaseInput
@@ -468,11 +397,8 @@ app_server <- function(input, output, session) {
       update_choices("mileInput",sort(unique(milestones()$MILESTONE)))
     })
   
-<<<<<<< HEAD
-=======
-  
+
   ###Project Level/Risk item reports explore risk page
->>>>>>> main
    
   in_react_frame <- reactiveVal(riskpies)
   
@@ -576,7 +502,6 @@ app_server <- function(input, output, session) {
   })
   
 
-<<<<<<< HEAD
   observeEvent(input$RiskItem, {
     req(isTruthy(input$riskInput),
         isTruthy(input$projectInput) || isTruthy(input$P2Input)) 
@@ -600,8 +525,6 @@ app_server <- function(input, output, session) {
   })
   
 
-=======
->>>>>>> main
   observeEvent(input$Proj, {
     req(isTruthy(input$projectInput) || isTruthy(input$P2Input))
     rmarkdown::render(
