@@ -28,6 +28,7 @@ Imports:
     ggrepel,
     golem,
     kableExtra,
+    knitr,
     plotly,
     readr,
     rlang,
@@ -43,7 +44,7 @@ Imports:
     waiter
 Suggests: 
     htmlwidgets,
-    knitr,
+    waiter
     spelling,
     testthat (>= 3.0.0)
 VignetteBuilder: 
