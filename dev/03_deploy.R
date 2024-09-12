@@ -33,8 +33,23 @@ golem::add_shinyserver_file()
 
 ## Docker ----
 ## If you want to deploy via a generic Dockerfile
-#golem::add_dockerfile(port = 3838)
-golem::add_dockerfile_with_renv(port = 3838)
+
+
+oracle <- 
+"
+apt-get install -y libaio1 alien
+wget http://yum.oracle.com/repo/OracleLinux/OL7/oracle/instantclient/x86_64/getPackage/oracle-instantclient19.6-basic-19.6.0.0.0-1.x86_64.rpm
+sudo alien -i --scripts oracle-instantclient*.rpm
+rm -f oracle-instantclient*.rpm  
+
+# Optionally install SQLPlus
+wget http://yum.oracle.com/repo/OracleLinux/OL7/oracle/instantclient/x86_64/getPackage/oracle-instantclient19.6-sqlplus-19.6.0.0.0-1.x86_64.rpm
+sudo alien -i --scripts oracle-instantclient*.rpm
+rm -f oracle-instantclient*.rpm  
+"
+
+golem::add_dockerfile_with_renv(port = 3838,
+                                extra_sysreqs = oracle)
 
 # In Terminal on computer with docker installed, run the following:
 # docker build -f Dockerfile --progress=plain -t erarr_base .
