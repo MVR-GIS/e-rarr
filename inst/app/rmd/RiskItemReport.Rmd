@@ -2,9 +2,9 @@
 title: "Risk Item Report"
 runtime: shiny
 output: html_document
-params: 
-  riskID: "RLE-2 Real Estate Estate Acquisition"
-  projID: LaGrange New 1200-Foot Lock
+params:   
+  riskID: "ECV-2 Impacts due to Uncertain Bathymetric Data"
+  projID: Lee County Conservation Board CAP Sec 204
   p2ID: 	""
 ---
 
@@ -60,12 +60,12 @@ library(stringr)
 ```{r echo=FALSE, message=FALSE, warning=FALSE, include=FALSE}
 options(scipen = 999)
 
-risk_item_db <- readr::read_csv("../data/erisk_item.csv")
-risk_project_db <- readr::read_csv("../data/erisk_project.csv")
-risk_transact <- readr::read_csv("../data/risk_transact.csv")
-milestone_df<- readr::read_csv("../data/phase_milestone.csv")
-risk_modeled<-readr::read_csv("../data/erisk_modeled.csv")
-risk_treatment<-readr::read_csv("../data/risk_treat.csv")
+risk_item_db <- readr::read_csv("../data/erisk_item.csv",show_col_types = FALSE)
+risk_project_db <- readr::read_csv("../data/erisk_project.csv",show_col_types = FALSE)
+risk_transact <- readr::read_csv("../data/risk_transact.csv",show_col_types = FALSE)
+milestone_df<- readr::read_csv("../data/phase_milestone.csv",show_col_types = FALSE)
+risk_modeled<-readr::read_csv("../data/erisk_modeled.csv",show_col_types = FALSE)
+risk_treatment<-readr::read_csv("../data/risk_treat.csv",show_col_types = FALSE)
 checkimagepath<-"../www/check.png"
 headers<-c("Cost Impact", "Schedule Impact","Performance Impact")
 
@@ -79,7 +79,14 @@ erisk_ItemProj <- risk_item_db |>
 
 risk_item_filt <- risk_item_db |>
   mutate(RISK_NAME_ID = paste(RISK_IDENTIFIER,RISK_NAME))|>
-  select(RISK_ID, PROJECT_ID,RISK_NAME, RISK_NAME_ID,P2_NUMBER)
+  mutate(RISK_NAME_ID =str_trim(RISK_NAME_ID, side = c("right")))|>
+   select(RISK_ID, PROJECT_ID, RISK_NAME, RISK_NAME_ID,P2_NUMBER)
+
+  
+risk_modeled <- risk_modeled|>
+   mutate(PROJECT_ID = as.numeric(PROJECT_ID),
+          RISK_ID = as.numeric(RISK_ID))
+
 
 
 
@@ -320,19 +327,23 @@ risk_item_table <- risk_item |>
                                         PERFORMANCEIMPACT_DESC)
   )
 ```
+<<<<<<< HEAD
+
+
+=======
+>>>>>>> main
 
 
 
-####Modularize assess for each cost schedule and performance build function
+
 ```{r Creating Risk Table Columns, echo=FALSE, results='asis'}
+####Modularize assess for each cost schedule and performance build function
 costcolumn <-
   if (risk_item_table$NO_COST_IMPACT == 1) {
     c("No cost impact is anticipated","","","")
   } else if(risk_item_table$COST_IMPACT_DISTTYPE == 299){
-     c(risk_item_table$COST_IMPACT_MOSTLIKELY,
-      "",
-      "",
-      "")
+     c(risk_item_table$COST_IMPACT_MOSTLIKELY,"","","")
+
   } else if (risk_item_table$COST_IMPACT_DISTTYPE == 306) {
     c(
       risk_item_table$COST_IMPACT_LOWEST,
@@ -465,4 +476,3 @@ risk_log_table[1:10]|>
 ```
 
 ###### Risk Manager: `r risk_item$RISK_MANAGER`
-
