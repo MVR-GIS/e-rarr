@@ -36,6 +36,7 @@ RiskImpactTable <- risk_item_db |>
 
 
 
+
 app_ui <- function(request) {
   tagList(
     # Leave this function for adding external resources
@@ -69,11 +70,11 @@ app_ui <- function(request) {
                      #class=c"fa-spin"
                      h5("Filter Projects",div(style = "display:inline-block; float:right",actionButton("resetBtn","Reset Filters", icon =icon("arrows-rotate")))),
                      selectizeInput('MSCInput',
-                                 'MSC',
-                                 choices = NULL,
-                                 selected = NULL,
-                                 multiple = F,
-                                 options=list(placeholder = 'Select an MSC')), 
+                                    'MSC',
+                                    choices = NULL,
+                                    selected = NULL,
+                                    multiple = F,
+                                    options=list(placeholder = 'Select an MSC')), 
                      selectizeInput(
                        'districtsInput',
                        "District",
@@ -83,53 +84,61 @@ app_ui <- function(request) {
                        options=list(placeholder = 'Select a District', 
                                     maxOptions = 40)),
                      selectizeInput('ProgramCodeInput',
-                                  'Program (Code)',
-                                  choices = NULL,
-                                 selected = NULL,
-                                 options=list(placeholder = 'Program (Code)')),
+                                    'Program (Code)',
+                                    choices = NULL,
+                                    selected = NULL,
+                                    options=list(placeholder = 'Program (Code)')),
                      selectizeInput('ProgramTypeInput',
-                                'Program Type',
-                                 choices = NULL,
-                                 selected = NULL,
-                                options=list(placeholder = 'Program Type')),
+                                    'Program Type',
+                                    choices = NULL,
+                                    selected = NULL,
+                                    options=list(placeholder = 'Program Type')),
                      selectizeInput('MissionInput',
-                                 'Primary Mission',
-                                 choices = NULL,
-                                 selected = NULL,
-                                 options=list(placeholder = 'Primary Mission')),
+                                    'Primary Mission',
+                                    choices = NULL,
+                                    selected = NULL,
+                                    options=list(placeholder = 'Primary Mission')),
                      h5("Filter Project Risks"),
-                     # selectizeInput(
-                     #   "phaseInput",
-                     #   "Phase",
-                     #   choices = NULL,
-                     #   selected = NULL,
-                     #   multiple = F,
-                     #   options=list(placeholder = 'Enter Phase')),
-                     # shinyjs::hidden(
-                     #   selectizeInput(
-                     #     "mileInput",
-                     #     "Milestone",
-                     #     choices = NULL,
-                     #     selected = NULL,
-                     #     multiple = F,
-                     #     options=list(placeholder = 'Enter Milestone'))),
-                     # selectizeInput(
-                     #   "disInput",
-                     #   "Discipline",
-                     #   choices = NULL,
-                     #   selected = NULL,
-                     #   multiple = F,
-                     #   options=list(placeholder = 'Select a Discipline')
-                     # ),
+                     selectizeInput(
+                       "projdisInput",
+                       "Discipline",
+                       choices = NULL,
+                       selected = NULL,
+                       multiple = F,
+                       options=list(placeholder = 'Select a Discipline')
+                     ),  selectizeInput(
+                       "projcatInput",
+                       "Risk Category",
+                       choices = NULL,
+                       selected = NULL,
+                       multiple = F,
+                       options=list(placeholder = 'Select a Risk Category')
+                     ),
+                     selectizeInput(
+                       "projphaseInput",
+                       "Phase",
+                       choices = NULL,
+                       selected = NULL,
+                       multiple = F,
+                       options=list(placeholder = 'Enter Phase')),
+                     shinyjs::hidden(
+                       selectizeInput(
+                         "projmileInput",
+                         "Milestone",
+                         choices = NULL,
+                         selected = NULL,
+                         multiple = F,
+                         options=list(placeholder = 'Enter Milestone'))),
+                     ,
                      width=2
-                     ), 
+                   ), 
                    mainPanel(tabsetPanel(
                      tabPanel(
                        "Explore Projects",
                        plotly::plotlyOutput("projpies"),
                        DT::DTOutput("projoverview"), value= "Explore Projects"),
-                       tabPanel("Explore Risks"),
-                       tabPanel("Reports"))))),
+                     tabPanel("Explore Risks"),
+                     tabPanel("Reports"))))),
         tabPanel("Project",
                  sidebarLayout(
                    sidebarPanel(
@@ -158,49 +167,49 @@ app_ui <- function(request) {
                        options=list(placeholder = 'Enter P2 Number')
                      ),
                      shinyjs::hidden(
-                     selectizeInput(
-                       "SubIDInput",
-                       "Sub ID",
-                       choices = NULL,
-                       selected = NULL,
-                       multiple = FALSE,
-                       options =  list(placeholder = "Select SubID")
-                     )),
-                       conditionalPanel(condition = "input.reporttabs == 'Reports'",
-                         selectizeInput(
-                         "riskInput",
-                         "Risk",
-                         choices = NULL ,
+                       selectizeInput(
+                         "SubIDInput",
+                         "Sub ID",
+                         choices = NULL,
                          selected = NULL,
-                         multiple = F,
-                         options=list(placeholder = 'Select a Risk Item')
-                         )),
+                         multiple = FALSE,
+                         options =  list(placeholder = "Select SubID")
+                       )),
+                     conditionalPanel(condition = "input.reporttabs == 'Reports'",
+                                      selectizeInput(
+                                        "riskInput",
+                                        "Risk",
+                                        choices = NULL ,
+                                        selected = NULL,
+                                        multiple = F,
+                                        options=list(placeholder = 'Select a Risk Item')
+                                      )),
                      conditionalPanel(condition = "input.reporttabs == 'Explore'",
-                     selectizeInput(
-                       "phaseInput",
-                       "Phase",
-                       choices = NULL,
-                       selected = NULL,
-                       multiple = F,
-                       options=list(placeholder = 'Enter Phase')),
-                     shinyjs::hidden(
-                     selectizeInput(
-                       "mileInput",
-                       "Milestone",
-                       choices = NULL,
-                       selected = NULL,
-                       multiple = F,
-                       options=list(placeholder = 'Enter Milestone'))),
-                     selectizeInput(
-                       "disInput",
-                       "Discipline",
-                       choices = NULL,
-                       selected = NULL,
-                       multiple = F,
-                       options=list(placeholder = 'Select a discipline')
-                     )
+                                      selectizeInput(
+                                        "phaseInput",
+                                        "Phase",
+                                        choices = NULL,
+                                        selected = NULL,
+                                        multiple = F,
+                                        options=list(placeholder = 'Enter Phase')),
+                                      shinyjs::hidden(
+                                        selectizeInput(
+                                          "mileInput",
+                                          "Milestone",
+                                          choices = NULL,
+                                          selected = NULL,
+                                          multiple = F,
+                                          options=list(placeholder = 'Enter Milestone'))),
+                                      selectizeInput(
+                                        "disInput",
+                                        "Discipline",
+                                        choices = NULL,
+                                        selected = NULL,
+                                        multiple = F,
+                                        options=list(placeholder = 'Select a discipline')
+                                      )
                      ), width=2),
-                  
+                   
                    mainPanel(
                      tabsetPanel(
                        tabPanel(
@@ -212,84 +221,83 @@ app_ui <- function(request) {
                                 layout_column_wrap(
                                   width = 1/4,
                                   height = 275,
-                                bslib::card(
-                                  height = 165,
-                                  full_screen = FALSE,
-                                  card_header("Project Risks",
-                                              shiny::downloadButton(
-                                                outputId="download_Proj",
-                                                label="Download",
-                                                style = "color: #3974db; 
+                                  bslib::card(
+                                    height = 165,
+                                    full_screen = FALSE,
+                                    card_header("Project Risks",
+                                                shiny::downloadButton(
+                                                  outputId="download_Proj",
+                                                  label="Download",
+                                                  style = "color: #3974db; 
                                                 background-color: transparent;
                                                 float:right;
                                                 border-color: transparent;"
-                                              )
-                                            ),
-                                  card_body(
-                                    tags$button(id ="Proj", class="action-button",tags$img(src="www/ProjAllRisk.png", height='165px', max_width='100%')
-                                    )
-                                )),
-                                bslib::card(
-                                  height = 100,
-                                  full_screen = FALSE,
-                                  card_header("All Risk",
-                                              shiny::downloadButton(
-                                                outputId="download_AllRisk",
-                                                label="Download",
-                                                style = "color: #3974db; 
+                                                )
+                                    ),
+                                    card_body(
+                                      tags$button(id ="Proj", class="action-button",tags$img(src="www/ProjAllRisk.png", height='165px', max_width='100%')
+                                      )
+                                    )),
+                                  bslib::card(
+                                    height = 100,
+                                    full_screen = FALSE,
+                                    card_header("All Risk",
+                                                shiny::downloadButton(
+                                                  outputId="download_AllRisk",
+                                                  label="Download",
+                                                  style = "color: #3974db; 
                                                 background-color: transparent;
                                                 float:right;
                                                 border-color: transparent;"
-                                              )),
-                                  card_body(
-                                    tags$button(id = "AllRisk", class="action-button",tags$img(src="www/AllRiskDetail.png", height='165px', max_width='100%')))
-                                  
+                                                )),
+                                    card_body(
+                                      tags$button(id = "AllRisk", class="action-button",tags$img(src="www/AllRiskDetail.png", height='165px', max_width='100%')))
+                                    
                                   ),
-                                bslib::card(
-                                  height = 165,
-                                  full_screen = FALSE,
-                                  card_header("Top 4s",
-                                              shiny::downloadButton(
-                                                outputId="download_Top4s",
-                                                label="Download",
-                                                style = "color: #3974db; 
+                                  bslib::card(
+                                    height = 165,
+                                    full_screen = FALSE,
+                                    card_header("Top 4s",
+                                                shiny::downloadButton(
+                                                  outputId="download_Top4s",
+                                                  label="Download",
+                                                  style = "color: #3974db; 
                                                 background-color: transparent;
                                                 float:right;
                                                 border-color: transparent;"
-                                              )),
-                                  card_body(
-                                    tags$button(id = "Proj4s", class="action-button",tags$img(src="www/ProjectTop4.png",height = '165px',max_width = '100%',
-                                                                                        ),
-                                                ),
-                             
-                                  )
-                                  #d-flex align-items-center gap-1
-                                ),
-                                bslib::card(
-                                  height = 165,
-                                  full_screen = FALSE,id="RiskItemCard",
-                                  card_header("Risk Item Report",
-                                              tooltip(bsicons::bs_icon("info-circle"), "Select a Risk Item", placement="right", id="tooltip"),
-                                              shiny::downloadButton(
-                                                outputId="download_RiskItem",
-                                                label="Download",
-                                                style = "color: #3974db; 
+                                                )),
+                                    card_body(
+                                      tags$button(id = "Proj4s", class="action-button",tags$img(src="www/ProjectTop4.png",height = '165px',max_width = '100%',
+                                      ),
+                                      ),
+                                      
+                                    )
+                                    #d-flex align-items-center gap-1
+                                  ),
+                                  bslib::card(
+                                    height = 165,
+                                    full_screen = FALSE,id="RiskItemCard",
+                                    card_header("Risk Item Report",
+                                                tooltip(bsicons::bs_icon("info-circle"), "Select a Risk Item", placement="right", id="tooltip"),
+                                                shiny::downloadButton(
+                                                  outputId="download_RiskItem",
+                                                  label="Download",
+                                                  style = "color: #3974db; 
                                                 background-color: transparent;
                                                 float:right;
                                                 border-color: transparent;"
-                                              )),
-                                  card_body(
-                                  tags$button(id = "RiskItem", class="action-button",tags$img(src="www/RiskItem.png", height='165px', max_width = '100%'))
-                                            
-                                  ))
-                                ,
-                                
-                      )
+                                                )),
+                                    card_body(
+                                      tags$button(id = "RiskItem", class="action-button",tags$img(src="www/RiskItem.png", height='165px', max_width = '100%'))
+                                      
+                                    ))
+                                  ,
+                                  
+                                )
                        ),
                        id = "reporttabs" )
                    )
-                   )
-                 ), selected = "Project")
+                 )
+        ), selected = "Project")
     )
   )}
-
