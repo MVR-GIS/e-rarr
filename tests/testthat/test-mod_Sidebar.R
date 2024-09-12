@@ -1,7 +1,7 @@
 testthat::skip("test not implemented yet")
 
 testServer(
-  mod_name_of_module1_server,
+  mod_Sidebar_server,
   # Add here your module params
   args = list()
   , {
@@ -29,10 +29,10 @@ testServer(
 })
  
 test_that("module ui works", {
-  ui <- mod_name_of_module1_ui(id = "test")
+  ui <- mod_Sidebar_ui(id = "test")
   golem::expect_shinytaglist(ui)
   # Check that formals have not been removed
-  fmls <- formals(mod_name_of_module1_ui)
+  fmls <- formals(mod_Sidebar_ui)
   for (i in c("id")){
     expect_true(i %in% names(fmls))
   }
