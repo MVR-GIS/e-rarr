@@ -59,6 +59,7 @@ library(stringr)
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, include=FALSE}
 options(scipen = 999)
+
 risk_item_db <- readr::read_csv("../data/erisk_item.csv",show_col_types = FALSE)
 risk_project_db <- readr::read_csv("../data/erisk_project.csv",show_col_types = FALSE)
 risk_transact <- readr::read_csv("../data/risk_transact.csv",show_col_types = FALSE)
@@ -85,7 +86,7 @@ risk_item_filt <- risk_item_db |>
 risk_modeled <- risk_modeled|>
    mutate(PROJECT_ID = as.numeric(PROJECT_ID),
           RISK_ID = as.numeric(RISK_ID))
- 
+
 
 
 
@@ -326,6 +327,11 @@ risk_item_table <- risk_item |>
                                         PERFORMANCEIMPACT_DESC)
   )
 ```
+<<<<<<< HEAD
+
+
+=======
+>>>>>>> main
 
 
 
@@ -337,6 +343,7 @@ costcolumn <-
     c("No cost impact is anticipated","","","")
   } else if(risk_item_table$COST_IMPACT_DISTTYPE == 299){
      c(risk_item_table$COST_IMPACT_MOSTLIKELY,"","","")
+
   } else if (risk_item_table$COST_IMPACT_DISTTYPE == 306) {
     c(
       risk_item_table$COST_IMPACT_LOWEST,

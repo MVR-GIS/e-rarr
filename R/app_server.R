@@ -7,7 +7,6 @@
 #' @importFrom dplyr select mutate filter
 #' @importFrom stringr str_detect
 #' @importFrom tidyr pivot_wider
-
 #' @importFrom shiny addResourcePath reactive observe observeEvent 
 #'                   updateSelectizeInput reactiveVal isTruthy req
 #' @importFrom shinyjs show hide disable enable
@@ -79,10 +78,6 @@ risk_proj_orgs <- risk_item_db |>
   left_join(project_orgs|>
             select(PROJECT_ID, PRIMARYMISSION,MSC,DISTRICT_NAME, PROGRAMTYPENAME
                    ),  by=join_by(PROJECT_ID))
-
-
-
-
 
 
 conditional <- function(condition, success) {
@@ -272,7 +267,9 @@ app_server <- function(input, output, session) {
                          options = list(maxOptions = 40, 
                                         server = TRUE, 
                                         placeholder = 'Select a District')
+
     )
+
   })
 
   projects <- reactive({
@@ -352,7 +349,6 @@ app_server <- function(input, output, session) {
   })
   
 
-  
 
   observeEvent(riskitems(),
                {
@@ -365,6 +361,7 @@ app_server <- function(input, output, session) {
                RiskImpactTable$PROJECT_NAME == input$projectInput,
              conditional(input$SubIDInput != "",
                          RiskImpactTable$P2_SUB_IDENTIFIER == input$SubIDInput),
+
         conditional(input$phaseInput !="",
                     RiskImpactTable$LIFECYCLEPHASENAME == input$phaseInput),
         conditional(input$mileInput !="", 
@@ -373,6 +370,7 @@ app_server <- function(input, output, session) {
   })
 
   
+
   observeEvent(disciplines(),{
     update_choices("disInput",sort(unique(disciplines()$DISCIPLINE)))
   })
@@ -399,7 +397,7 @@ app_server <- function(input, output, session) {
       update_choices("mileInput",sort(unique(milestones()$MILESTONE)))
     })
   
-  
+
   ###Project Level/Risk item reports explore risk page
    
   in_react_frame <- reactiveVal(riskpies)
@@ -481,6 +479,29 @@ app_server <- function(input, output, session) {
     }
   })
   
+  observeEvent(input$RiskItem, {
+    req(isTruthy(input$riskInput),
+        isTruthy(input$projectInput) || isTruthy(input$P2Input)) 
+    rmarkdown::render(
+      "./inst/app/rmd/RiskItemReport.Rmd",
+      params = list(projID = input$projectInput,
+                    riskID = input$riskInput,
+                    p2ID   = input$P2Input),
+      output_dir ="./inst/app/www"
+    )
+    shinyalert::shinyalert(
+      html = TRUE, 
+      text = tagList(tags$iframe(src="www/RiskItemReport.html", 
+                                 width = 900,  
+                                 height = 1000,  
+                                 style = "border:none;")), 
+      size = "l",
+      confirmButtonText = "Close Report",
+      closeOnClickOutside = TRUE
+    )
+  })
+  
+
   observeEvent(input$RiskItem, {
     req(isTruthy(input$riskInput),
         isTruthy(input$projectInput) || isTruthy(input$P2Input)) 

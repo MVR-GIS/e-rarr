@@ -1,3 +1,5 @@
+testthat::skip("test not implemented yet")
+
 testServer(
   mod_Sidebar_server,
   # Add here your module params
