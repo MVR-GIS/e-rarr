@@ -62,12 +62,14 @@ RiskDeets <- risk_item_db |>
 
 
 ```{r echo=FALSE, eval = params$projID != ""}
-Risk_List_Proj <-dplyr::filter(RiskDeets, RiskDeets$PROJECT_NAME == params$projID | RiskDeets$P2_NUMBER == params$p2ID)
+Risk_List_Proj <-dplyr::filter(RiskDeets, RiskDeets$PROJECT_NAME == params$projID)
 
 
 proj_risks<-dplyr::filter(Risk_List_Proj, Risk_List_Proj$PROJECT_NAME == params$projID)
 proj_risk_item<- dplyr::slice_head(Risk_List_Proj)
-
+header<-paste("Project:",proj_risk_item$PROJECT_NAME)
+header2<-if (params$p2sub != ""){
+  paste("SubID:",params$p2sub)}
 ```
 
 ```{r echo=FALSE, eval = params$p2ID != ""}
@@ -76,6 +78,11 @@ Risk_List_Proj <-dplyr::filter(RiskDeets, RiskDeets$P2_NUMBER == params$p2ID)
 
 proj_risks<-dplyr::filter(Risk_List_Proj, Risk_List_Proj$P2_NUMBER == params$p2ID)
 proj_risk_item<- dplyr::slice_head(Risk_List_Proj)
+header<-paste("P2 Number:",proj_risk_item$P2_NUMBER)
+header2<-if (params$p2sub != ""){
+  paste("SubID:",params$p2sub)}
+
+
 ```
 
 ```{r echo=FALSE, eval = params$p2sub != ""}
@@ -84,14 +91,14 @@ Risk_List_Proj <-dplyr::filter(Risk_List_Proj, Risk_List_Proj$P2_SUB_IDENTIFIER 
 
 proj_risks<-dplyr::filter(Risk_List_Proj, Risk_List_Proj$P2_SUB_IDENTIFIER == params$p2sub)
 proj_risk_item<- dplyr::slice_head(Risk_List_Proj)
+header<-paste("Project:",proj_risk_item$PROJECT_NAME)
+header2<-if (params$p2sub != ""){
+  paste("SubID:",params$p2sub)}
+
 ```
 
 ###### Report Created On: `r format(Sys.time(), '%d %B, %Y')`
 ```{r, echo=FALSE, warning=FALSE, message=FALSE,results='asis'}
-
-header<-paste("Project:",proj_risk_item$PROJECT_NAME)
-header2<-if (params$p2sub != ""){
-  paste("SubID:",params$p2sub)}
 
 cat("###",header,header2)
 

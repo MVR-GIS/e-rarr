@@ -116,7 +116,7 @@ risk_item<-filter(RiskImpactTable, RiskImpactTable$RISK_NAME_ID == params$riskID
                   RiskImpactTable$PROJECT_NAME.x == params$projID)
 risk_treatment<-filter(risk_treat, risk_treat$PROJECT_NAME == params$projID, 
                        risk_treat$RISK_NAME_ID == params$riskID)
-
+header_name <- "risk_item$PROJECT_NAME.x," ",(risk_item$RISK_IDENTIFIER"
 ```
 
 ```{r echo=FALSE, eval = params$p2ID != ""}

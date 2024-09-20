@@ -120,6 +120,8 @@ risk_model<-filter(risk_modeled, risk_modeled$PROJECT_ID == params$projID,
                        risk_modeled$RISK_NAME_ID == params$riskID)
 risk_item_transact<-filter(risk_transact, risk_transact$RISK_NAME_ID == params$riskID,
                            risk_transact$PROJECT_NAME == params$projID)
+
+header <- paste("Project:",risk_item$PROJECT_NAME," ",(risk_item$RISK_IDENTIFIER))
 ```
 
 ```{r echo=FALSE, eval = params$p2ID != ""}
@@ -131,6 +133,8 @@ risk_model<-filter(risk_modeled, risk_modeled$PROJECT_ID == params$projID,
                        risk_modeled$RISK_NAME_ID == params$riskID)
 risk_item_transact<-filter(risk_transact, risk_transact$RISK_NAME_ID == params$riskID,
                            risk_transact$P2_NUMBER == params$p2ID)
+
+header <- paste("P2 ID:",risk_item$P2_NUMBER," ",(risk_item$RISK_IDENTIFIER))
 ```
 
 
@@ -142,9 +146,6 @@ monte_condit <- ifelse(nrow(risk_model>0),TRUE,FALSE)
 
 ###### Report Created On: `r format(Sys.time(), '%d %B, %Y')`
 ```{r echo=FALSE, warning=FALSE, message=FALSE, results='asis'}
-header<-paste("Project:",risk_item$PROJECT_NAME," ",(risk_item$RISK_IDENTIFIER))
-
-
 cat("####",header)
 ```
 
