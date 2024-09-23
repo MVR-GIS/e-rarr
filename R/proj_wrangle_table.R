@@ -26,24 +26,8 @@ proj_tableprep <- function(riskdf, colname) {
   
   # Data wrangling
   wrangled_table <- riskdf %>%    
-    group_by(PROJECT_NAME, PROJECT_ID, !!sym(fullname)) %>%
-    summarise(Count = n(), Sum_impact = sum(!!sym(sum_name), na.rm = TRUE), .groups = 'drop') %>%
-    pivot_wider(names_from = !!sym(fullname), values_from = Count, values_fill = list(Count = 0)) %>%
-    group_by(PROJECT_NAME, PROJECT_ID) %>%
-    mutate(
-      !!sym(paste0(colname, '_Opp')) := ifelse("Opportunity" %in% colnames(.data), sum(!!sym('Opportunity')), 0),
-      !!sym(paste0(colname, '_Low')) := ifelse("Low" %in% colnames(.data), sum(!!sym('Low')), 0),
-      !!sym(paste0(colname, '_Med')) := ifelse("Medium" %in% colnames(.data), sum(!!sym('Medium')), 0),
-      !!sym(paste0(colname, '_High')) := ifelse("High" %in% colnames(.data), sum(!!sym('High')), 0)
-    ) %>%
-    summarise(
-      !!sym(paste0('Potential_Mean_', colname, '_Impact')) := sum(Sum_impact, na.rm = TRUE),
-      !!sym(paste0(colname, '_Opp')) := sum(Opportunity),
-      !!sym(paste0(colname, '_Low')) := sum(Low),
-      !!sym(paste0(colname, '_Med')) := sum(Medium),
-      !!sym(paste0(colname, '_High')) := sum(High),
-      .groups = 'drop'
-    )
+    group_by(PROJECT_NAME, PROJECT_ID,P2_NUMBER) %>%
+    summarise(Count = n(), !!sym(paste0('Potential_Mean_', colname, '_Impact')) := sum(!!sym(sum_name)), .groups = 'drop') 
   
   return(wrangled_table)
 }
