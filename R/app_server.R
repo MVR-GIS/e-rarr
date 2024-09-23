@@ -12,6 +12,7 @@
 #' @importFrom shinyjs show hide disable enable
 #' @importFrom DT renderDT datatable 
 #' @importFrom shinyalert shinyalert
+#' @importFrom formattable currency
 #'
 library(shiny)
 library(readr)
@@ -22,11 +23,12 @@ library(shinycssloaders)
 library(shinyalert)
 library(bslib)
 library(shinyjs)
+library(formattable)
 
-erisk_item <-read.csv("./inst/app/data/erisk_item.csv")
+erisk_item <-read_csv("./inst/app/data/erisk_item.csv",show_col_types = FALSE)
 risk_item_db <- data.frame(erisk_item)
-erisk_project <-read.csv("./inst/app/data/erisk_project.csv")
-erisk_orgs <-read.csv("./inst/app/data/erisk_orgs.csv")
+erisk_project <-read_csv("./inst/app/data/erisk_project.csv",show_col_types = FALSE)
+erisk_orgs <-read_csv("./inst/app/data/erisk_orgs.csv",show_col_types = FALSE)
 
 
 erisk_MSC <- erisk_orgs |>
@@ -52,7 +54,6 @@ RiskImpactTable <- risk_item_db |>
                                     P2_SUB_IDENTIFIER)) |>
   mutate(RISK_NAME_ID = paste(RISK_IDENTIFIER,RISK_NAME))
 
-RiskImpactTable <- risk_item_db
 
 riskpies <- risk_item_db |>
   dplyr::select("P2_NUMBER",
@@ -80,6 +81,8 @@ risk_proj_orgs <- risk_item_db |>
                    ),  by=join_by(PROJECT_ID))
 
 
+
+
 conditional <- function(condition, success) {
   if (condition)
     success 
@@ -103,8 +106,8 @@ app_server <- function(input, output, session) {
   
   
   update_choices <- function(input_id, choices) {
-    updateSelectizeInput(session, input_id, choices = c("", choices), selected = "")
-  }
+    updateSelectizeInput(session, input_id, choices = c("", choices), selected = ""
+                         )}
   
 
 
@@ -119,8 +122,9 @@ app_server <- function(input, output, session) {
   
 ### Division Level Reports
  
-  MSCs <- reactive({setNames(as.list(erisk_MSC$MSC), erisk_MSC$DISTRICT_NAME)})
-
+  MSCs <- reactive({setNames(as.list(erisk_MSC$MSC), erisk_MSC$DISTRICT_NAME)
+    })
+  
   observe({
     updateSelectizeInput(session, 'MSCInput', choices = MSCs(), selected = "")
   })
@@ -132,7 +136,8 @@ app_server <- function(input, output, session) {
   
   
   observeEvent(districts(), { update_choices('districtsInput', 
-                                             unique(districts()$USACE_ORGANIZATION)) })
+                                             unique(districts()$USACE_ORGANIZATION)) 
+    })
   
   
   programcodes <-reactive({
@@ -144,9 +149,10 @@ app_server <- function(input, output, session) {
   })
   
   observeEvent(programcodes(), { update_choices('ProgramCodeInput', 
-                                             unique(programcodes()$P2_PROGRAM_CODE)) })
-
-
+                                                unique(programcodes()$P2_PROGRAM_CODE)) 
+    })
+  
+  
   programtypes <-reactive({
     project_orgs |>
       filter(conditional(input$MSCInput != "",
@@ -171,14 +177,108 @@ app_server <- function(input, output, session) {
              conditional(input$ProgramCodeInput != "" , 
                          project_orgs$P2_PROGRAM_CODE == input$ProgramCodeInput),
              conditional(input$ProgramTypeInput != "" , 
-                        project_orgs$PROGRAMTYPENAME == input$ProgramTypeInput))
+                         project_orgs$PROGRAMTYPENAME == input$ProgramTypeInput))
   })
   
   observeEvent(primarymissions(),{
     update_choices("MissionInput",sort(unique(primarymissions()$PRIMARYMISSION)))
   })
   
-
+  
+  proj_disciplines<-reactive({
+    risk_proj_orgs |>
+      filter(conditional(input$MSCInput != "",
+                         risk_proj_orgs$MSC == input$MSCInput),
+             conditional(input$districtsInput != "" , 
+                         risk_proj_orgs$USACE_ORGANIZATION == input$districtsInput),
+             conditional(input$ProgramCodeInput != "" , 
+                         risk_proj_orgs$P2_PROGRAM_CODE == input$ProgramCodeInput),
+             conditional(input$ProgramTypeInput != "" , 
+                         risk_proj_orgs$PROGRAMTYPENAME == input$ProgramTypeInput),
+             conditional(input$MissionInput != "" , 
+                         risk_proj_orgs$PRIMARYMISSION == input$MissionInput),
+             conditional(input$projcatInput != "", 
+                         risk_proj_orgs$RISKCATEGORY == input$projcatInput),
+             conditional(input$projphaseInput !="",
+                         risk_proj_orgs$LIFECYCLEPHASENAME == input$phaseInput)
+             
+      )
+  })
+  
+  observeEvent(proj_disciplines(),{
+    update_choices("projdisInput",sort(unique(proj_disciplines()$DISCIPLINE)))
+  })
+  
+  
+  projphases <-reactive({
+    risk_proj_orgs |>
+      filter(conditional(input$MSCInput != "",
+                         risk_proj_orgs$MSC == input$MSCInput),
+             conditional(input$districtsInput != "" , 
+                         risk_proj_orgs$USACE_ORGANIZATION == input$districtsInput),
+             conditional(input$ProgramCodeInput != "" , 
+                         risk_proj_orgs$P2_PROGRAM_CODE == input$ProgramCodeInput),
+             conditional(input$ProgramTypeInput != "" , 
+                         risk_proj_orgs$PROGRAMTYPENAME == input$ProgramTypeInput),
+             conditional(input$MissionInput != "" , 
+                         risk_proj_orgs$PRIMARYMISSION == input$MissionInput),
+             conditional(input$projdisInput != "" , 
+                         risk_proj_orgs$DISCIPLINE == input$projdisInput),
+             conditional(input$projcatInput != "", 
+                         risk_proj_orgs$RISKCATEGORY == input$projcatInput),
+      )
+  })
+  
+  observeEvent(projphases(),{
+    update_choices("projphaseInput",sort(unique(projphases()$LIFECYCLEPHASENAME)))
+  })
+  
+  
+  
+  projmilestones <- reactive({
+    projphases() |>
+      filter(conditional(input$projphaseInput !="",
+                         projphases()$LIFECYCLEPHASENAME == input$projphaseInput)
+             
+      )
+  })
+  
+  observe({
+    if (is.null(input$projphaseInput) || input$projphaseInput == ""){
+      shinyjs::hide("projmileInput")
+    } else {
+      shinyjs::show("projmileInput")
+    }
+  })
+  
+  observeEvent(projmilestones(), {
+    update_choices("projmileInput",sort(unique(projmilestones()$MILESTONE)))
+  })
+  
+  
+  proj_cats <- reactive({
+    risk_proj_orgs |>
+      filter(conditional(input$MSCInput != "",
+                         risk_proj_orgs$MSC == input$MSCInput),
+             conditional(input$districtsInput != "" ,
+                         risk_proj_orgs$USACE_ORGANIZATION == input$districtsInput),
+             conditional(input$ProgramCodeInput != "" ,
+                         risk_proj_orgs$P2_PROGRAM_CODE == input$ProgramCodeInput),
+             conditional(input$ProgramTypeInput != "" ,
+                         risk_proj_orgs$PROGRAMTYPENAME == input$ProgramTypeInput),
+             conditional(input$MissionInput != "" , 
+                         risk_proj_orgs$PRIMARYMISSION == input$MissionInput),
+             conditional(input$projdisInput !="",
+                         risk_proj_orgs$DISCIPLINE == input$projdisInput),
+             conditional(input$projphaseInput !="",
+                         risk_proj_orgs$LIFECYCLEPHASENAME == input$projphaseInput),
+      )
+  })
+  
+  observeEvent(proj_cats(),{
+    update_choices("projcatInput",sort(unique(proj_cats()$RISKCATEGORY)))
+  })
+  
   
   proj_orgs_table <- reactiveVal(risk_proj_orgs)
   
@@ -193,28 +293,62 @@ app_server <- function(input, output, session) {
              conditional(input$ProgramTypeInput != "",
                          proj_orgs_table()$PROGRAMTYPENAME == input$ProgramTypeInput),
              conditional(input$MissionInput != "",
-                         proj_orgs_table()$PRIMARYMISSION == input$MissionInput))|>
-      select(PROJECT_NAME,DISTRICT_CODE,PRIMARYMISSION,COST_RANK_DESC,SCHEDULE_RANK_DESC,
-             PERFORMANCE_RANK_DESC)
+                         proj_orgs_table()$PRIMARYMISSION == input$MissionInput),
+             conditional(input$projdisInput != "" , 
+                         proj_orgs_table()$DISCIPLINE == input$projdisInput),
+             conditional(input$projcatInput != "", 
+                         proj_orgs_table()$RISKCATEGORY == input$projcatInput),
+             conditional(input$projphaseInput !="",
+                         proj_orgs_table()$LIFECYCLEPHASENAME == input$projphaseInput),
+             conditional(input$projmileInput !="",
+                         proj_orgs_table()$MILESTONE== input$projmileInput)
+      )|>
+      select(PROJECT_NAME,PROJECT_ID,P2_NUMBER,DISTRICT_CODE,PRIMARYMISSION,
+             COST_RANK_DESC,COST_IMPACT_MOSTLIKELY,SCHEDULE_RANK_DESC,
+             SCHEDULE_IMPACT_MOSTLIKELY,PERFORMANCE_RANK_DESC)
   })
   
-  prog_filt_frame <- reactive({  
-    frame<-projframe()
+  
+  proj_costs  <-reactive({
+    proj_tableprep(projframe(), 'Cost')
+  })
+  
+  
+  proj_schedule  <-reactive({
+    proj_tableprep(projframe(), 'Schedule')
+  })
+  
+  proj_perform <-reactive({projframe() |>
+      group_by(PROJECT_NAME,PROJECT_ID,P2_NUMBER)|>
+      summarise(Count = n(), .groups = 'drop')
+  })
+  
+  
+  dfs_combined <- reactive({df_list <-list(proj_costs(), proj_schedule(), 
+                                           proj_perform())
+  })
+  
+  projects_comb<-reactive({dfs_combined()|>
+      purrr::reduce(left_join, by = join_by(PROJECT_NAME, PROJECT_ID))|>
+      select(PROJECT_NAME,P2_NUMBER, Potential_Mean_Cost_Impact,
+             Potential_Mean_Schedule_Impact)
+  })
+  
+  proj_filt_frame <- reactive({  
+    frame<-projects_comb()
     indexes <- req(input$projoverview_rows_all)
     frame[indexes,]
   })
   
   
   proj_cost_pie <- reactive(
-    pieprep(prog_filt_frame(), "COST_RANK_DESC"))
+    pieprep(projframe(), "COST_RANK_DESC"))
   
   proj_schedule_pie <- reactive(
-    pieprep(prog_filt_frame(), "SCHEDULE_RANK_DESC"))
+    pieprep(projframe(), "SCHEDULE_RANK_DESC"))
   
   proj_perform_pie <- reactive(
-    pieprep(prog_filt_frame(), "PERFORMANCE_RANK_DESC"))
-  
-  
+    pieprep(projframe(), "PERFORMANCE_RANK_DESC"))
   
   
   output$projpies = plotly::renderPlotly({
@@ -222,38 +356,18 @@ app_server <- function(input, output, session) {
   })
   
   
-  # proj_costs  <-risk_proj_orgs|>
-  #   filter(COST_RANK_DESC != 'No Risk')|>
-  #   group_by(PROJECT_NAME,COST_RANK_DESC)|>
-  #   summarise(Count = n(),Sum_impact = sum(COST_IMPACT_MOSTLIKELY),.groups = 'drop')|>
-  #   pivot_wider(names_from = COST_RANK_DESC, values_from = Count, values_fill = list(Count = 0))|>
-  #   group_by(PROJECT_NAME)|>
-  #   summarise('Potential Mean Cost Impact'  = sum(Sum_impact), Cost_Opp = sum(Opportunity), Cost_Low = sum(Low),
-  #             Cost_med = sum(Medium), Cost_High = sum(High))
-  
-  
-  # 
-  # proj_schedule  <-projframe()|>
-  #   group_by(PROJECT_NAME,SCHEDULE_RANK_DESC )
-  # 
-  # proj_perform  <-projframe()|>
-  #   group_by(PROJECT_NAME,PERFORMANCE_RANK_DESC )
-  
-    
   
   output$projoverview = DT::renderDT({
-    DT::datatable(projframe(),
+    DT::datatable(projects_comb(),
+                  colnames = c('Project Name', 'P2 Number', 
+                               'Cost Impact Most Likely', 
+                               'Schedule Impact Most Likely'),
+                  rownames = FALSE,
                   extensions = 'Buttons',
                   options = list(dom ='Bfrtip',
-                                 buttons = c('csv', 'excel','pdf','print')),
-                  rownames = FALSE,
-                  filter = "top"
-    )
+                                 buttons = c('csv', 'excel','pdf','print')
+                  ))
   })
-  
-  
-
-  
   
 #### Project level/Risk item reports  
   num <- reactive({
@@ -344,7 +458,8 @@ app_server <- function(input, output, session) {
       filter(
         RiskImpactTable$P2_NUMBER == input$P2Input |
           RiskImpactTable$PROJECT_NAME == input$projectInput,
-             conditional(input$SubIDInput != "", RiskImpactTable$P2_SUB_IDENTIFIER == input$SubIDInput)
+             conditional(input$SubIDInput != "",
+                         RiskImpactTable$P2_SUB_IDENTIFIER == input$SubIDInput)
       )
   })
   
@@ -361,6 +476,7 @@ app_server <- function(input, output, session) {
                RiskImpactTable$PROJECT_NAME == input$projectInput,
              conditional(input$SubIDInput != "",
                          RiskImpactTable$P2_SUB_IDENTIFIER == input$SubIDInput),
+
 
         conditional(input$phaseInput !="",
                     RiskImpactTable$LIFECYCLEPHASENAME == input$phaseInput),

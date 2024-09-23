@@ -1,5 +1,5 @@
 ---
-title: "All Risk Report"
+title: ""
 output: html_document
 runtime: shiny
 params:
@@ -83,6 +83,9 @@ Risk_List_Proj$COST_IMPACT_MOSTLIKELY <-
 proj_risks <- filter(Risk_List_Proj, 
                      Risk_List_Proj$PROJECT_NAME == params$projID)
 proj_risk_item <- slice_head(Risk_List_Proj)
+header <- paste("Project:", proj_risk_item$PROJECT_NAME)
+header2 <- if (params$p2sub != "") {paste("SubID:", params$p2sub)}
+
 ```
 
 ```{r echo=FALSE, eval = params$p2ID != ""}
@@ -92,6 +95,10 @@ Risk_List_Proj$COST_IMPACT_MOSTLIKELY <-
 
 proj_risks <- filter(Risk_List_Proj, Risk_List_Proj$P2_NUMBER == params$p2ID)
 proj_risk_item <- slice_head(Risk_List_Proj)
+header <- paste("P2 Number:", proj_risk_item$P2_NUMBER)
+header2 <- if (params$p2sub != "") {paste("SubID:", params$p2sub)}
+
+
 ```
 
 ```{r echo=FALSE,  eval = params$p2sub != ""}
@@ -99,6 +106,8 @@ Risk_List_Proj<-filter(Risk_List_Proj,
                   Risk_List_Proj$P2_SUB_IDENTIFIER == params$p2sub)
 proj_risks <- filter(proj_risks,
                      proj_risks$P2_SUB_IDENTIFIER == params$p2sub)
+
+header2 <- if (params$p2sub != "") {paste("SubID:", params$p2sub)}
 ```
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, include=FALSE}
@@ -133,9 +142,6 @@ proj_risks <- proj_risks %>%
 ```
 ###### Report Created On: `r format(Sys.time(), '%d %B, %Y')`
 ```{r, echo=FALSE, warning=FALSE, message=FALSE,results='asis'}
-header <- paste("Project:", proj_risk_item$PROJECT_NAME)
-header2 <- if (params$p2sub != "") {paste("SubID:", params$p2sub)}
-
 cat("###", header, header2)
 ```
 

@@ -85,17 +85,29 @@ RiskDeets <- risk_item_db |>
 Risk_List_Proj <-filter(RiskDeets, RiskDeets$PROJECT_NAME == params$projID)
 Risk_List_Proj$COST_IMPACT_MOSTLIKELY <- 
 currency(Risk_List_Proj$COST_IMPACT_MOSTLIKELY, format = "d")
+
+header<-paste("Project:",params$projID)
+header2<-if (params$p2sub != ""){
+  paste("SubID:", params$p2sub)}
 ```
 
 ```{r echo=FALSE, eval = params$p2ID != ""}
 Risk_List_Proj <-filter(RiskDeets, RiskDeets$P2_NUMBER == params$p2ID)
 Risk_List_Proj$COST_IMPACT_MOSTLIKELY <-
   currency(Risk_List_Proj$COST_IMPACT_MOSTLIKELY,format = "d")
+
+header<-paste("P2 Number:",params$p2ID)
+header2<-if (params$p2sub != ""){
+  paste("SubID:", params$p2sub)}
+
 ```
 
 ```{r echo=FALSE, eval = params$p2sub != ""}
 Risk_List_Proj <-filter(Risk_List_Proj, Risk_List_Proj$P2_SUB_IDENTIFIER == params$p2sub)
 Risk_List_Proj$COST_IMPACT_MOSTLIKELY <- currency(Risk_List_Proj$COST_IMPACT_MOSTLIKELY,format = "d")
+
+header2<-if (params$p2sub != ""){
+  paste("SubID:", params$p2sub)}
 ```
 
 
@@ -115,10 +127,6 @@ RiskDeetsTable<-Risk_List_Proj |>
 ```
 ###### Report Created On: `r format(Sys.time(), '%d %B, %Y')`
 ```{r, echo=FALSE, warning=FALSE, message=FALSE,results='asis'}
-
-header<-paste("Project:",params$projID)
-header2<-if (params$p2sub != ""){
-  paste("SubID:", params$p2sub)}
 
 cat("###",header,header2)
 

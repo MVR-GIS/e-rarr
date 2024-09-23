@@ -87,9 +87,6 @@ risk_modeled <- risk_modeled|>
    mutate(PROJECT_ID = as.numeric(PROJECT_ID),
           RISK_ID = as.numeric(RISK_ID))
 
-
-
-
 RiskImpactTable <- erisk_ItemProj |>
   select("RISK_ID","RISK_NAME_ID","RISK_NAME","RISK_IDENTIFIER","P2_NUMBER", "PROJECT_ID",
          "PROJECT_NAME", "RISK_NAME","RISKCATEGORY", 
@@ -123,6 +120,8 @@ risk_model<-filter(risk_modeled, risk_modeled$PROJECT_ID == params$projID,
                        risk_modeled$RISK_NAME_ID == params$riskID)
 risk_item_transact<-filter(risk_transact, risk_transact$RISK_NAME_ID == params$riskID,
                            risk_transact$PROJECT_NAME == params$projID)
+
+header <- paste("Project:",risk_item$PROJECT_NAME," ",(risk_item$RISK_IDENTIFIER))
 ```
 
 ```{r echo=FALSE, eval = params$p2ID != ""}
@@ -134,6 +133,8 @@ risk_model<-filter(risk_modeled, risk_modeled$PROJECT_ID == params$projID,
                        risk_modeled$RISK_NAME_ID == params$riskID)
 risk_item_transact<-filter(risk_transact, risk_transact$RISK_NAME_ID == params$riskID,
                            risk_transact$P2_NUMBER == params$p2ID)
+
+header <- paste("P2 ID:",risk_item$P2_NUMBER," ",(risk_item$RISK_IDENTIFIER))
 ```
 
 
@@ -145,9 +146,6 @@ monte_condit <- ifelse(nrow(risk_model>0),TRUE,FALSE)
 
 ###### Report Created On: `r format(Sys.time(), '%d %B, %Y')`
 ```{r echo=FALSE, warning=FALSE, message=FALSE, results='asis'}
-header<-paste("Project:",risk_item$PROJECT_NAME," ",(risk_item$RISK_IDENTIFIER))
-
-
 cat("####",header)
 ```
 
@@ -327,13 +325,6 @@ risk_item_table <- risk_item |>
                                         PERFORMANCEIMPACT_DESC)
   )
 ```
-<<<<<<< HEAD
-
-
-=======
->>>>>>> main
-
-
 
 
 ```{r Creating Risk Table Columns, echo=FALSE, results='asis'}
@@ -343,7 +334,6 @@ costcolumn <-
     c("No cost impact is anticipated","","","")
   } else if(risk_item_table$COST_IMPACT_DISTTYPE == 299){
      c(risk_item_table$COST_IMPACT_MOSTLIKELY,"","","")
-
   } else if (risk_item_table$COST_IMPACT_DISTTYPE == 306) {
     c(
       risk_item_table$COST_IMPACT_LOWEST,
@@ -476,3 +466,4 @@ risk_log_table[1:10]|>
 ```
 
 ###### Risk Manager: `r risk_item$RISK_MANAGER`
+

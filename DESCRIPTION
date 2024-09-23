@@ -40,11 +40,9 @@ Imports:
     shinyjs,
     stringr,
     tidyr,
-    webshot,
-    waiter
+    webshot
 Suggests: 
     htmlwidgets,
-    waiter
     spelling,
     testthat (>= 3.0.0)
 VignetteBuilder: 
