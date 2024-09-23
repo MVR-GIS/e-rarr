@@ -135,7 +135,6 @@ app_ui <- function(request) {
                        "Explore Projects",
                        plotly::plotlyOutput("projpies"),
                        DT::DTOutput("projoverview"), value= "Explore Projects"),
-                     tabPanel("Explore Risks"),
                      tabPanel("Reports"))))),
         tabPanel("Project",
                  sidebarLayout(
