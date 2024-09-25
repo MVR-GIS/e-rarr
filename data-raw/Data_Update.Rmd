@@ -40,7 +40,8 @@ connect_string <- paste0(
  
 con_roracle <- ROracle::dbConnect(drv, 
                                   username = user_name, 
-                                  password = keyring::key_get(key_service, user_name),
+                                  password = keyring::key_get(key_service, 
+                                                              user_name),
                                   dbname   = connect_string)
 ```
 
@@ -58,9 +59,9 @@ risk_transact          <- ROracle::dbReadTable(con_roracle,
 risk_treat <- ROracle::dbReadTable(con_roracle, 
                                              "ERR_RISKTREATMENTLIST_FULL")
 erisk_orgs      <- ROracle::dbReadTable(con_roracle, 
-                                             "ERR_TBLUSACEORGS")
+                                             "ERR_USACEORGANIZATION")
 risk_modeled <-ROracle::dbReadTable(con_roracle, 
-                                             "ERR_RISKMODELED")
+                                             "ERR_RISK_MODELED")
 
 # Disconnect from the database
 ROracle::dbDisconnect(con_roracle)

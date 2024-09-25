@@ -79,7 +79,7 @@ erisk_ItemProj <- risk_item_db |>
 
 risk_item_filt <- risk_item_db |>
   mutate(RISK_NAME_ID = paste(RISK_IDENTIFIER,RISK_NAME))|>
-  mutate(RISK_NAME_ID =str_trim(RISK_NAME_ID, side = c("right")))|>
+#  mutate(RISK_NAME_ID =str_trim(RISK_NAME_ID, side = c("right")))|>
    select(RISK_ID, PROJECT_ID, RISK_NAME, RISK_NAME_ID,P2_NUMBER)
 
   
