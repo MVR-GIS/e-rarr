@@ -58,7 +58,7 @@ risk_transact          <- ROracle::dbReadTable(con_roracle,
                                              "ERR_RISKTRANSACTIONLIST_FULL")
 risk_treat <- ROracle::dbReadTable(con_roracle, 
                                              "ERR_RISKTREATMENTLIST_FULL")
-erisk_orgs      <- ROracle::dbReadTable(con_roracle, 
+erisk_orgs_new      <- ROracle::dbReadTable(con_roracle, 
                                              "ERR_USACEORGANIZATION")
 risk_modeled <-ROracle::dbReadTable(con_roracle, 
                                              "ERR_RISK_MODELED")
@@ -74,6 +74,7 @@ readr::write_csv(erisk_item,"C:/workspace/erarr/inst/app/data/erisk_item.csv")
 readr::write_csv(risk_transact,"C:/workspace/erarr/inst/app/data/risk_transact.csv")
 readr::write_csv(risk_treat,"C:/workspace/erarr/inst/app/data/risk_treat.csv")
 readr::write_csv(erisk_orgs,"C:/workspace/erarr/inst/app/data/erisk_orgs.csv")
+readr::write_csv(erisk_orgs_new,"C:/workspace/erarr/inst/app/data/erisk_orgs_new.csv")
 readr::write_csv(risk_modeled,"C:/workspace/erarr/inst/app/data/erisk_modeled.csv")
 
 usethis::use_data(erisk_project,
