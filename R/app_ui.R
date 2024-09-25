@@ -66,7 +66,9 @@ app_ui <- function(request) {
                  sidebarLayout(
                    sidebarPanel(
                      #class=c"fa-spin"
-                     h5("Filter Projects",div(style = "display:inline-block; float:right",actionButton("resetBtn","Reset Filters", icon =icon("arrows-rotate")))),
+                     h5("Filter Projects",div(style = "display:inline-block; float:right",
+                                              actionButton("resetBtn","Reset Filters", 
+                                                           icon =icon("arrows-rotate")))),
                      selectizeInput('MSCInput',
                                     'MSC',
                                     choices = NULL,
@@ -153,7 +155,8 @@ app_ui <- function(request) {
                                     choices = NULL,
                                     selected = NULL,
                                     multiple = F,
-                                    options=list(placeholder = 'Select a Project')),
+                                    options=list(
+                                      placeholder = 'Select a Project')),
                      h6("or"),
                      selectizeInput(
                        "P2Input",
@@ -179,7 +182,8 @@ app_ui <- function(request) {
                                         choices = NULL ,
                                         selected = NULL,
                                         multiple = F,
-                                        options=list(placeholder = 'Select a Risk Item')
+                                        options=list(
+                                          placeholder = 'Select a Risk Item')
                                       )),
                      conditionalPanel(condition = "input.reporttabs == 'Explore'",
                                       selectizeInput(
@@ -188,7 +192,8 @@ app_ui <- function(request) {
                                         choices = NULL,
                                         selected = NULL,
                                         multiple = F,
-                                        options=list(placeholder = 'Enter Phase')),
+                                        options=list(
+                                          placeholder = 'Enter Phase')),
                                       shinyjs::hidden(
                                         selectizeInput(
                                           "mileInput",
@@ -196,14 +201,16 @@ app_ui <- function(request) {
                                           choices = NULL,
                                           selected = NULL,
                                           multiple = F,
-                                          options=list(placeholder = 'Enter Milestone'))),
+                                          options=list(
+                                            placeholder = 'Enter Milestone'))),
                                       selectizeInput(
                                         "disInput",
                                         "Discipline",
                                         choices = NULL,
                                         selected = NULL,
                                         multiple = F,
-                                        options=list(placeholder = 'Select a discipline')
+                                        options=list(
+                                          placeholder = 'Select a discipline')
                                       )
                      ), width=2),
                    
@@ -211,6 +218,7 @@ app_ui <- function(request) {
                      tabsetPanel(
                        tabPanel(
                          "Explore Risks",
+                         textOutput("dynamic_title"),
                          plotly::plotlyOutput("pie"),
                          DT::DTOutput("overviewtab"), value= "Explore"
                        ),
@@ -232,7 +240,10 @@ app_ui <- function(request) {
                                                 )
                                     ),
                                     card_body(
-                                      tags$button(id ="Proj", class="action-button",tags$img(src="www/ProjAllRisk.png", height='165px', max_width='100%')
+                                      tags$button(id ="Proj", class="action-button",
+                                                  tags$img(src="www/ProjAllRisk.png", 
+                                                           height='165px', 
+                                                           max_width='100%')
                                       )
                                     )),
                                   bslib::card(
@@ -248,7 +259,11 @@ app_ui <- function(request) {
                                                 border-color: transparent;"
                                                 )),
                                     card_body(
-                                      tags$button(id = "AllRisk", class="action-button",tags$img(src="www/AllRiskDetail.png", height='165px', max_width='100%')))
+                                      tags$button(id = "AllRisk", 
+                                                  class="action-button",
+                                                  tags$img(src="www/AllRiskDetail.png", 
+                                                           height='165px', 
+                                                           max_width='100%')))
                                     
                                   ),
                                   bslib::card(
@@ -264,7 +279,11 @@ app_ui <- function(request) {
                                                 border-color: transparent;"
                                                 )),
                                     card_body(
-                                      tags$button(id = "Proj4s", class="action-button",tags$img(src="www/ProjectTop4.png",height = '165px',max_width = '100%',
+                                      tags$button(id = "Proj4s", 
+                                                  class="action-button",
+                                                  tags$img(src="www/ProjectTop4.png",
+                                                           height = '165px',
+                                                           max_width = '100%',
                                       ),
                                       ),
                                       
@@ -275,7 +294,10 @@ app_ui <- function(request) {
                                     height = 165,
                                     full_screen = FALSE,id="RiskItemCard",
                                     card_header("Risk Item Report",
-                                                tooltip(bsicons::bs_icon("info-circle"), "Select a Risk Item", placement="right", id="tooltip"),
+                                                tooltip(bsicons::bs_icon("info-circle"),
+                                                        "Select a Risk Item", 
+                                                        placement="right", 
+                                                        id="tooltip"),
                                                 shiny::downloadButton(
                                                   outputId="download_RiskItem",
                                                   label="Download",
@@ -285,11 +307,12 @@ app_ui <- function(request) {
                                                 border-color: transparent;"
                                                 )),
                                     card_body(
-                                      tags$button(id = "RiskItem", class="action-button",tags$img(src="www/RiskItem.png", height='165px', max_width = '100%'))
-                                      
-                                    ))
-                                  ,
-                                  
+                                      tags$button(id = "RiskItem", 
+                                                  class="action-button",
+                                                  tags$img(src="www/RiskItem.png", 
+                                                           height='165px', 
+                                                           max_width = '100%'))
+                                    )),
                                 )
                        ),
                        id = "reporttabs" )
