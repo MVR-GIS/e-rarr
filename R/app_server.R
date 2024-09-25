@@ -13,6 +13,7 @@
 #' @importFrom DT renderDT datatable 
 #' @importFrom shinyalert shinyalert
 #' @importFrom formattable currency
+#' @importFrom readr read_csv
 #'
 library(shiny)
 library(readr)
@@ -27,7 +28,8 @@ library(formattable)
 
 erisk_item <-read_csv("./inst/app/data/erisk_item.csv",show_col_types = FALSE)
 risk_item_db <- data.frame(erisk_item)
-erisk_project <-read_csv("./inst/app/data/erisk_project.csv",show_col_types = FALSE)
+erisk_project <-read_csv("./inst/app/data/erisk_project.csv",
+                         show_col_types = FALSE)
 erisk_orgs <-read_csv("./inst/app/data/erisk_orgs.csv",show_col_types = FALSE)
 
 
@@ -90,6 +92,13 @@ conditional <- function(condition, success) {
     TRUE
 }
 
+condit_title <-function(condition, success) {
+  if (condition)
+    success 
+  else
+    ""
+}
+
 filter_data <- function(data, ...) {
   conditions <- list(...)
   for (condition in conditions) {
@@ -106,8 +115,8 @@ app_server <- function(input, output, session) {
   
   
   update_choices <- function(input_id, choices) {
-    updateSelectizeInput(session, input_id, choices = c("", choices), selected = ""
-                         )}
+    updateSelectizeInput(session, input_id, choices = c("", choices), 
+                         selected = "")}
   
 
 
@@ -371,21 +380,21 @@ app_server <- function(input, output, session) {
   
 #### Project level/Risk item reports  
   num <- reactive({
-    data = RiskImpactTable$USACE_ORGANIZATION
-    return(data)
+    unique(RiskImpactTable$USACE_ORGANIZATION)
   })
   
   observe({
     updateSelectizeInput(session,'districtInput',
-                         choices = c("", sort(unique(num()))), 
+                         choices = c("", sort(num())), 
                          options = list(maxOptions = 40, 
                                         server = TRUE, 
                                         placeholder = 'Select a District')
 
     )
+ 
 
   })
-
+  # Reactive to filter projects based on selected district
   projects <- reactive({
     RiskImpactTable |>
       filter(RiskImpactTable$USACE_ORGANIZATION == input$districtInput,
@@ -394,14 +403,10 @@ app_server <- function(input, output, session) {
   })
   
 
-  observeEvent(projects(), {
-    projs <- sort(unique(projects()$PROJECT_NAME))
-    updateSelectizeInput(
-      inputId = "projectInput",
-      choices = c("", projs),
-      selected = ""
-    )
+  observeEvent(projects(),{
+    update_choices('projectInput',sort(unique(projects()$PROJECT_NAME)))
   })
+  
   
   P2s <- reactive({
     RiskImpactTable |>
@@ -429,15 +434,9 @@ app_server <- function(input, output, session) {
     } else 
       shinyjs::hide("SubIDInput")
   })
-
-  
-  observeEvent(risks(), {
-    P2sub <- sort(risks()$P2_SUB_IDENTIFIER)
-    updateSelectizeInput(
-      inputId = "SubIDInput",
-      choices =c(P2sub),
-      selected =""
-    )
+ 
+  observeEvent(risks(),{
+    update_choices("SubIDInput",sort(unique(risks()$P2_SUB_IDENTIFIER)))
   })
 
   risks <- reactive({
@@ -467,7 +466,8 @@ app_server <- function(input, output, session) {
 
   observeEvent(riskitems(),
                {
-                 update_choices("phaseInput",sort(unique(riskitems()$LIFECYCLEPHASENAME)))
+                 update_choices("phaseInput",
+                                sort(unique(riskitems()$LIFECYCLEPHASENAME)))
                })
   
   disciplines <- reactive({
@@ -583,6 +583,28 @@ app_server <- function(input, output, session) {
     )
   })
   
+  output$dynamic_title <- renderText({
+    title_parts <- c(
+      condit_title(input$districtInput != "", 
+                   paste("District:", input$districtInput)),
+      condit_title(input$projectInput != "", 
+                   paste("Project:", input$projectInput)),
+      condit_title(input$SubIDInput != "", 
+                   paste("SubID:", input$SubIDInput)),
+      condit_title(input$P2Input != "", 
+                   paste("P2 Number:", input$P2Input)),
+      condit_title(input$phaseInput !="", 
+                  paste("Phase:", input$phaseInput)),
+      condit_title(input$mileInput != "", 
+                  paste("Milestone:", input$mileInput)),
+      condit_title(input$disInput !="", 
+                  paste("Discipline:",input$disInput))
+    )
+    
+    # Remove empty strings and collapse into a single string
+    paste(title_parts[title_parts != ""], collapse = " | ")
+  })
+  
   output$pie = plotly::renderPlotly({
     pie_plots(cost_pie(), schedule_pie(), perform_pie())
   })
@@ -618,28 +640,6 @@ app_server <- function(input, output, session) {
   })
   
 
-  observeEvent(input$RiskItem, {
-    req(isTruthy(input$riskInput),
-        isTruthy(input$projectInput) || isTruthy(input$P2Input)) 
-    rmarkdown::render(
-      "./inst/app/rmd/RiskItemReport.Rmd",
-      params = list(projID = input$projectInput,
-                    riskID = input$riskInput,
-                    p2ID   = input$P2Input),
-      output_dir ="./inst/app/www"
-    )
-    shinyalert::shinyalert(
-      html = TRUE, 
-      text = tagList(tags$iframe(src="www/RiskItemReport.html", 
-                                 width = 900,  
-                                 height = 1000,  
-                                 style = "border:none;")), 
-      size = "l",
-      confirmButtonText = "Close Report",
-      closeOnClickOutside = TRUE
-    )
-  })
-  
 
   observeEvent(input$Proj, {
     req(isTruthy(input$projectInput) || isTruthy(input$P2Input))
@@ -779,7 +779,4 @@ app_server <- function(input, output, session) {
       )
     }
   )
-  
-
-
 }
