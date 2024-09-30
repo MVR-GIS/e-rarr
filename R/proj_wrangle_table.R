@@ -19,7 +19,7 @@ proj_tableprep <- function(riskdf, colname) {
   
   # Determine the name for summing impacts based on colname
   if (colname %in% c("Cost", 'Schedule')) {
-    sum_name <- paste0(upname, '_IMPACT_MOSTLIKELY')
+    sum_name <- paste0(upname, '_MEAN')
   } else {
     sum_name <- NULL
   }

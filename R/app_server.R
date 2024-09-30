@@ -31,13 +31,26 @@ risk_item_db <- data.frame(erisk_item)
 erisk_project <-read_csv("./inst/app/data/erisk_project.csv",
                          show_col_types = FALSE)
 erisk_orgs <-read_csv("./inst/app/data/erisk_orgs.csv",show_col_types = FALSE)
+erisk_msc <-read_csv("./inst/app/data/erisk_msc.csv",show_col_types = FALSE)
+erisk_dist <-read_csv("./inst/app/data/erisk_dist.csv",show_col_types = FALSE)
+erisk_archive <- read_csv("./inst/app/data/erisk_modeled.csv",show_col_types=FALSE)
 
+erisk_mean <- erisk_archive|>
+  dplyr::select(COST_MEAN, SCHEDULE_MEAN,OUTCOME_MEAN,PROJECT_ID,RISK_ID)
 
-erisk_MSC <- erisk_orgs |>
-  filter(str_detect(EROC,'0'))
+erisk_orgs_div <- erisk_orgs |>
+  inner_join(erisk_dist, by = join_by(DISTRICT_CODE))
+
+erisk_orgs_div <- erisk_orgs_div |>
+  dplyr::select(DISTRICT_CODE,MSC_ID)
+
+erisk_msc_orgs <- erisk_orgs_div |>
+  inner_join(erisk_msc, by = join_by(MSC_ID), keep = FALSE)
 
 project_orgs <- erisk_project |>
-  left_join(erisk_orgs, by=join_by(DISTRICT_CODE))
+  inner_join(erisk_msc_orgs|>
+             select(MSC, MSC_DESCRIPT, DISTRICT_CODE), by=join_by(DISTRICT_CODE), keep=FALSE)
+
 
 shiny::addResourcePath(prefix = "www", directoryPath = "./inst/app/www")
 
@@ -57,7 +70,7 @@ RiskImpactTable <- risk_item_db |>
   mutate(RISK_NAME_ID = paste(RISK_IDENTIFIER,RISK_NAME))
 
 
-riskpies <- risk_item_db |>
+riskpies <- risk_proj_orgs |>
   dplyr::select("P2_NUMBER",
                 "RISK_IDENTIFIER",
                 "PROJECT_NAME",
@@ -78,9 +91,10 @@ riskpies <- risk_item_db |>
   mutate(RISK_NAME_ID =str_trim(RISK_NAME_ID, side = c("right")))
 
 risk_proj_orgs <- risk_item_db |>
-  left_join(project_orgs|>
-            select(PROJECT_ID, PRIMARYMISSION,MSC,DISTRICT_NAME, PROGRAMTYPENAME
-                   ),  by=join_by(PROJECT_ID))
+  inner_join(project_orgs|>
+            select(PROJECT_ID, PRIMARYMISSION,MSC,MSC_DESCRIPT,PROGRAMTYPENAME
+                   ),  by=join_by(PROJECT_ID))|>
+  inner_join(erisk_mean, by = join_by(PROJECT_ID,RISK_ID))
 
 
 
@@ -131,7 +145,7 @@ app_server <- function(input, output, session) {
   
 ### Division Level Reports
  
-  MSCs <- reactive({setNames(as.list(erisk_MSC$MSC), erisk_MSC$DISTRICT_NAME)
+  MSCs <- reactive({setNames(as.list(project_orgs$MSC), project_orgs$MSC_DESCRIPT)
     })
   
   observe({
@@ -314,7 +328,7 @@ app_server <- function(input, output, session) {
       )|>
       select(PROJECT_NAME,PROJECT_ID,P2_NUMBER,DISTRICT_CODE,PRIMARYMISSION,
              COST_RANK_DESC,COST_IMPACT_MOSTLIKELY,SCHEDULE_RANK_DESC,
-             SCHEDULE_IMPACT_MOSTLIKELY,PERFORMANCE_RANK_DESC)
+             SCHEDULE_IMPACT_MOSTLIKELY,PERFORMANCE_RANK_DESC, COST_MEAN,SCHEDULE_MEAN)
   })
   
   
@@ -369,8 +383,8 @@ app_server <- function(input, output, session) {
   output$projoverview = DT::renderDT({
     DT::datatable(projects_comb(),
                   colnames = c('Project Name', 'P2 Number', 
-                               'Cost Impact Most Likely', 
-                               'Schedule Impact Most Likely'),
+                               'Mean Cost Impact', 
+                               'Mean Schedule Impact'),
                   rownames = FALSE,
                   extensions = 'Buttons',
                   options = list(dom ='Bfrtip',
