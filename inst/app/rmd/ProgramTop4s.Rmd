@@ -6,7 +6,7 @@ params:
   progID: ""
   missionID: ""
   divisionID: ""
-  districtID: ""
+  MSCID: ""
   phaseID: ""
   disciplineID: ""
 ---
@@ -45,25 +45,24 @@ library(formattable)
 library(dplyr)
 library(utils)
 library(erarr)
+library(stringr)
 options(scipen = 999)
 
 erisk_item <- utils::read.csv("../data/erisk_item.csv")
 risk_item_db<-data.frame(erisk_item)
 erisk_project <- utils::read.csv("../data/erisk_project.csv")
 risk_project_db<-data.frame(erisk_project)
-erisk_orgs <-read_csv("./inst/app/data/erisk_orgs.csv",show_col_types = FALSE)
+erisk_orgs <-read_csv("../data/erisk_orgs.csv",show_col_types = FALSE)
 
 
-erisk_MSC <- erisk_orgs |>
-  filter(str_detect(EROC,'0'))
 
 project_orgs <- erisk_project |>
   left_join(erisk_orgs, by=join_by(DISTRICT_CODE))
 
 
-risk_item_db<-risk_item_db |>
-  dplyr::left_join(risk_project_db|>
-              dplyr::select(PROJECT_ID, PRIMARYMISSION))
+# risk_item_db<-risk_item_db |>
+#   dplyr::left_join(risk_project_db|>
+#               dplyr::select(PROJECT_ID, PRIMARYMISSION))
 
 risk_proj_orgs <- risk_item_db |>
   left_join(project_orgs|>
@@ -73,12 +72,18 @@ risk_proj_orgs <- risk_item_db |>
 
 
 
-RiskDeets <- risk_item_db |>
-  dplyr::select("PROJECT_ID","P2_NUMBER","P2_SUB_IDENTIFIER","RISK_IDENTIFIER", "PROJECT_NAME","RISK_NAME","RISKCATEGORY","RISK_STATEMENT" ,"LIFECYCLEPHASENAME","MILESTONE","LIKELIHOOD","DISCIPLINE","PROB_OCCURRENCE", "PERFORMANCEIMPACT","PERFORMANCEIMPACT_IMPCT", "PERFORMANCE_RANK_DESC", "PERFORMANCEIMPACT_RISK_RANKING","COST_IMPACT_LOWEST","COST_IMPACT_MOSTLIKELY",
+program_risks <- risk_proj_orgs |>
+  dplyr::select("MSC","USACE_ORGANIZATION","P2_PROGRAM_CODE","PROGRAMTYPENAME",
+                "PRIMARYMISSION","DISCIPLINE","RISKCATEGORY","LIFECYCLEPHASENAME",
+                "MILESTONE","PROJECT_ID","PROGRAM_ID","PROJECT_NAME",
+                "P2_NUMBER","RISK_NAME","RISK_STATEMENT","LIKELIHOOD",
+                "PROB_OCCURRENCE", "PERFORMANCEIMPACT","PERFORMANCEIMPACT_IMPCT",
+                "PERFORMANCE_RANK_DESC", "PERFORMANCEIMPACT_RISK_RANKING",
+                "COST_IMPACT_LOWEST","COST_IMPACT_MOSTLIKELY",
                 "COST_IMPACT_HIGHEST","COST_RANK_DESC","COST_RISK_RANKING",
                 "SCHEDULE_IMPACT_LOWEST","SCHEDULE_IMPACT_MOSTLIKELY",
                 "SCHEDULE_IMPACT_HIGHEST", "SCHEDULE_RANK_DESC", 
-                "SCHEDULE_RISK_RANKING", "PRIMARYMISSION", "USACE_ORGANIZATION")
+                "SCHEDULE_RISK_RANKING")
 
 ```
 
@@ -105,22 +110,16 @@ RiskDeets <- risk_item_db |>
 
 
 ```{r echo=FALSE, eval = params$projID != ""}
-Risk_List_Proj <-dplyr::filter(RiskDeets, RiskDeets$PROJECT_NAME == params$projID)
-
-
-proj_risks<-dplyr::filter(Risk_List_Proj, Risk_List_Proj$PROJECT_NAME == params$projID)
-proj_risk_item<- dplyr::slice_head(Risk_List_Proj)
+proj_risks<-dplyr::filter(program_risks, program_risks$MSC == params$MSCID)
+proj_risk_item<- dplyr::slice_head(proj_risks)
 header<-paste("Project:",proj_risk_item$PROJECT_NAME)
 header2<-if (params$p2sub != ""){
   paste("SubID:",params$p2sub)}
 ```
 
 ```{r echo=FALSE, eval = params$p2ID != ""}
-Risk_List_Proj <-dplyr::filter(RiskDeets, RiskDeets$P2_NUMBER == params$p2ID)
-
-
 proj_risks<-dplyr::filter(Risk_List_Proj, Risk_List_Proj$P2_NUMBER == params$p2ID)
-proj_risk_item<- dplyr::slice_head(Risk_List_Proj)
+proj_risk_item<- dplyr::slice_head(proj_risks)
 header<-paste("P2 Number:",proj_risk_item$P2_NUMBER)
 header2<-if (params$p2sub != ""){
   paste("SubID:",params$p2sub)}
@@ -129,10 +128,6 @@ header2<-if (params$p2sub != ""){
 ```
 
 ```{r echo=FALSE, eval = params$p2sub != ""}
-Risk_List_Proj <-dplyr::filter(Risk_List_Proj, 
-                               Risk_List_Proj$P2_SUB_IDENTIFIER == params$p2sub)
-
-
 proj_risks<-dplyr::filter(Risk_List_Proj, 
                           Risk_List_Proj$P2_SUB_IDENTIFIER == params$p2sub)
 proj_risk_item<- dplyr::slice_head(Risk_List_Proj)
