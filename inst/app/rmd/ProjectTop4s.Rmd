@@ -45,17 +45,27 @@ library(utils)
 library(erarr)
 options(scipen = 999)
 
-erisk_item <- utils::read.csv("../data/erisk_item.csv")
+erisk_item <- readr::read_csv("../data/erisk_item.csv")
 risk_item_db<-data.frame(erisk_item)
-erisk_project <- utils::read.csv("../data/erisk_project.csv")
+erisk_project <- readr::read_csv("../data/erisk_project.csv")
 risk_project_db<-data.frame(erisk_project)
+erisk_archive <- read_csv("../data/erisk_modeled.csv",
+                          show_col_types=FALSE)
+
+
+erisk_mean <- erisk_archive|>
+  dplyr::select(COST_MEAN, SCHEDULE_MEAN,OUTCOME_MEAN,PROJECT_ID,RISK_ID)
 
 risk_item_db<-risk_item_db |>
   dplyr::left_join(risk_project_db|>
-              dplyr::select(PROJECT_ID, PRIMARYMISSION))
+              dplyr::select(PROJECT_ID, PRIMARYMISSION))|>
+    left_join(erisk_mean, by = join_by(PROJECT_ID,RISK_ID))
+
+
+
 
 RiskDeets <- risk_item_db |>
-  dplyr::select("PROJECT_ID","P2_NUMBER","P2_SUB_IDENTIFIER","RISK_IDENTIFIER", "PROJECT_NAME","RISK_NAME","RISKCATEGORY","RISK_STATEMENT" ,"LIFECYCLEPHASENAME","MILESTONE","LIKELIHOOD","DISCIPLINE","PROB_OCCURRENCE", "PERFORMANCEIMPACT","PERFORMANCEIMPACT_IMPCT", "PERFORMANCE_RANK_DESC", "PERFORMANCEIMPACT_RISK_RANKING","COST_IMPACT_LOWEST","COST_IMPACT_MOSTLIKELY","COST_IMPACT_HIGHEST", "COST_RANK_DESC","COST_RISK_RANKING","SCHEDULE_IMPACT_LOWEST","SCHEDULE_IMPACT_MOSTLIKELY","SCHEDULE_IMPACT_HIGHEST", "SCHEDULE_RANK_DESC", "SCHEDULE_RISK_RANKING", "PRIMARYMISSION", "USACE_ORGANIZATION")
+  dplyr::select("PROJECT_ID","P2_NUMBER","P2_SUB_IDENTIFIER","RISK_IDENTIFIER", "PROJECT_NAME","RISK_NAME","RISKCATEGORY","RISK_STATEMENT" ,"LIFECYCLEPHASENAME","MILESTONE","LIKELIHOOD","DISCIPLINE","PROB_OCCURRENCE", "PERFORMANCEIMPACT","PERFORMANCEIMPACT_IMPCT", "PERFORMANCE_RANK_DESC", "PERFORMANCEIMPACT_RISK_RANKING","COST_IMPACT_LOWEST","COST_MEAN","COST_IMPACT_HIGHEST", "COST_RANK_DESC","COST_RISK_RANKING","SCHEDULE_IMPACT_LOWEST","SCHEDULE_MEAN","SCHEDULE_IMPACT_HIGHEST", "SCHEDULE_RANK_DESC", "SCHEDULE_RISK_RANKING", "PRIMARYMISSION", "USACE_ORGANIZATION")
 
 ```
 
@@ -122,7 +132,7 @@ cat("###",header,header2)
 #### Top 4 Cost Impacts (All Phases)
 ``` {r cost risk log, echo = FALSE, warning=FALSE}
 cost_top4s<-proj_risks |>
-  mutate(MAX_COST = pmax(COST_IMPACT_LOWEST, COST_IMPACT_MOSTLIKELY, COST_IMPACT_HIGHEST))|>
+  mutate(MAX_COST = pmax(COST_IMPACT_LOWEST, COST_MEAN, COST_IMPACT_HIGHEST))|>
   arrange(desc(COST_RISK_RANKING), desc(MAX_COST), desc(PROB_OCCURRENCE))|>
       dplyr::select(RISK_IDENTIFIER, RISK_NAME, RISKCATEGORY , MILESTONE , LIKELIHOOD, MAX_COST) |>
     dplyr::slice_head(n=4)|>
@@ -136,7 +146,7 @@ cost_top4s
 #### Top 4 Schedule Impacts (All Phases)
 ``` {r schedule risk log, echo = FALSE, warning=FALSE}
 schedule_top4s<-proj_risks |>
-   mutate(MAX_SCHED = pmax(SCHEDULE_IMPACT_LOWEST, SCHEDULE_IMPACT_MOSTLIKELY, SCHEDULE_IMPACT_HIGHEST))|>
+   mutate(MAX_SCHED = pmax(SCHEDULE_IMPACT_LOWEST, SCHEDULE_MEAN, SCHEDULE_IMPACT_HIGHEST))|>
   arrange(desc(SCHEDULE_RISK_RANKING), desc(MAX_SCHED), desc(PROB_OCCURRENCE))|>
       dplyr::select(RISK_IDENTIFIER, RISK_NAME, RISKCATEGORY , MILESTONE , LIKELIHOOD, MAX_SCHED) |>
     dplyr::slice_head(n=4)|>

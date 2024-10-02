@@ -60,41 +60,56 @@ library(stringr)
 ```{r echo=FALSE, message=FALSE, warning=FALSE, include=FALSE}
 options(scipen = 999)
 
-risk_item_db <- readr::read_csv("../data/erisk_item.csv",show_col_types = FALSE)
-risk_project_db <- readr::read_csv("../data/erisk_project.csv",show_col_types = FALSE)
-risk_transact <- readr::read_csv("../data/risk_transact.csv",show_col_types = FALSE)
-milestone_df<- readr::read_csv("../data/phase_milestone.csv",show_col_types = FALSE)
-risk_modeled<-readr::read_csv("../data/erisk_modeled.csv",show_col_types = FALSE)
-risk_treatment<-readr::read_csv("../data/risk_treat.csv",show_col_types = FALSE)
+risk_item_db <- readr::read_csv("../data/erisk_item.csv",
+                                show_col_types = FALSE)
+risk_project_db <- readr::read_csv("../data/erisk_project.csv",
+                                   show_col_types = FALSE)
+risk_transact <- readr::read_csv("../data/risk_transact.csv",
+                                 show_col_types = FALSE)
+milestone_df<- readr::read_csv("../data/phase_milestone.csv",
+                               show_col_types = FALSE)
+risk_modeled<-readr::read_csv("../data/erisk_modeled.csv",
+                              show_col_types = FALSE)
+risk_treatment<-readr::read_csv("../data/risk_treat.csv",
+                                show_col_types = FALSE)
+erisk_archive <- readr::read_csv("../data/erisk_modeled.csv",
+                          show_col_types=FALSE)
 checkimagepath<-"../www/check.png"
 headers<-c("Cost Impact", "Schedule Impact","Performance Impact")
 
-erisk_ItemProj <- left_join(risk_item_db, risk_project_db, 
-                            by = c("PROJECT_ID"), relationship = "many-to-many") 
 
-#erisk_ItemProj<-left_join(risk_item_db, risk_project_db, by =c("PROJECT_ID"), relationship = "many-to-many") 
+erisk_mean <- erisk_archive|>
+  dplyr::select(COST_MEAN, SCHEDULE_MEAN,OUTCOME_MEAN,PROJECT_ID,RISK_ID)
+
+
+risk_item_db<-risk_item_db |>
+  dplyr::left_join(risk_project_db|>
+              select(PROJECT_ID, PRIMARYMISSION))|>
+  dplyr::left_join(erisk_mean, by = join_by(PROJECT_ID,RISK_ID))
+
 
 erisk_ItemProj <- risk_item_db |>
   mutate(RISK_NAME_ID = paste(RISK_IDENTIFIER,RISK_NAME))                 
 
 risk_item_filt <- risk_item_db |>
   mutate(RISK_NAME_ID = paste(RISK_IDENTIFIER,RISK_NAME))|>
-  mutate(RISK_NAME_ID =str_trim(RISK_NAME_ID, side = c("right")))|>
-   select(RISK_ID, PROJECT_ID, RISK_NAME, RISK_NAME_ID,P2_NUMBER)
+#  mutate(RISK_NAME_ID =str_trim(RISK_NAME_ID, side = c("right")))|>
+   select(RISK_ID, PROJECT_ID, PROJECT_NAME,RISK_NAME, RISK_NAME_ID,P2_NUMBER)|>
+  mutate(P2_NUMBER = as.numeric(P2_NUMBER))
 
   
-risk_modeled <- risk_modeled|>
-   mutate(PROJECT_ID = as.numeric(PROJECT_ID),
-          RISK_ID = as.numeric(RISK_ID))
+
+risk_modeled <- erisk_archive
+
 
 RiskImpactTable <- erisk_ItemProj |>
   select("RISK_ID","RISK_NAME_ID","RISK_NAME","RISK_IDENTIFIER","P2_NUMBER", "PROJECT_ID",
          "PROJECT_NAME", "RISK_NAME","RISKCATEGORY", 
          "DISCIPLINE", 
          "RISK_STATEMENT","LIKELIHOOD_DESC", "PROB_OCCURRENCE_EVIDENCE",  
-         "COST_IMPACT_LOWEST", "COST_IMPACT_MOSTLIKELY", "COST_IMPACT_HIGHEST",
+         "COST_IMPACT_LOWEST", "COST_MEAN", "COST_IMPACT_HIGHEST",
          "COST_IMPACT_EVIDENCE","SCHEDULE_IMPACT_LOWEST", 
-         "SCHEDULE_IMPACT_MOSTLIKELY", "SCHEDULE_IMPACT_HIGHEST", 
+         "SCHEDULE_MEAN", "SCHEDULE_IMPACT_HIGHEST", 
          "SCHEDULE_IMPACT_EVIDENCE", "LIFECYCLEPHASENAME", 
          "PERFORMANCEIMPACT_DESC", "PERFORMANCEIMPACT","PERFORMANCE_IMPACT_DESC" 
          ,"PROJECTPHASEID", 
@@ -102,21 +117,22 @@ RiskImpactTable <- erisk_ItemProj |>
          "SCHEDULE_IMPACT_DISTTYPE", "NO_PERFORMANCE_IMPACT", "NO_COST_IMPACT",
          "NO_SCHEDULE_IMPACT")
 
-risk_transact<-left_join(risk_transact, risk_item_filt, by=c("PROJECT_ID","RISK_ID"), 
-                         relationship = "many-to-many", keep=FALSE)     
-risk_treat<-left_join(risk_treatment, risk_item_filt, by=c("PROJECT_ID", "RISK_ID"),
-                      relationship = "many-to-many", keep=FALSE)
+risk_transact<-left_join(risk_transact|>
+                           select(-PROJECT_NAME), risk_item_filt, by=c("PROJECT_ID","RISK_ID"), 
+                          keep=FALSE)     
+risk_treat<-risk_treatment |>
+  left_join(risk_item_filt|>
+              select(RISK_ID, PROJECT_ID, P2_NUMBER, RISK_NAME, RISK_NAME_ID), keep=FALSE)
 
-risk_modeled <-left_join(risk_modeled, risk_item_filt, by=c("PROJECT_ID", "RISK_ID"), 
-                         keep=FALSE)
+risk_modeled <-left_join(risk_modeled, risk_item_filt, by=c("PROJECT_ID", "RISK_ID"))
 ```
 
 ```{r echo=FALSE, eval = params$projID != ""}
 risk_item<-filter(RiskImpactTable, RiskImpactTable$RISK_NAME_ID == params$riskID,
                   RiskImpactTable$PROJECT_NAME == params$projID)
-risk_treatment<-filter(risk_treat, risk_treat$PROJECT_ID == params$projID, 
+risk_treatment<-filter(risk_treat, risk_treat$PROJECT_NAME == params$projID, 
                         risk_treat$RISK_NAME_ID == params$riskID)
-risk_model<-filter(risk_modeled, risk_modeled$PROJECT_ID == params$projID, 
+risk_model<-filter(risk_modeled, risk_modeled$PROJECT_NAME == params$projID, 
                        risk_modeled$RISK_NAME_ID == params$riskID)
 risk_item_transact<-filter(risk_transact, risk_transact$RISK_NAME_ID == params$riskID,
                            risk_transact$PROJECT_NAME == params$projID)
@@ -129,7 +145,7 @@ risk_item<-filter(RiskImpactTable, RiskImpactTable$RISK_NAME_ID == params$riskID
                   RiskImpactTable$P2_NUMBER == params$p2ID)
  risk_treatment<-filter(risk_treat, risk_treat$PROJECT_NAME == params$projID, 
                         risk_treat$RISK_NAME_ID == params$riskID)
-risk_model<-filter(risk_modeled, risk_modeled$PROJECT_ID == params$projID, 
+risk_model<-filter(risk_modeled, risk_modeled$PROJECT_NAME == params$projID, 
                        risk_modeled$RISK_NAME_ID == params$riskID)
 risk_item_transact<-filter(risk_transact, risk_transact$RISK_NAME_ID == params$riskID,
                            risk_transact$P2_NUMBER == params$p2ID)
@@ -170,11 +186,17 @@ knitr::include_graphics("mileplot.png")
 ```{r monte carlo plots, message=FALSE, echo=FALSE,warning=FALSE, eval= monte_condit, fig.height=1.75, fig.width=7}
 ranking = c("Opportunity", "Low", "Medium","High")
 colors = c('rgb(31,120,180)','rgb(51,160,44)','rgb(255,127,0)','rgb(227,26,28)')
-cost_values = c(risk_model$COST_PROBOPP,risk_model$COST_PROBLOW,risk_model$COST_PROBMOD,risk_model$COST_PROBHIGH)
-schedule_values= c(risk_model$SCHEDULE_PROBOPP,risk_model$SCHEDULE_PROBLOW,risk_model$SCHEDULE_PROBMOD,risk_model$SCHEDULE_PROBHIGH)
-performance_values = c(risk_model$OUTCOME_PROBOPP,risk_model$OUTCOME_PROBLOW,risk_model$OUTCOME_PROBMOD,risk_model$OUTCOME_PROBHIGH)
-monte_pies = data.frame(ranking,colors, round(cost_values,2), round(schedule_values,2),round(performance_values,2))
-names(monte_pies) = c("ranking", "colors","cost_values", "schedule_values","performance_values")
+cost_values = c(risk_model$COST_PROBOPP,risk_model$COST_PROBLOW,
+                risk_model$COST_PROBMOD,risk_model$COST_PROBHIGH)
+schedule_values= c(risk_model$SCHEDULE_PROBOPP,risk_model$SCHEDULE_PROBLOW,
+                   risk_model$SCHEDULE_PROBMOD,risk_model$SCHEDULE_PROBHIGH)
+performance_values = c(risk_model$OUTCOME_PROBOPP,risk_model$OUTCOME_PROBLOW,
+                       risk_model$OUTCOME_PROBMOD,risk_model$OUTCOME_PROBHIGH)
+monte_pies = data.frame(ranking,colors, round(cost_values,2), 
+                        round(schedule_values,2),
+                        round(performance_values,2))
+names(monte_pies) = c("ranking", "colors","cost_values",
+                      "schedule_values","performance_values")
 cost_label <- monte_pies |>
   slice_max(cost_values)|>
   select(ranking,colors)
@@ -227,7 +249,7 @@ monte_pie<-plot_ly() |>
     xref = "paper", yref = "paper", 
     showarrow = F,
     text = c("Schedule", 
-             paste("Mean:", monteframe$SCHEDULE_MEAN, "Days")))
+             paste("Mean:", risk_model$SCHEDULE_MEAN, "Days")))
   ) |>
   add_pie(
     monte_pies,
@@ -268,8 +290,8 @@ risk_item_table <- risk_item |>
   select(NO_COST_IMPACT,
          NO_SCHEDULE_IMPACT,
          NO_PERFORMANCE_IMPACT,
-         COST_IMPACT_MOSTLIKELY,
-         SCHEDULE_IMPACT_MOSTLIKELY,
+         COST_MEAN,
+         SCHEDULE_MEAN,
          COST_IMPACT_LOWEST,
          COST_IMPACT_HIGHEST,
          COST_IMPACT_EVIDENCE,
@@ -291,10 +313,10 @@ risk_item_table <- risk_item |>
                                 'font-family: Arial Narrow;font-size:8pt'>",
                                 "Highest","</p>",
                                  currency(COST_IMPACT_HIGHEST)),
-    COST_IMPACT_MOSTLIKELY = paste0("<p style = 
+    COST_MEAN = paste0("<p style = 
                                     'font-family: Arial Narrow;font-size:8pt'>",
-                                    "Most Likely","</p>", 
-                                    currency(COST_IMPACT_MOSTLIKELY)),
+                                    "Mean","</p>", 
+                                    currency(COST_MEAN)),
     SCHEDULE_IMPACT_HIGHEST = paste0("<p style = 
                                    'font-family: Arial Narrow;font-size:8pt'>",
                                    "Highest","</p>",
@@ -303,10 +325,10 @@ risk_item_table <- risk_item |>
                                     'font-family: Arial Narrow;font-size:8pt'>",
                                     "Lowest","</p>",
                                     SCHEDULE_IMPACT_LOWEST, " days"),
-    SCHEDULE_IMPACT_MOSTLIKELY = paste0("<p style = 
+    SCHEDULE_MEAN = paste0("<p style = 
                                     'font-family: Arial Narrow;font-size:8pt'>",
-                                    "Most Likely","</p>",
-                                    SCHEDULE_IMPACT_MOSTLIKELY, " days"),
+                                    "Mean","</p>",
+                                    SCHEDULE_MEAN, " days"),
     PERFORMANCE_IMPACT_DESC = paste0("<p style = 
                                         'font-family: Arial;font-size:8pt; 
                                      font-weight: bold'>",
@@ -333,7 +355,7 @@ costcolumn <-
   if (risk_item_table$NO_COST_IMPACT == 1) {
     c("No cost impact is anticipated","","","")
   } else if(risk_item_table$COST_IMPACT_DISTTYPE == 299){
-     c(risk_item_table$COST_IMPACT_MOSTLIKELY,"","","")
+     c(risk_item_table$COST_MEAN,"","","")
   } else if (risk_item_table$COST_IMPACT_DISTTYPE == 306) {
     c(
       risk_item_table$COST_IMPACT_LOWEST,
@@ -344,7 +366,7 @@ costcolumn <-
   } else if (risk_item_table$COST_IMPACT_DISTTYPE == 302) {
     c(
       risk_item_table$COST_IMPACT_LOWEST,
-      risk_item_table$COST_IMPACT_MOSTLIKELY,
+      risk_item_table$COST_MEAN,
       risk_item_table$COST_IMPACT_HIGHEST,
       risk_item_table$COST_IMPACT_EVIDENCE
     )
@@ -357,7 +379,7 @@ schedulecolumn <-
   if (risk_item_table$NO_SCHEDULE_IMPACT == 1) {
     c("No schedule impact is anticipated","","","")
   } else if (risk_item_table$SCHEDULE_IMPACT_DISTTYPE == 299) {
-    c(risk_item_table$SCHEDULE_IMPACT_MOSTLIKELY,"","","")
+    c(risk_item_table$SCHEDULE_MEAN,"","","")
   } else if (risk_item_table$SCHEDULE_IMPACT_DISTTYPE == 306) {
     c(
       risk_item_table$SCHEDULE_IMPACT_LOWEST,
@@ -368,7 +390,7 @@ schedulecolumn <-
   } else if (risk_item_table$SCHEDULE_IMPACT_DISTTYPE == 302) {
     c(
       risk_item_table$SCHEDULE_IMPACT_LOWEST,
-      risk_item_table$SCHEDULE_IMPACT_MOSTLIKELY,
+      risk_item_table$SCHEDULE_MEAN,
       risk_item_table$SCHEDULE_IMPACT_HIGHEST,
       risk_item_table$SCHEDULE_IMPACT_EVIDENCE
     )

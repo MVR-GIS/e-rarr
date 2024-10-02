@@ -1,0 +1,86 @@
+DISTRICT_ID,DISTRICT_CODE,DISTRICT_NAME,MSC,LIVESTAT,USER_UPDATED,DATE_LAST_UPDATED,EROC,MSC_ID,SME,LIBRARY,APT,ORGANIZATION_NAME,ORGANIZATION_VALUE
+1,LRB,Buffalo District,LRD,live,dawn.blanchard,10/21/2010,H5,4,yes,1,1,Buffalo District LRD LRB,LRB#LRD#H5
+2,LRC,Chicago District,LRD,live,dawn.blanchard,10/21/2010,H6,4,yes,1,1,Chicago District LRD LRC,LRC#LRD#H6
+3,LRE,Detroit District,LRD,live,dawn.blanchard,10/21/2010,H7,4,yes,1,1,Detroit District LRD LRE,LRE#LRD#H7
+4,LRH,Huntington District,LRD,live,dawn.blanchard,10/21/2010,H1,4,yes,1,1,Huntington District LRD LRH,LRH#LRD#H1
+5,LRL,Louisville District,LRD,live,dawn.blanchard,10/21/2010,H2,4,yes,1,1,Louisville District LRD LRL,LRL#LRD#H2
+6,LRN,Nashville District,LRD,live,dawn.blanchard,10/21/2010,H3,4,yes,1,1,Nashville District LRD LRN,LRN#LRD#H3
+7,LRP,Pittsburgh District,LRD,live,dawn.blanchard,10/21/2010,H4,4,yes,1,1,Pittsburgh District LRD LRP,LRP#LRD#H4
+8,MVK,Vicksburg District,MVD,live,dawn.blanchard,10/21/2010,B4,5,yes,1,1,Vicksburg District MVD MVK,MVK#MVD#B4
+9,MVM,Memphis District,MVD,live,dawn.blanchard,10/21/2010,B1,5,yes,1,1,Memphis District MVD MVM,MVM#MVD#B1
+10,MVN,New Orleans District,MVD,live,dawn.blanchard,10/21/2010,B2,5,yes,1,1,New Orleans District MVD MVN,MVN#MVD#B2
+11,MVP,St. Paul District,MVD,live,dawn.blanchard,10/21/2010,B6,5,yes,1,1,St. Paul District MVD MVP,MVP#MVD#B6
+12,MVR,Rock Island District,MVD,live,dawn.blanchard,10/21/2010,B5,5,yes,1,1,Rock Island District MVD MVR,MVR#MVD#B5
+13,MVS,St. Louis District,MVD,live,dawn.blanchard,10/21/2010,B3,5,yes,1,1,St. Louis District MVD MVS,MVS#MVD#B3
+14,NAB,Baltimore District,NAD,live,dawn.blanchard,10/21/2010,E1,6,yes,1,1,Baltimore District NAD NAB,NAB#NAD#E1
+15,NAE,New England District,NAD,live,dawn.blanchard,10/21/2010,E6,6,yes,1,1,New England District NAD NAE,NAE#NAD#E6
+16,NAN,New York District,NAD,live,dawn.blanchard,10/21/2010,E3,6,yes,1,1,New York District NAD NAN,NAN#NAD#E3
+17,NAO,Norfolk District,NAD,live,dawn.blanchard,10/21/2010,E4,6,yes,1,1,Norfolk District NAD NAO,NAO#NAD#E4
+18,NAP,Philadelphia District,NAD,live,dawn.blanchard,10/21/2010,E5,6,yes,1,1,Philadelphia District NAD NAP,NAP#NAD#E5
+19,NWK,Kansas City District,NWD,live,dawn.blanchard,10/21/2010,G5,7,yes,1,1,Kansas City District NWD NWK,NWK#NWD#G5
+20,NWO,Omaha District,NWD,live,dawn.blanchard,10/21/2010,G6,7,yes,1,1,Omaha District NWD NWO,NWO#NWD#G6
+21,NWP,Portland District,NWD,live,dawn.blanchard,10/21/2010,G2,7,yes,1,1,Portland District NWD NWP,NWP#NWD#G2
+23,NWW,Walla Walla District,NWD,live,dawn.blanchard,10/21/2010,G4,7,yes,1,1,Walla Walla District NWD NWW,NWW#NWD#G4
+24,POA,Alaska District,POD,live,dawn.blanchard,10/21/2010,J4,8,yes,1,1,Alaska District POD POA,POA#POD#J4
+26,SAC,Charleston District,SAD,live,dawn.blanchard,10/21/2010,K2,9,yes,1,1,Charleston District SAD SAC,SAC#SAD#K2
+27,SAJ,Jacksonville District,SAD,live,dawn.blanchard,10/21/2010,K3,9,yes,1,1,Jacksonville District SAD SAJ,SAJ#SAD#K3
+29,SAS,Savannah District,SAD,live,dawn.blanchard,10/21/2010,K6,9,yes,1,1,Savannah District SAD SAS,SAS#SAD#K6
+31,SPA,Albuquerque District,SPD,live,dawn.blanchard,10/21/2010,L4,10,yes,1,1,Albuquerque District SPD SPA,SPA#SPD#L4
+32,SPK,Sacramento District,SPD,live,dawn.blanchard,10/21/2010,L2,10,yes,1,1,Sacramento District SPD SPK,SPK#SPD#L2
+34,SPN,San Francisco District,SPD,live,dawn.blanchard,10/21/2010,L3,10,yes,1,1,San Francisco District SPD SPN,SPN#SPD#L3
+35,SWF,Ft. Worth District,SWD,live,dawn.blanchard,10/21/2010,M2,11,yes,1,1,Ft. Worth District SWD SWF,SWF#SWD#M2
+37,SWL,Little Rock District,SWD,live,dawn.blanchard,10/21/2010,M4,11,yes,1,1,Little Rock District SWD SWL,SWL#SWD#M4
+38,SWT,Tulsa District,SWD,live,dawn.blanchard,10/21/2010,M5,11,yes,1,1,Tulsa District SWD SWT,SWT#SWD#M5
+40,IWR,Institute for Water Resources,IWR,live,dawn.blanchard,10/21/2010,Q0,3,yes,1,0,Institute for Water Resources IWR,IWR#WRC#Q0
+42,HEC,Hydrologic Engineering Center,IWR,live,dawn.blanchard,10/26/2010,Q0,3,yes,1,0,Hydrologic Engineering Center IWR HEC,HEC#IWR#Q0
+43,NAU,Europe District,NAD,live,dawn.blanchard,10/27/2010,E7,6,yes,1,1,Europe District NAD NAU,NAU#NAD#E7
+44,POF,Far East District,POD,live,dawn.blanchard,10/27/2010,J1,8,yes,1,1,Far East District POD POF,POF#POD#J1
+46,AED,Afghanistan Engineer District - North,TAD,del,ethan.grayson,10/2/2013,N2,13,no,0,0,Afghanistan Engineer District - North TAD AED,AED#TAD#N2
+48,GRD,Gulf Region District,TAD,live,dawn.blanchard,10/27/2010,P0,13,yes,1,0,Gulf Region District TAD GRD,GRD#TAD#P0
+49,TAM,Middle East District,TAD,live,dawn.blanchard,10/27/2010,N0,13,yes,1,0,Middle East District TAD TAM,TAM#TAD#N0
+50,Other,Other District,Other,del,dawn.blanchard,10/29/2010,NA,0,no,0,0,Other District Other Other,Other#Other#
+52,LRD,Great Lakes & Ohio River Division,LRD,live,rose.rankin,2/8/2011,H0,4,yes,1,1,Great Lakes & Ohio River Division LRD LRD,LRD#LRD#H0
+54,NAD,North Atlantic Division,NAD,live,rose.rankin,2/8/2011,E0,6,yes,1,1,North Atlantic Division NAD NAD,NAD#NAD#E0
+55,NWD,Northwestern Division,NWD,live,rose.rankin,2/8/2011,G0,7,yes,1,1,Northwestern Division NWD NWD,NWD#NWD#G0
+57,SAD,South Atlantic Division,SAD,live,rose.rankin,2/8/2011,K0,9,yes,1,1,South Atlantic Division SAD SAD,SAD#SAD#K0
+58,SPD,South Pacific Division,SPD,live,rose.rankin,2/8/2011,L0,10,yes,1,1,South Pacific Division SPD SPD,SPD#SPD#L0
+60,TAD,Transatlantic Division,TAD,live,rose.rankin,2/8/2011,N0,13,yes,1,0,Transatlantic Division TAD TAD,TAD#TAD#N0
+63,RMC,Risk Management Center,IWR,live,diana.hallman,10/31/2013,Q0,3,yes,1,0,Risk Management Center IWR RMC,RMC#IWR#Q0
+64,NDC,Navigation and Civil Works Decision Support Center,IWR,live,diana.hallman,10/31/2013,Q0,3,yes,1,0,Navigation and Civil Works Decision Support Center IWR NDC,NDC#IWR#Q0
+66,PCX-DDN,Deep Draft Navigation Planning Center of Expertise,PCX,live,diana@wwsc.us,3/5/2014,NA,15,no,1,0,Deep Draft Navigation Planning Center of Expertise PCX PCX-DDN,PCX-DDN#PCX#
+67,PCX,Planning Center of Expertise,PCX,live,diana@wwsc.us,3/5/2014,NA,15,no,1,0,Planning Center of Expertise PCX PCX,PCX#PCX#
+69,PCX-FRM,Flood Risk Management Planning Center of Expertise,PCX,live,diana@wwsc.us,3/5/2014,NA,15,no,1,0,Flood Risk Management Planning Center of Expertise PCX PCX-FRM,PCX-FRM#PCX#
+71,PCX-WMR,Water Management and Reallocation Planning Center of Expertise,PCX,live,diana@wwsc.us,3/5/2014,NA,15,no,1,0,Water Management and Reallocation Planning Center of Expertise PCX PCX-WMR,PCX-WMR#PCX#
+72,AGC,Army Geospatial Center,AGC,live,diana@wwsc.us,3/5/2014,NA,18,no,1,0,Army Geospatial Center AGC AGC,AGC#AGC#
+74,CX-ATR,Civil Works Cost Engineering and Agency Technical Review,CX,live,diana@wwsc.us,3/5/2014,NA,16,no,1,0,Civil Works Cost Engineering and Agency Technical Review CX CX-ATR,CX-ATR#CX#
+76,CX-JAL,Joint Airborne Lidar Bathymetry Center,CX,live,diana@wwsc.us,3/5/2014,NA,16,no,1,0,Joint Airborne Lidar Bathymetry Center CX CX-JAL,CX-JAL#CX#
+77,CX-MDC,Marine Design Center,CX,live,diana@wwsc.us,3/5/2014,NA,16,no,1,0,Marine Design Center CX CX-MDC,CX-MDC#CX#
+79,CX-GIS,Water Resources Remote Sensing/Geographic Information Systems Center,CX,live,diana@wwsc.us,3/5/2014,NA,16,no,1,0,Water Resources Remote Sensing/Geographic Information Systems Center CX CX-GIS,CX-GIS#CX#
+81,CRSubCoP,Cultural Resources Sub-CoP,PCoP,live,diana@wwsc.us,3/5/2014,NA,17,no,1,0,Cultural Resources Sub-CoP PCoP CRSubCoP,CRSubCoP#PCoP#
+83,EcoSubCoP,Ecosystem Restoration Sub-CoP,PCoP,live,diana@wwsc.us,3/5/2014,NA,17,no,1,0,Ecosystem Restoration Sub-CoP PCoP EcoSubCoP,EcoSubCoP#PCoP#
+101,ASACW,Assistant Secretary of the Army (Civil Works),Other,live,Erin.L.Rooks@usace.army.mil,4/11/2017 3:50 PM,99,0,yes,1,0,NA,NA
+22,NWS,Seattle District,NWD,live,dawn.blanchard,10/21/2010,G3,7,yes,1,1,Seattle District NWD NWS,NWS#NWD#G3
+25,POH,Honolulu District,POD,live,dawn.blanchard,10/21/2010,J3,8,yes,1,1,Honolulu District POD POH,POH#POD#J3
+28,SAM,Mobile District,SAD,live,dawn.blanchard,10/21/2010,K5,9,yes,1,1,Mobile District SAD SAM,SAM#SAD#K5
+30,SAW,Wilmington District,SAD,live,dawn.blanchard,10/21/2010,K7,9,yes,1,1,Wilmington District SAD SAW,SAW#SAD#K7
+33,SPL,Los Angeles District,SPD,live,dawn.blanchard,10/21/2010,L1,10,yes,1,1,Los Angeles District SPD SPL,SPL#SPD#L1
+36,SWG,Galveston District,SWD,live,dawn.blanchard,10/21/2010,M3,11,yes,1,1,Galveston District SWD SWG,SWG#SWD#M3
+39,ERDC,Engineer Research and Development Center,ERDC,live,dawn.blanchard,10/21/2010,U4,12,yes,1,0,Engineer Research and Development Center ERDC ERDC,ERDC#ERDC#U4
+41,HQ,Headquarters U.S. Army Corps of Engineers,HQ,live,dawn.blanchard,10/21/2010,S0,2,yes,1,0,Headquarters U.S. Army Corps of Engineers HQ HQ,HQ#HQ#S0
+45,POJ,Japan Engineer District,POD,live,dawn.blanchard,10/27/2010,J2,8,yes,1,1,Japan Engineer District POD POJ,POJ#POD#J2
+47,AES,Afghanistan Engineer District - South,TAD,live,dawn.blanchard,10/27/2010,N2,13,yes,1,0,Afghanistan Engineer District - South TAD AES,AES#TAD#N2
+51,HNC,"Engineering and Support Center, Huntsville",HNC,live,erin.rooks,8/9/2013,A0,1,yes,1,0,"Engineering and Support Center, Huntsville HNC HNC",HNC#HNC#A0
+53,MVD,Mississippi Valley Division,MVD,live,rose.rankin,2/8/2011,B0,5,yes,1,1,Mississippi Valley Division MVD MVD,MVD#MVD#B0
+56,POD,Pacific Ocean Division,POD,live,rose.rankin,2/8/2011,J0,8,yes,1,1,Pacific Ocean Division POD POD,POD#POD#J0
+59,SWD,Southwestern Division,SWD,live,rose.rankin,2/8/2011,M0,11,yes,1,1,Southwestern Division SWD SWD,SWD#SWD#M0
+61,WCS,Waterborne Commerce Statistics Center,IWR,live,admin,3/2/2011,Q0,3,yes,1,0,Waterborne Commerce Statistics Center IWR WCS,WCS#IWR#Q0
+65,PCX-CSR,Coastal Storm Risk Management Planning Center of Expertise,PCX,live,diana@wwsc.us,3/5/2014,NA,15,no,1,0,Coastal Storm Risk Management Planning Center of Expertise PCX PCX-CSR,PCX-CSR#PCX#
+68,PCX-ECO,Ecosystem Restoration Planning Center of Expertise,PCX,live,diana@wwsc.us,3/5/2014,NA,15,no,1,0,Ecosystem Restoration Planning Center of Expertise PCX PCX-ECO,PCX-ECO#PCX#
+70,PCX-INN,Inland Navigation Planning Center of Expertise,PCX,live,diana@wwsc.us,3/5/2014,NA,15,no,1,0,Inland Navigation Planning Center of Expertise PCX PCX-INN,PCX-INN#PCX#
+73,CX-CPC,Collaboration and Public Participation Center of Expertise CPCX,CX,live,diana@wwsc.us,3/5/2014,NA,16,no,1,0,Collaboration and Public Participation Center of Expertise CPCX CX CX-CPC,CX-CPC#CX#
+75,CX-HYD,Hydroelectric Design Center,CX,live,diana@wwsc.us,3/5/2014,NA,16,no,1,0,Hydroelectric Design Center CX CX-HYD,CX-HYD#CX#
+78,CX-RES,Real Estate Systems National Center,CX,live,diana@wwsc.us,3/5/2014,NA,16,no,1,0,Real Estate Systems National Center CX CX-RES,CX-RES#CX#
+80,PCOP,Planning Community of Practice,PCoP,live,diana@wwsc.us,3/5/2014,NA,17,no,1,0,Planning Community of Practice PCoP PCOP,PCOP#PCoP#
+82,EconSubCoP,Economics Sub-CoP,PCoP,live,diana@wwsc.us,3/5/2014,NA,17,no,1,0,Economics Sub-CoP PCoP EconSubCoP,EconSubCoP#PCoP#
+84,PlanSubCoP,Plan Formulation Sub-CoP,PCoP,live,diana@wwsc.us,3/5/2014,NA,17,no,1,0,Plan Formulation Sub-CoP PCoP PlanSubCoP,PlanSubCoP#PCoP#
+121,SAA,Caribbean Engineer District,SAD,live,diana.hallman@usace.army.mil,7/17/2024 5:18 PM,K8,9,yes,1,1,Caribbean Engineer District SAD SAA,SAA#SAD#KX

@@ -40,7 +40,8 @@ connect_string <- paste0(
  
 con_roracle <- ROracle::dbConnect(drv, 
                                   username = user_name, 
-                                  password = keyring::key_get(key_service, user_name),
+                                  password = keyring::key_get(key_service, 
+                                                              user_name),
                                   dbname   = connect_string)
 ```
 
@@ -57,10 +58,14 @@ risk_transact          <- ROracle::dbReadTable(con_roracle,
                                              "ERR_RISKTRANSACTIONLIST_FULL")
 risk_treat <- ROracle::dbReadTable(con_roracle, 
                                              "ERR_RISKTREATMENTLIST_FULL")
-erisk_orgs      <- ROracle::dbReadTable(con_roracle, 
-                                             "ERR_TBLUSACEORGS")
+erisk_orgs          <- ROracle::dbReadTable(con_roracle,
+                                              "ERR_USACEORGANIZATION")
+erisk_msc      <- ROracle::dbReadTable(con_roracle,
+                                               "ERR_TBLMSC")
+erisk_dist <- ROracle::dbReadTable(con_roracle,
+                                               "ERR_TBLDISTRICT")
 risk_modeled <-ROracle::dbReadTable(con_roracle, 
-                                             "ERR_RISKMODELED")
+                                             "ERR_RISK_MODELED")
 
 # Disconnect from the database
 ROracle::dbDisconnect(con_roracle)
@@ -73,6 +78,8 @@ readr::write_csv(erisk_item,"C:/workspace/erarr/inst/app/data/erisk_item.csv")
 readr::write_csv(risk_transact,"C:/workspace/erarr/inst/app/data/risk_transact.csv")
 readr::write_csv(risk_treat,"C:/workspace/erarr/inst/app/data/risk_treat.csv")
 readr::write_csv(erisk_orgs,"C:/workspace/erarr/inst/app/data/erisk_orgs.csv")
+readr::write_csv(erisk_dist,"C:/workspace/erarr/inst/app/data/erisk_dist.csv")
+readr::write_csv(erisk_msc,"C:/workspace/erarr/inst/app/data/erisk_msc.csv")
 readr::write_csv(risk_modeled,"C:/workspace/erarr/inst/app/data/erisk_modeled.csv")
 
 usethis::use_data(erisk_project,
