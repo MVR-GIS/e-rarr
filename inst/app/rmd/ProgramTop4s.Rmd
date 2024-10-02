@@ -176,7 +176,7 @@ cat("###",header,header2)
 #### Top 4 Cost Impacts (All Phases)
 ``` {r cost risk log, echo = FALSE, warning=FALSE}
 cost_top4s<-proj_risks |>
-  mutate(MAX_COST = pmax(COST_IMPACT_LOWEST, COST_IMPACT_MOSTLIKELY, 
+  mutate(MAX_COST = pmax(COST_IMPACT_LOWEST, COST_MEAN, 
                          COST_IMPACT_HIGHEST))|>
   arrange(desc(COST_RISK_RANKING), desc(MAX_COST), desc(PROB_OCCURRENCE))|>
       dplyr::select(RISK_IDENTIFIER, RISK_NAME, RISKCATEGORY , MILESTONE , 
@@ -194,7 +194,7 @@ cost_top4s
 #### Top 4 Schedule Impacts (All Phases)
 ``` {r schedule risk log, echo = FALSE, warning=FALSE}
 schedule_top4s<-proj_risks |>
-   mutate(MAX_SCHED = pmax(SCHEDULE_IMPACT_LOWEST, SCHEDULE_IMPACT_MOSTLIKELY, SCHEDULE_IMPACT_HIGHEST))|>
+   mutate(MAX_SCHED = pmax(SCHEDULE_IMPACT_LOWEST, SCHEDULE_MEAN, SCHEDULE_IMPACT_HIGHEST))|>
   arrange(desc(SCHEDULE_RISK_RANKING), desc(MAX_SCHED), desc(PROB_OCCURRENCE))|>
       dplyr::select(RISK_IDENTIFIER, RISK_NAME, RISKCATEGORY , MILESTONE , 
                     LIKELIHOOD, MAX_SCHED) |>
