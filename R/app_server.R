@@ -14,6 +14,7 @@
 #' @importFrom shinyalert shinyalert
 #' @importFrom formattable currency
 #' @importFrom readr read_csv
+
 #'
 library(shiny)
 library(readr)
@@ -25,6 +26,7 @@ library(shinyalert)
 library(bslib)
 library(shinyjs)
 library(formattable)
+
 
 erisk_item <-read_csv("./inst/app/data/erisk_item.csv",
                       show_col_types = FALSE)
@@ -39,7 +41,6 @@ erisk_dist <-read_csv("./inst/app/data/erisk_dist.csv",
                       show_col_types = FALSE)
 erisk_archive <- read_csv("./inst/app/data/erisk_modeled.csv",
                           show_col_types=FALSE)
-
 erisk_mean <- erisk_archive|>
   dplyr::select(COST_MEAN, SCHEDULE_MEAN,OUTCOME_MEAN,PROJECT_ID,RISK_ID)
 
@@ -74,6 +75,7 @@ RiskImpactTable <- risk_item_db |>
                                     P2_SUB_IDENTIFIER)) |>
   mutate(RISK_NAME_ID = paste(RISK_IDENTIFIER,RISK_NAME))
 
+
 risk_proj_orgs <- risk_item_db |>
   inner_join(project_orgs|>
             select(PROJECT_ID, PRIMARYMISSION,MSC,MSC_DESCRIPT,PROGRAMTYPENAME
@@ -99,6 +101,8 @@ riskpies <- risk_proj_orgs |>
                                     P2_SUB_IDENTIFIER)) |>
   mutate(RISK_NAME_ID = paste(RISK_IDENTIFIER,RISK_NAME))|>
   mutate(RISK_NAME_ID =str_trim(RISK_NAME_ID, side = c("right")))
+
+
 
 
 
@@ -135,6 +139,7 @@ app_server <- function(input, output, session) {
   update_choices <- function(input_id, choices) {
     updateSelectizeInput(session, input_id, choices = c("", choices), 
                          selected = "")}
+
   
 
 
@@ -149,6 +154,7 @@ app_server <- function(input, output, session) {
   
 ### Division Level Reports
  
+
   MSCs <- reactive({setNames(as.list(project_orgs$MSC), project_orgs$MSC_DESCRIPT)
     })
   
@@ -346,6 +352,7 @@ app_server <- function(input, output, session) {
   proj_perform <-reactive({projframe() |>
       group_by(PROJECT_NAME,PROJECT_ID,P2_NUMBER)|>
       summarise(Count = n(), .groups = 'drop')
+
   })
   
   
@@ -359,6 +366,7 @@ app_server <- function(input, output, session) {
              Potential_Mean_Schedule_Impact)
   })
   
+
   proj_filt_frame <- reactive({  
     frame<-projects_comb()
     indexes <- req(input$projoverview_rows_all)
