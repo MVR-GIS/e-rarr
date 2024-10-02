@@ -53,21 +53,35 @@ risk_item_db<-data.frame(erisk_item)
 erisk_project <- utils::read.csv("../data/erisk_project.csv")
 risk_project_db<-data.frame(erisk_project)
 erisk_orgs <-read_csv("../data/erisk_orgs.csv",show_col_types = FALSE)
+erisk_archive <- read_csv("../data/erisk_modeled.csv",
+                          show_col_types=FALSE)
+erisk_msc <-read_csv("../data/erisk_msc.csv",
+                     show_col_types = FALSE)
+erisk_dist <-read_csv("../data/erisk_dist.csv",
+                      show_col_types = FALSE)
+erisk_archive <- read_csv("../data/erisk_modeled.csv",
+                          show_col_types=FALSE)
 
 
+erisk_mean <- erisk_archive|>
+  dplyr::select(COST_MEAN, SCHEDULE_MEAN,OUTCOME_MEAN,PROJECT_ID,RISK_ID)
+
+
+erisk_orgs_div <- erisk_orgs_div |>
+  dplyr::select(DISTRICT_CODE,MSC_ID)
+
+erisk_msc_orgs <- erisk_orgs_div |>
+  inner_join(erisk_msc, by = join_by(MSC_ID), keep = FALSE)
 
 project_orgs <- erisk_project |>
-  left_join(erisk_orgs, by=join_by(DISTRICT_CODE))
-
-
-# risk_item_db<-risk_item_db |>
-#   dplyr::left_join(risk_project_db|>
-#               dplyr::select(PROJECT_ID, PRIMARYMISSION))
+  inner_join(erisk_msc_orgs|>
+             select(MSC, MSC_DESCRIPT, DISTRICT_CODE), by=join_by(DISTRICT_CODE), keep=FALSE)
 
 risk_proj_orgs <- risk_item_db |>
   left_join(project_orgs|>
-            select(PROJECT_ID, PRIMARYMISSION,MSC,DISTRICT_NAME, PROGRAMTYPENAME
-                   ),  by=join_by(PROJECT_ID))
+            select(PROJECT_ID, PRIMARYMISSION,MSC,PROGRAMTYPENAME
+                   ),  by=join_by(PROJECT_ID))|>
+  left_join(erisk_mean, by = join_by(PROJECT_ID,RISK_ID))
 
 
 
@@ -75,13 +89,13 @@ risk_proj_orgs <- risk_item_db |>
 program_risks <- risk_proj_orgs |>
   dplyr::select("MSC","USACE_ORGANIZATION","P2_PROGRAM_CODE","PROGRAMTYPENAME",
                 "PRIMARYMISSION","DISCIPLINE","RISKCATEGORY","LIFECYCLEPHASENAME",
-                "MILESTONE","PROJECT_ID","PROGRAM_ID","PROJECT_NAME",
+                "MILESTONE","PROJECT_ID","PROJECT_NAME",
                 "P2_NUMBER","RISK_NAME","RISK_STATEMENT","LIKELIHOOD",
                 "PROB_OCCURRENCE", "PERFORMANCEIMPACT","PERFORMANCEIMPACT_IMPCT",
                 "PERFORMANCE_RANK_DESC", "PERFORMANCEIMPACT_RISK_RANKING",
-                "COST_IMPACT_LOWEST","COST_IMPACT_MOSTLIKELY",
+                "COST_IMPACT_LOWEST","COST_MEAN",
                 "COST_IMPACT_HIGHEST","COST_RANK_DESC","COST_RISK_RANKING",
-                "SCHEDULE_IMPACT_LOWEST","SCHEDULE_IMPACT_MOSTLIKELY",
+                "SCHEDULE_IMPACT_LOWEST","SCHEDULE_MEAN",
                 "SCHEDULE_IMPACT_HIGHEST", "SCHEDULE_RANK_DESC", 
                 "SCHEDULE_RISK_RANKING")
 
