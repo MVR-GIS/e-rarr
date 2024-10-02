@@ -263,8 +263,7 @@ app_ui <- function(request) {
                                                   class="action-button",
                                                   tags$img(src="www/AllRiskDetail.png", 
                                                            height='165px', 
-                                                           max_width='100%')))
-                                    
+                                                           max_width='100%')))                   
                                   ),
                                   bslib::card(
                                     height = 165,

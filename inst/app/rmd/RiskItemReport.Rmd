@@ -99,7 +99,9 @@ risk_item_filt <- risk_item_db |>
   mutate(P2_NUMBER = as.numeric(P2_NUMBER))
 
   
+
 risk_modeled <- erisk_archive
+
 
 RiskImpactTable <- erisk_ItemProj |>
   select("RISK_ID","RISK_NAME_ID","RISK_NAME","RISK_IDENTIFIER","P2_NUMBER", "PROJECT_ID",

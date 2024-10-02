@@ -117,7 +117,6 @@ header2<-if (params$p2sub != ""){
 Risk_List_Proj <-filter(Risk_List_Proj, 
                         Risk_List_Proj$P2_SUB_IDENTIFIER == params$p2sub)
 Risk_List_Proj$COST_MEAN <- currency(Risk_List_Proj$COST_MEAN,format = "d")
-
 header2<-if (params$p2sub != ""){
   paste("SubID:", params$p2sub)}
 ```
