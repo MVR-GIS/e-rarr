@@ -26,14 +26,19 @@ library(bslib)
 library(shinyjs)
 library(formattable)
 
-erisk_item <-read_csv("./inst/app/data/erisk_item.csv",show_col_types = FALSE)
+erisk_item <-read_csv("./inst/app/data/erisk_item.csv",
+                      show_col_types = FALSE)
 risk_item_db <- data.frame(erisk_item)
 erisk_project <-read_csv("./inst/app/data/erisk_project.csv",
                          show_col_types = FALSE)
-erisk_orgs <-read_csv("./inst/app/data/erisk_orgs.csv",show_col_types = FALSE)
-erisk_msc <-read_csv("./inst/app/data/erisk_msc.csv",show_col_types = FALSE)
-erisk_dist <-read_csv("./inst/app/data/erisk_dist.csv",show_col_types = FALSE)
-erisk_archive <- read_csv("./inst/app/data/erisk_modeled.csv",show_col_types=FALSE)
+erisk_orgs <-read_csv("./inst/app/data/erisk_orgs.csv",
+                      show_col_types = FALSE)
+erisk_msc <-read_csv("./inst/app/data/erisk_msc.csv",
+                     show_col_types = FALSE)
+erisk_dist <-read_csv("./inst/app/data/erisk_dist.csv",
+                      show_col_types = FALSE)
+erisk_archive <- read_csv("./inst/app/data/erisk_modeled.csv",
+                          show_col_types=FALSE)
 
 erisk_mean <- erisk_archive|>
   dplyr::select(COST_MEAN, SCHEDULE_MEAN,OUTCOME_MEAN,PROJECT_ID,RISK_ID)
@@ -69,6 +74,11 @@ RiskImpactTable <- risk_item_db |>
                                     P2_SUB_IDENTIFIER)) |>
   mutate(RISK_NAME_ID = paste(RISK_IDENTIFIER,RISK_NAME))
 
+risk_proj_orgs <- risk_item_db |>
+  inner_join(project_orgs|>
+            select(PROJECT_ID, PRIMARYMISSION,MSC,MSC_DESCRIPT,PROGRAMTYPENAME
+                   ),  by=join_by(PROJECT_ID))|>
+  inner_join(erisk_mean, by = join_by(PROJECT_ID,RISK_ID))
 
 riskpies <- risk_proj_orgs |>
   dplyr::select("P2_NUMBER",
@@ -90,13 +100,6 @@ riskpies <- risk_proj_orgs |>
   mutate(RISK_NAME_ID = paste(RISK_IDENTIFIER,RISK_NAME))|>
   mutate(RISK_NAME_ID =str_trim(RISK_NAME_ID, side = c("right")))
 
-risk_proj_orgs <- risk_item_db |>
-  inner_join(project_orgs|>
-            select(PROJECT_ID, PRIMARYMISSION,MSC,MSC_DESCRIPT,PROGRAMTYPENAME
-                   ),  by=join_by(PROJECT_ID))|>
-  inner_join(erisk_mean, by = join_by(PROJECT_ID,RISK_ID))
-
-
 
 
 conditional <- function(condition, success) {
@@ -105,6 +108,7 @@ conditional <- function(condition, success) {
   else
     TRUE
 }
+
 
 condit_title <-function(condition, success) {
   if (condition)
@@ -291,8 +295,6 @@ app_server <- function(input, output, session) {
                          risk_proj_orgs$PROGRAMTYPENAME == input$ProgramTypeInput),
              conditional(input$MissionInput != "" , 
                          risk_proj_orgs$PRIMARYMISSION == input$MissionInput),
-             conditional(input$projdisInput !="",
-                         risk_proj_orgs$DISCIPLINE == input$projdisInput),
              conditional(input$projphaseInput !="",
                          risk_proj_orgs$LIFECYCLEPHASENAME == input$projphaseInput),
       )
@@ -327,8 +329,8 @@ app_server <- function(input, output, session) {
                          proj_orgs_table()$MILESTONE== input$projmileInput)
       )|>
       select(PROJECT_NAME,PROJECT_ID,P2_NUMBER,DISTRICT_CODE,PRIMARYMISSION,
-             COST_RANK_DESC,COST_IMPACT_MOSTLIKELY,SCHEDULE_RANK_DESC,
-             SCHEDULE_IMPACT_MOSTLIKELY,PERFORMANCE_RANK_DESC, COST_MEAN,SCHEDULE_MEAN)
+             COST_RANK_DESC,SCHEDULE_RANK_DESC,PERFORMANCE_RANK_DESC, COST_MEAN,
+             SCHEDULE_MEAN)
   })
   
   
