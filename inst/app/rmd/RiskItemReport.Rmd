@@ -3,7 +3,7 @@ title: "Risk Item Report"
 runtime: shiny
 output: html_document
 params:   
-  riskID: "ECV-2 Impacts due to Uncertain Bathymetric Data"
+  riskID: "OPS-4 Habitat and Vegetation Success"
   projID: Lee County Conservation Board CAP Sec 204
   p2ID: 	""
 ---
@@ -55,6 +55,7 @@ library(ggplot2)
 library(formattable)
 library(english)
 library(stringr)
+library(lubridate)
 ```
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, include=FALSE}
@@ -452,38 +453,40 @@ kable_styling() |>
 add_header_above(c("Measures" = 2, "Impacts" = 2, "Implemented" = 1))
 ```
 
-```{r risk log, echo = FALSE, warning=FALSE, eval= FALSE}
-risk_log<-data.frame(risk_transact)
-risk_log<-risk_log %>%
-  mutate('costcolor' = case_when(COST_RISK_RANKING == 0 ~ '#ffffff',
-  COST_RISK_RANKING == 1 ~ '#1F78B4',
-  COST_RISK_RANKING == 2 ~'#33A02C', 
-  COST_RISK_RANKING == 3 ~'#FF7F00',
-  COST_RISK_RANKING ==  4 ~ '#E31A1C')) %>%
-  mutate('schedulecolor' = case_when(SCHEDULE_RISK_RANKING == 0 ~ '#ffffff',
-  SCHEDULE_RISK_RANKING == 1 ~ '#1F78B4',
-  SCHEDULE_RISK_RANKING == 2 ~'#33A02C', 
-  SCHEDULE_RISK_RANKING == 3 ~'#FF7F00',
-  SCHEDULE_RISK_RANKING ==  4 ~ '#E31A1C')) %>%
-  mutate('performancecolor' = case_when(PERFORMANCEIMPACT_RISK_RANKING == 0 ~ '#ffffff',
-  PERFORMANCEIMPACT_RISK_RANKING == 1 ~ '#1F78B4',
-  PERFORMANCEIMPACT_RISK_RANKING == 2 ~'#33A02C', 
-  PERFORMANCEIMPACT_RISK_RANKING == 3 ~'#FF7F00',
-  PERFORMANCEIMPACT_RISK_RANKING == 4 ~ '#E31A1C'))%>%
-  mutate(TREAT_IMPLEMENT_IMG = if_else(is.na(treat_condit), "", checkimagepath))
+```{r risk log, echo = FALSE, warning=FALSE}
+risk_log<-data.frame(risk_item_transact)
+risk_log<-risk_log |>
+mutate(across(c(COST_RISK_RANKING, SCHEDULE_RISK_RANKING, PERFORMANCEIMPACT_RISK_RANKING), 
+                ~ case_when(
+                  . == 0 ~ '#ffffff',
+                  . == 1 ~ '#1F78B4',
+                  . == 2 ~ '#33A02C',
+                  . == 3 ~ '#FF7F00',
+                  . == 4 ~ '#E31A1C'),
+                .names = "{.col}color")) |>
+  mutate(TREAT_IMPLEMENT_IMG = if_else(is.na(TREATMENTS_IMPLEMENTED), "", checkimagepath))
          
 
-risk_log_table<-risk_log |>
-  select(DATE_TIME, REASON, RISK_LOG_NOTE, TREAT_IMPLEMENT_IMG, COST_RISK_RANKING, SCHEDULE_RISK_RANKING, PERFORMANCEIMPACT_RISK_RANKING, costcolor, schedulecolor, performancecolor )
+risk_log_table <- risk_log |>
+  select(DATE_TIME, REASON, RISK_LOG_NOTE, TREAT_IMPLEMENT_IMG, 
+         COST_RISK_RANKING, SCHEDULE_RISK_RANKING, PERFORMANCEIMPACT_RISK_RANKING, 
+         ends_with("color")) |>
+  mutate(DATE_TIME = mdy_hm(DATE_TIME)) |>
+  arrange(DATE_TIME)
 
-risk_log_table$TREAT_IMPLEMENT_IMG = sprintf("![](%s)", risk_log_table$TREAT_IMPLEMENT_IMG)
-risk_log_table[1:10]|>
+risk_log_table$TREAT_IMPLEMENT_IMG <- sprintf("![](%s)", risk_log_table$TREAT_IMPLEMENT_IMG)
+
+risk_log_table[1:10] |>
   mutate(
-    COST_RISK_RANKING = cell_spec(COST_RISK_RANKING, "html", color = costcolor, align = 'c', background = costcolor),
-    SCHEDULE_RISK_RANKING = cell_spec(SCHEDULE_RISK_RANKING, "html", color = schedulecolor, align = 'c', background = schedulecolor),
-      PERFORMANCEIMPACT_RISK_RANKING = cell_spec(PERFORMANCEIMPACT_RISK_RANKING, "html", color = performancecolor, align = 'c', background = performancecolor) ) |>
-  select(DATE_TIME, REASON,RISK_LOG_NOTE, TREAT_IMPLEMENT_IMG, COST_RISK_RANKING, SCHEDULE_RISK_RANKING, PERFORMANCEIMPACT_RISK_RANKING) |>
-  kbl(format = "html", escape = F, col.names =c("Edit Date", "Reason for Change", "Risk Log Note",  "Measures Implemented", "Cost","Schedule","Performance"), align="lllcccc")|>
+    across(c(COST_RISK_RANKING, SCHEDULE_RISK_RANKING, PERFORMANCEIMPACT_RISK_RANKING),
+           ~ cell_spec(., "html", color = get(paste0(cur_column(), "color")), align = 'c', 
+                       background = get(paste0(cur_column(), "color"))))) |>
+  select(DATE_TIME, REASON, RISK_LOG_NOTE, TREAT_IMPLEMENT_IMG, 
+         COST_RISK_RANKING, SCHEDULE_RISK_RANKING, PERFORMANCEIMPACT_RISK_RANKING) |>
+  kbl(format = "html", escape = FALSE, 
+      col.names = c("Edit Date", "Reason for Change", "Risk Log Note", "Measures Implemented", 
+                     "Cost", "Schedule", "Performance"), 
+      align = "lllcccc") |>
   kable_styling(bootstrap_options = c("condensed"))
 ```
 
