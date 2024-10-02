@@ -14,7 +14,6 @@
 #' @importFrom shinyalert shinyalert
 #' @importFrom formattable currency
 #' @importFrom readr read_csv
-
 #'
 library(shiny)
 library(readr)
@@ -473,9 +472,13 @@ app_server <- function(input, output, session) {
   
   
   observeEvent(riskitems(),{
-    update_choices("riskInput",sort(unique(risks()$RISK_NAME_ID)))
-  })
-  
+    sorted_choices <- riskitems() |>
+      separate(RISK_IDENTIFIER, c("code", "rnkorder"), sep = "-", remove = FALSE) |>
+      arrange(as.numeric(rnkorder))|>
+      pull(RISK_NAME_ID)
+    update_choices("riskInput",sorted_choices)
+    })
+ 
   riskitems <- reactive({
     RiskImpactTable |>
       filter(
@@ -486,7 +489,6 @@ app_server <- function(input, output, session) {
       )
   })
   
-
 
   observeEvent(riskitems(),
                {
