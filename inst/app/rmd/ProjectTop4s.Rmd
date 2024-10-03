@@ -8,7 +8,7 @@ params:
   p2sub: ""
 ---
 
-```{css, echo=FALSE}
+```{css formatting, echo=FALSE}
  h2,h3, h5,h7 {
   text-align: center;
 }
@@ -35,7 +35,7 @@ body {-webkit-print-color-adjust: exact;}
 }
 ```
 
-```{r echo=FALSE, message=FALSE, warning=FALSE, include=FALSE}
+```{r load in data, echo=FALSE, message=FALSE, warning=FALSE, include=FALSE}
 library(readr)
 library(dplyr) 
 library(kableExtra) 
@@ -49,7 +49,7 @@ erisk_item <- readr::read_csv("../data/erisk_item.csv")
 risk_item_db<-data.frame(erisk_item)
 erisk_project <- readr::read_csv("../data/erisk_project.csv")
 risk_project_db<-data.frame(erisk_project)
-erisk_archive <- read_csv("../data/erisk_modeled.csv",
+erisk_archive <- readr::read_csv("../data/erisk_modeled.csv",
                           show_col_types=FALSE)
 
 
@@ -69,42 +69,34 @@ RiskDeets <- risk_item_db |>
 
 ```
 
+```{r filter projs, echo=FALSE, eval = params$projID != "" | params$p2ID != "" | params$p2sub != ""}
+# Initialize Risk_List_Proj as the complete dataset
+Risk_List_Proj <- RiskDeets
 
+# Apply filters based on available parameters
+if (params$projID != "") {
+  proj_risks <- dplyr::filter(Risk_List_Proj, PROJECT_NAME == params$projID)
+  header <- paste("Project:", Risk_List_Proj$PROJECT_NAME[1])
+}
 
-```{r echo=FALSE, eval = params$projID != ""}
-Risk_List_Proj <-dplyr::filter(RiskDeets, RiskDeets$PROJECT_NAME == params$projID)
+if (params$p2ID != "") {
+  proj_risks<- dplyr::filter(Risk_List_Proj, P2_NUMBER == params$p2ID)
+  header <- paste("P2 Number:", Risk_List_Proj$P2_NUMBER[1])
+}
 
+if (params$p2sub != "") {
+  proj_risks<- dplyr::filter(Risk_List_Proj, P2_SUB_IDENTIFIER == params$p2sub)
+  header <- paste("SubID:", params$p2sub)
+}
 
-proj_risks<-dplyr::filter(Risk_List_Proj, Risk_List_Proj$PROJECT_NAME == params$projID)
+# Conditional header2 assignment
+header2 <- if (params$p2sub != "") {
+  paste("SubID:", params$p2sub)
+} else {
+  ""
+}
+
 proj_risk_item<- dplyr::slice_head(Risk_List_Proj)
-header<-paste("Project:",proj_risk_item$PROJECT_NAME)
-header2<-if (params$p2sub != ""){
-  paste("SubID:",params$p2sub)}
-```
-
-```{r echo=FALSE, eval = params$p2ID != ""}
-Risk_List_Proj <-dplyr::filter(RiskDeets, RiskDeets$P2_NUMBER == params$p2ID)
-
-
-proj_risks<-dplyr::filter(Risk_List_Proj, Risk_List_Proj$P2_NUMBER == params$p2ID)
-proj_risk_item<- dplyr::slice_head(Risk_List_Proj)
-header<-paste("P2 Number:",proj_risk_item$P2_NUMBER)
-header2<-if (params$p2sub != ""){
-  paste("SubID:",params$p2sub)}
-
-
-```
-
-```{r echo=FALSE, eval = params$p2sub != ""}
-Risk_List_Proj <-dplyr::filter(Risk_List_Proj, Risk_List_Proj$P2_SUB_IDENTIFIER == params$p2sub)
-
-
-proj_risks<-dplyr::filter(Risk_List_Proj, Risk_List_Proj$P2_SUB_IDENTIFIER == params$p2sub)
-proj_risk_item<- dplyr::slice_head(Risk_List_Proj)
-header<-paste("Project:",proj_risk_item$PROJECT_NAME)
-header2<-if (params$p2sub != ""){
-  paste("SubID:",params$p2sub)}
-
 ```
 
 ###### Report Created On: `r format(Sys.time(), '%d %B, %Y')`
