@@ -189,7 +189,7 @@ wrangled_table <- proj_risks %>%
 
 ```
 </center>
-#### Top 4 Cost Impacts Phase:`r phase_lab`
+#### Top 4 Cost Impacts Phase: `r phase_lab`
 ``` {r cost risk log, echo = FALSE, warning=FALSE}
 cost_top4s<-proj_risks |>
   mutate(MAX_COST = pmax(COST_IMPACT_LOWEST, COST_MEAN, 
@@ -208,7 +208,7 @@ cost_top4s<-proj_risks |>
 cost_top4s
 ```
 
-#### Top 4 Schedule Impacts Phase:`r phase_lab`
+#### Top 4 Schedule Impacts Phase: `r phase_lab`
 ``` {r schedule risk log, echo = FALSE, warning=FALSE}
 schedule_top4s<-proj_risks |>
    mutate(MAX_SCHED = pmax(SCHEDULE_IMPACT_LOWEST, SCHEDULE_MEAN, SCHEDULE_IMPACT_HIGHEST))|>
@@ -230,7 +230,7 @@ schedule_top4s
 
 
 
-#### Top 4 Performance Impacts Phase:`r phase_lab`
+#### Top 4 Performance Impacts Phase: `r phase_lab`
 ``` {r perform risk log, echo = FALSE, warning=FALSE}
 perform_log_table<-proj_risks |>
   arrange(desc(PERFORMANCEIMPACT_RISK_RANKING), desc(PERFORMANCEIMPACT_IMPCT), desc(PROB_OCCURRENCE))|>
