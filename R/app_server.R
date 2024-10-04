@@ -401,6 +401,51 @@ app_server <- function(input, output, session) {
                   ))
   })
   
+  
+### Division Reports
+  
+  observeEvent(input$Prog4s, {
+    rmarkdown::render(
+      "./inst/app/rmd/ProgramTop4s.Rmd",
+      params = list(
+        progID = input$ProgramTypeInput,
+        missionID = input$MissionInput,
+        MSCID = input$MSCInput,
+        districtID = input$projdisInput,
+        phaseID = input$projphaseInput,
+        disciplineID = input$projdisInput), 
+      output_dir ="./inst/app/www"
+    )
+    shinyalert::shinyalert(html = TRUE, text = tagList(tags$iframe(
+      src="www/ProgramTop4s.html", width = 1000, height = 900,  
+      style = "border:none;")),
+      size = "l",confirmButtonText = "Close Report",
+      closeOnClickOutside = TRUE
+    )
+  })
+  
+  
+  output$progdownload_Top4s <- downloadHandler(
+    # For PDF output, change this to "report.pdf"
+    filename = function() {
+      paste0(input$projectInput, " - ", "ProgramTop4s", ".html")
+    },
+    content = function(file) {
+      rmarkdown::render(
+        paste0("./inst/app/rmd/ProgramTop4s.Rmd"),
+        output_file = file,
+        params = list( progID = input$ProgramTypeInput,
+                       missionID = input$MissionInput,
+                       MSCID = input$MSCInput,
+                       districtID = input$projdisInput,
+                       phaseID = input$projphaseInput,
+                       disciplineID = input$projdisInput),
+        envir = new.env(),
+        intermediates_dir = tempdir()
+      )
+    }
+  )
+  
 #### Project level/Risk item reports  
   num <- reactive({
     unique(RiskImpactTable$USACE_ORGANIZATION)
@@ -634,6 +679,8 @@ app_server <- function(input, output, session) {
   output$pie = plotly::renderPlotly({
     pie_plots(cost_pie(), schedule_pie(), perform_pie())
   })
+  
+  ####Reporting Cards
   
   observeEvent(input$riskInput,{
     if (input$riskInput ==""){

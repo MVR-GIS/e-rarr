@@ -137,7 +137,32 @@ app_ui <- function(request) {
                        "Explore Projects",
                        plotly::plotlyOutput("projpies"),
                        DT::DTOutput("projoverview"), value= "Explore Projects"),
-                     tabPanel("Reports"))))),
+                     tabPanel("Reports",   
+                              layout_column_wrap(
+                       width = 1/4,
+                       height = 275,
+                       bslib::card(
+                         height = 165,
+                         full_screen = FALSE,
+                         card_header("Program Top 4s",
+                                     shiny::downloadButton(
+                                       outputId="download_ProgTop4s",
+                                       label="Download",
+                                       style = "color: #3974db; 
+                                                background-color: transparent;
+                                                float:right;
+                                                border-color: transparent;"
+                                     )),
+                         card_body(
+                           tags$button(id = "Prog4s", 
+                                       class="action-button",
+                                       tags$img(src="www/ProjectTop4.png",
+                                                height = '165px',
+                                                max_width = '100%',
+                                       ),
+                           ),
+                           
+                         )))))))),
         tabPanel("Project",
                  sidebarLayout(
                    sidebarPanel(
