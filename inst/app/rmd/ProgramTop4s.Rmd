@@ -5,8 +5,8 @@ output: html_document
 params:
   progID: ""
   missionID: ""
-  divisionID: ""
-  MSCID: ""
+  MSCID: "MVD"
+  districtID: ""
   phaseID: ""
   disciplineID: ""
 ---
@@ -62,10 +62,11 @@ erisk_dist <-read_csv("../data/erisk_dist.csv",
 erisk_archive <- read_csv("../data/erisk_modeled.csv",
                           show_col_types=FALSE)
 
-
 erisk_mean <- erisk_archive|>
   dplyr::select(COST_MEAN, SCHEDULE_MEAN,OUTCOME_MEAN,PROJECT_ID,RISK_ID)
 
+erisk_orgs_div <- erisk_orgs |>
+  inner_join(erisk_dist, by = join_by(DISTRICT_CODE))
 
 erisk_orgs_div <- erisk_orgs_div |>
   dplyr::select(DISTRICT_CODE,MSC_ID)
@@ -90,7 +91,7 @@ program_risks <- risk_proj_orgs |>
   dplyr::select("MSC","USACE_ORGANIZATION","P2_PROGRAM_CODE","PROGRAMTYPENAME",
                 "PRIMARYMISSION","DISCIPLINE","RISKCATEGORY","LIFECYCLEPHASENAME",
                 "MILESTONE","PROJECT_ID","PROJECT_NAME",
-                "P2_NUMBER","RISK_NAME","RISK_STATEMENT","LIKELIHOOD",
+                "P2_NUMBER","RISK_IDENTIFIER","RISK_NAME","RISK_STATEMENT","LIKELIHOOD",
                 "PROB_OCCURRENCE", "PERFORMANCEIMPACT","PERFORMANCEIMPACT_IMPCT",
                 "PERFORMANCE_RANK_DESC", "PERFORMANCEIMPACT_RISK_RANKING",
                 "COST_IMPACT_LOWEST","COST_MEAN",
@@ -101,65 +102,81 @@ program_risks <- risk_proj_orgs |>
 
 ```
 
-```{r load in data}
-# (conditional(input$MSCInput != "",
-#                          proj_orgs_table()$MSC == input$MSCInput),
-#              conditional(input$districtsInput != "",
-#                          proj_orgs_table()$USACE_ORGANIZATION == input$districtsInput),
-#               conditional(input$ProgramCodeInput != "",
-#                          proj_orgs_table()$P2_PROGRAM_CODE == input$ProgramCodeInput),
-#               conditional(input$ProgramTypeInput != "",
-#                          proj_orgs_table()$PROGRAMTYPENAME == input$ProgramTypeInput),
-#               conditional(input$MissionInput != "",
-#                           proj_orgs_table()$PRIMARYMISSION == input$MissionInput),
-#               conditional(input$projdisInput != "" ,
-#                          proj_orgs_table()$DISCIPLINE == input$projdisInput),
-#              conditional(input$projcatInput != "",
-#                         proj_orgs_table()$RISKCATEGORY == input$projcatInput),
-#               conditional(input$projphaseInput !="",
-#                         proj_orgs_table()$LIFECYCLEPHASENAME == input$projphaseInput),
-#            conditional(input$projmileInput !="",
-#                          proj_orgs_table()$MILESTONE== input$projmileInput)
-```
+```{r setup, include=FALSE}
+# Start with the complete dataset
+proj_risks <- program_risks
+
+# Filter based on parameters
+if (params$MSCID != "") {
+  proj_risks <- proj_risks %>% filter(MSC == params$MSCID)
+}
+
+if (params$districtID != "") {
+  proj_risks <- proj_risks %>% filter(USACE_ORGANIZATION == params$districtID)
+}
+
+if (params$progID != "") {
+  proj_risks <- proj_risks %>% filter(PROGRAMTYPENAME == params$progID)
+}
+
+if (params$missionID != "") {
+  proj_risks <- proj_risks %>% filter(PRIMARYMISSION == params$missionID)
+}
+
+if (params$phaseID != "") {
+  proj_risks <- proj_risks %>% filter(LIFECYCLEPHASENAME == params$phaseID)
+}
+
+if (params$disciplineID != "") {
+  proj_risks <- proj_risks %>% filter(DISCIPLINE == params$disciplineID)
+}
+
+# Create a header
+header <- "Top 4 Report" 
+if (params$MSCID != "") {
+  header <- paste(header, "| MSC:", params$MSCID)
+}
+if (params$districtID != "") {
+  header <- paste(header, "| District:", params$districtID)
+}
+if (params$progID != "") {
+  header <- paste(header, "| Program:", params$progID)
+}
+if (params$missionID != "") {
+  header <- paste(header, "| Mission:", params$missionID)
+}
+if (params$phaseID != "") {
+  header <- paste(header, "| Phase:", params$phaseID)
+}
+if (params$disciplineID != "") {
+  header <- paste(header, "| Discipline:", params$disciplineID)
+}
 
 
-```{r echo=FALSE, eval = params$projID != ""}
-proj_risks<-dplyr::filter(program_risks, program_risks$MSC == params$MSCID)
-proj_risk_item<- dplyr::slice_head(proj_risks)
-header<-paste("Project:",proj_risk_item$PROJECT_NAME)
-header2<-if (params$p2sub != ""){
-  paste("SubID:",params$p2sub)}
-```
-
-```{r echo=FALSE, eval = params$p2ID != ""}
-proj_risks<-dplyr::filter(Risk_List_Proj, Risk_List_Proj$P2_NUMBER == params$p2ID)
-proj_risk_item<- dplyr::slice_head(proj_risks)
-header<-paste("P2 Number:",proj_risk_item$P2_NUMBER)
-header2<-if (params$p2sub != ""){
-  paste("SubID:",params$p2sub)}
+if (nrow(proj_risks) > 0) {
+  knitr::kable(proj_risks)
+} else {
+  cat("No results found for the given filters.")
+}
 
 
-```
-
-```{r echo=FALSE, eval = params$p2sub != ""}
-proj_risks<-dplyr::filter(Risk_List_Proj, 
-                          Risk_List_Proj$P2_SUB_IDENTIFIER == params$p2sub)
-proj_risk_item<- dplyr::slice_head(Risk_List_Proj)
-header<-paste("Project:",proj_risk_item$PROJECT_NAME)
-header2<-if (params$p2sub != ""){
-  paste("SubID:",params$p2sub)}
-
+phase_lab = ifelse(nzchar(params$phaseID), params$phaseID, "All Phases")
 ```
 
 ###### Report Created On: `r format(Sys.time(), '%d %B, %Y')`
 ```{r, echo=FALSE, warning=FALSE, message=FALSE,results='asis'}
-
-cat("###",header,header2)
-
+cat("###",header)
 ```
 
-##### `r proj_risk_item$PRIMARYMISSION` (Current Phase:`r proj_risk_item$LIFECYCLEPHASENAME`)
-##### `r proj_risk_item$USACE_ORGANIZATION`
+```{r aggregate by project,warning=FALSE, message=FALSE,echo=FALSE }
+wrangled_table <- proj_risks %>%    
+    group_by(PROJECT_NAME) %>%
+    summarise(Count = n(),Mean_Cost = sum(COST_MEAN, na.rm = TRUE),Mean_Schedule = sum(SCHEDULE_MEAN, na.rm = TRUE), .groups = 'drop') 
+  
+```
+
+
+
 ### Project Risk Summary 
 <center>
 ```{r proj risk pies, message=FALSE, warning=FALSE, echo=FALSE,fig.height=2, fig.width=7}
@@ -167,40 +184,42 @@ cat("###",header,header2)
   cost_pie<- erarr::pieprep(proj_risks, "COST_RANK_DESC")
   schedule_pie<-erarr::pieprep(proj_risks, "SCHEDULE_RANK_DESC")
   perform_pie<- erarr::pieprep(proj_risks, "PERFORMANCE_RANK_DESC")
-
   erarr::pie_plots(cost_pie,schedule_pie,perform_pie)
 
 
 ```
 </center>
-#### Top 4 Cost Impacts (All Phases)
+#### Top 4 Cost Impacts Phase: `r phase_lab`
 ``` {r cost risk log, echo = FALSE, warning=FALSE}
 cost_top4s<-proj_risks |>
   mutate(MAX_COST = pmax(COST_IMPACT_LOWEST, COST_MEAN, 
                          COST_IMPACT_HIGHEST))|>
   arrange(desc(COST_RISK_RANKING), desc(MAX_COST), desc(PROB_OCCURRENCE))|>
-      dplyr::select(RISK_IDENTIFIER, RISK_NAME, RISKCATEGORY , MILESTONE , 
-                    LIKELIHOOD, MAX_COST) |>
+      dplyr::select(USACE_ORGANIZATION,PROJECT_NAME, PROGRAMTYPENAME,RISK_IDENTIFIER, RISK_NAME, RISKCATEGORY , MILESTONE , LIKELIHOOD, MAX_COST) |>
     dplyr::slice_head(n=4)|>
   mutate(MAX_COST = as.character(formattable::currency(MAX_COST)))|>
   kableExtra::kbl(format = "html", escape = F, 
-                  col.names = c("Risk ID","Risk Name","Risk Category","Project Milestone","Likelihood", "Cost Impact"), align="clcccc", row.names = FALSE)|>
+                  col.names = c("District","Project","Program", "Risk ID",
+                                "Risk Name","Risk Category","Project Milestone",
+                                "Likelihood", "Cost Impact"), align="ccclcccc", 
+                  row.names = FALSE)|>
   kableExtra::kable_styling(bootstrap_options = c( "hover", "condensed", 
                                                    "responsive"))
-
 cost_top4s
 ```
 
-#### Top 4 Schedule Impacts (All Phases)
+#### Top 4 Schedule Impacts Phase: `r phase_lab`
 ``` {r schedule risk log, echo = FALSE, warning=FALSE}
 schedule_top4s<-proj_risks |>
    mutate(MAX_SCHED = pmax(SCHEDULE_IMPACT_LOWEST, SCHEDULE_MEAN, SCHEDULE_IMPACT_HIGHEST))|>
   arrange(desc(SCHEDULE_RISK_RANKING), desc(MAX_SCHED), desc(PROB_OCCURRENCE))|>
-      dplyr::select(RISK_IDENTIFIER, RISK_NAME, RISKCATEGORY , MILESTONE , 
+      dplyr::select(USACE_ORGANIZATION,PROJECT_NAME,PROGRAMTYPENAME,
+                    RISK_IDENTIFIER, RISK_NAME, RISKCATEGORY , MILESTONE , 
                     LIKELIHOOD, MAX_SCHED) |>
     dplyr::slice_head(n=4)|>
   kableExtra::kbl(format = "html", escape = F, 
-                  col.names =c("Risk ID","Risk Name","Risk Category",
+                  col.names =c("District","Project","Program", 
+                               "Risk ID","Risk Name","Risk Category",
                                "Project Milestone","Likelihood", 
                                "Schedule Impact (Days)"), 
                   align="clcccc", row.names = FALSE)|>
@@ -211,7 +230,7 @@ schedule_top4s
 
 
 
-#### Top 4 Performance Impacts (All Phases)
+#### Top 4 Performance Impacts Phase: `r phase_lab`
 ``` {r perform risk log, echo = FALSE, warning=FALSE}
 perform_log_table<-proj_risks |>
   arrange(desc(PERFORMANCEIMPACT_RISK_RANKING), desc(PERFORMANCEIMPACT_IMPCT), desc(PROB_OCCURRENCE))|>

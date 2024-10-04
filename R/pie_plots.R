@@ -15,6 +15,14 @@
 #' @export
 #'
 pie_plots<- function(cost_pie, schedule_pie, perform_pie){
+  
+  cost_pie$COST_RANK_DESC <- factor(cost_pie$COST_RANK_DESC, 
+                                    levels = c("Opportunity", "Low", "Medium", "High"))
+  schedule_pie$SCHEDULE_RANK_DESC <- factor(schedule_pie$SCHEDULE_RANK_DESC, 
+                                            levels = c("Opportunity", "Low", "Medium", "High"))
+  perform_pie$PERFORMANCE_RANK_DESC <- factor(perform_pie$PERFORMANCE_RANK_DESC, 
+                                              levels = c("Opportunity", "Low", "Medium", "High"))
+  
   fig <- plotly::plot_ly(textfont = list(color = '#FFFFFF')) |>
     plotly::add_pie(
       data = cost_pie,
@@ -63,8 +71,10 @@ pie_plots<- function(cost_pie, schedule_pie, perform_pie){
     plotly::layout(title = "", showlegend = T, 
                    margin = list(l = 20, r = 20, b = 20, t = 20, pad = 0),
                    grid = list(rows = 1, columns = 3), 
-                   legend = list(orientation = 'h', xanchor = "center", 
-                                 x = 0.5, traceorder = "normal", 
+                   legend = list(orientation = 'h', 
+                                 xanchor = "center", 
+                                 x = 0.5, 
+                                 traceorder = "normal", 
                                  font = list(size = 15))
     )
 
