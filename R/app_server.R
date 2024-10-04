@@ -172,7 +172,19 @@ app_server <- function(input, output, session) {
     }
   })
 
-
+  # conn <- attempt::attempt({
+  #   connect_db()
+  # })
+  # # if ever this connection failed, we notify the user 
+  # # about this failed connection, so that they can know
+  # # what has gone wrong
+  # if (attempt::is_try_error(conn)){
+  #   # Notify the user
+  #   send_notification("Could not connect")
+  # } else {
+  #   # Continue computing if the connection was successful
+  #   continue_computing()
+  # }
 ### Division Level Reports
  
 
