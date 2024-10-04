@@ -135,8 +135,10 @@ app_ui <- function(request) {
                    mainPanel(tabsetPanel(
                      tabPanel(
                        "Explore Projects",
+                       textOutput("last_updated"),
                        plotly::plotlyOutput("projpies"),
-                       DT::DTOutput("projoverview"), value= "Explore Projects"),
+                       DT::DTOutput("projoverview"), 
+                       value= "Explore Projects"),
                      tabPanel("Reports",   
                               layout_column_wrap(
                        width = 1/4,
@@ -244,8 +246,10 @@ app_ui <- function(request) {
                        tabPanel(
                          "Explore Risks",
                          textOutput("dynamic_title"),
+                         textOutput("last_updated"),
                          plotly::plotlyOutput("pie"),
-                         DT::DTOutput("overviewtab"), value= "Explore"
+                         DT::DTOutput("overviewtab"),
+                         value= "Explore"
                        ),
                        tabPanel("Reports",
                                 layout_column_wrap(

@@ -130,6 +130,7 @@ filter_data <- function(data, ...) {
   return(data)
 }
 
+threshold <- as.difftime(24, units = "hours") 
 
 ### Server Function
 app_server <- function(input, output, session) {
@@ -150,7 +151,28 @@ app_server <- function(input, output, session) {
   })
 
   
+### Data Update Script
+  last_updated_time <- reactiveVal(Sys.time())
+  data <- reactiveVal(NULL)
   
+  is_data_out_of_date <- function(last_updated_time, threshold) {
+    Sys.time() - last_updated_time > threshold
+  }
+  
+  output$last_updated <- renderText({
+    paste("Last updated on:", format(last_updated_time(), "%Y-%m-%d %H:%M:%S"))
+  })
+  
+  autoInvalidate <- reactiveTimer(10000)  # Check every 10 seconds
+  
+  observe({
+    autoInvalidate()  # Triggers reactive block every 10 seconds
+    if (is_data_out_of_date(last_updated_time(), threshold)) {
+      erarr::update_data()
+    }
+  })
+
+
 ### Division Level Reports
  
 
