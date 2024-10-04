@@ -159,6 +159,8 @@ if (nrow(proj_risks) > 0) {
   cat("No results found for the given filters.")
 }
 
+
+phase_lab = ifelse(nzchar(params$phaseID), params$phaseID, "All Phases")
 ```
 
 ###### Report Created On: `r format(Sys.time(), '%d %B, %Y')`
@@ -187,33 +189,37 @@ wrangled_table <- proj_risks %>%
 
 ```
 </center>
-#### Top 4 Cost Impacts (All Phases)
+#### Top 4 Cost Impacts Phase:`r phase_lab`
 ``` {r cost risk log, echo = FALSE, warning=FALSE}
 cost_top4s<-proj_risks |>
   mutate(MAX_COST = pmax(COST_IMPACT_LOWEST, COST_MEAN, 
                          COST_IMPACT_HIGHEST))|>
   arrange(desc(COST_RISK_RANKING), desc(MAX_COST), desc(PROB_OCCURRENCE))|>
-      dplyr::select(USACE_ORGANIZATION,PROGRAMTYPENAME,RISK_IDENTIFIER, RISK_NAME, RISKCATEGORY , MILESTONE , 
-                    LIKELIHOOD, MAX_COST) |>
+      dplyr::select(USACE_ORGANIZATION,PROJECT_NAME, PROGRAMTYPENAME,RISK_IDENTIFIER, RISK_NAME, RISKCATEGORY , MILESTONE , LIKELIHOOD, MAX_COST) |>
     dplyr::slice_head(n=4)|>
   mutate(MAX_COST = as.character(formattable::currency(MAX_COST)))|>
   kableExtra::kbl(format = "html", escape = F, 
-                  col.names = c("District"," Program", "Risk ID","Risk Name","Risk Category","Project Milestone","Likelihood", "Cost Impact"), align="ccclcccc", row.names = FALSE)|>
+                  col.names = c("District","Project","Program", "Risk ID",
+                                "Risk Name","Risk Category","Project Milestone",
+                                "Likelihood", "Cost Impact"), align="ccclcccc", 
+                  row.names = FALSE)|>
   kableExtra::kable_styling(bootstrap_options = c( "hover", "condensed", 
                                                    "responsive"))
 cost_top4s
 ```
 
-#### Top 4 Schedule Impacts (All Phases)
+#### Top 4 Schedule Impacts Phase:`r phase_lab`
 ``` {r schedule risk log, echo = FALSE, warning=FALSE}
 schedule_top4s<-proj_risks |>
    mutate(MAX_SCHED = pmax(SCHEDULE_IMPACT_LOWEST, SCHEDULE_MEAN, SCHEDULE_IMPACT_HIGHEST))|>
   arrange(desc(SCHEDULE_RISK_RANKING), desc(MAX_SCHED), desc(PROB_OCCURRENCE))|>
-      dplyr::select(USACE_ORGANIZATION,PROGRAMTYPENAME,RISK_IDENTIFIER, RISK_NAME, RISKCATEGORY , MILESTONE , 
+      dplyr::select(USACE_ORGANIZATION,PROJECT_NAME,PROGRAMTYPENAME,
+                    RISK_IDENTIFIER, RISK_NAME, RISKCATEGORY , MILESTONE , 
                     LIKELIHOOD, MAX_SCHED) |>
     dplyr::slice_head(n=4)|>
   kableExtra::kbl(format = "html", escape = F, 
-                  col.names =c("District"," Program", "Risk ID","Risk Name","Risk Category",
+                  col.names =c("District","Project","Program", 
+                               "Risk ID","Risk Name","Risk Category",
                                "Project Milestone","Likelihood", 
                                "Schedule Impact (Days)"), 
                   align="clcccc", row.names = FALSE)|>
@@ -224,7 +230,7 @@ schedule_top4s
 
 
 
-#### Top 4 Performance Impacts (All Phases)
+#### Top 4 Performance Impacts Phase:`r phase_lab`
 ``` {r perform risk log, echo = FALSE, warning=FALSE}
 perform_log_table<-proj_risks |>
   arrange(desc(PERFORMANCEIMPACT_RISK_RANKING), desc(PERFORMANCEIMPACT_IMPCT), desc(PROB_OCCURRENCE))|>
