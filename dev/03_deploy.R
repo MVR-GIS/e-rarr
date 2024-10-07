@@ -37,19 +37,27 @@ golem::add_shinyserver_file()
 
 oracle <- 
 "
-apt-get install -y libaio1 alien
-wget http://yum.oracle.com/repo/OracleLinux/OL7/oracle/instantclient/x86_64/getPackage/oracle-instantclient19.6-basic-19.6.0.0.0-1.x86_64.rpm
-sudo alien -i --scripts oracle-instantclient*.rpm
-rm -f oracle-instantclient*.rpm  
+# Install unixODBC packages
+  apt-get install -y unixodbc unixodbc-dev
 
-# Optionally install SQLPlus
-wget http://yum.oracle.com/repo/OracleLinux/OL7/oracle/instantclient/x86_64/getPackage/oracle-instantclient19.6-sqlplus-19.6.0.0.0-1.x86_64.rpm
-sudo alien -i --scripts oracle-instantclient*.rpm
-rm -f oracle-instantclient*.rpm  
+# Install Oracle Instant Client components
+  apt-get install -y libaio1 alien
+  wget https://download.oracle.com/otn_software/linux/instantclient/2350000/oracle-instantclient-basiclite-23.5.0.24.07-1.el9.x86_64.rpm
+  wget https://download.oracle.com/otn_software/linux/instantclient/2350000/oracle-instantclient-sqlplus-23.5.0.24.07-1.el9.x86_64.rpm
+  wget https://download.oracle.com/otn_software/linux/instantclient/2350000/oracle-instantclient-odbc-23.5.0.24.07-1.el9.x86_64.rpm
+  sudo alien -i --scripts oracle-instantclient*.rpm
+  rm -f oracle-instantclient*.rpm  
+
+# Configure ODBC
+  cd /opt/oracle/instantclient_23_5
+  mkdir etc
+  cp /ect/odbcinst.ini etc/.
+  cp ~/.odbc.ini etc/odbc.ini
+  ./odbc_update_ini.sh .
+  sudo cp etc/odbcinst.ini /etc/.
 "
-
-golem::add_dockerfile_with_renv(port = 3838,
-                                extra_sysreqs = oracle)
+golem::add_dockerfile(port = 3838,
+                      extra_sysreqs = oracle)
 
 # In Terminal on computer with docker installed, run the following:
 # docker build -f Dockerfile --progress=plain -t erarr_base .
