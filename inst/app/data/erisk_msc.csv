@@ -1,0 +1,20 @@
+MSC_ID,MSC,MSC_DESCRIPT,LIVESTAT,USER_UPDATED,DATE_LAST_UPDATED,EROC,SME
+19,SAM,Samples,del,dave@wwsc.us,2014-03-18T05:00:00Z,SM,no
+15,PCX,Planning Center of Expertise,live,diana@wwsc.us,2014-03-05T05:00:00Z,NA,no
+16,CX,Centers of Expertise,live,diana@wwsc.us,2014-03-05T05:00:00Z,NA,no
+17,PCoP,Planning Community of Practice,live,diana@wwsc.us,2014-03-05T05:00:00Z,NA,no
+18,AGC,Army Geospatial Center,live,diana@wwsc.us,2014-03-05T05:00:00Z,NA,no
+1,HNC,"Engineering and Support Center, Huntsville Division",live,erin.rooks,2013-08-09T05:00:00Z,A0,yes
+2,HQ,Headquarters U.S. Army Corps of Engineers,live,dawn.blanchard,2010-10-26T05:00:00Z,S0,yes
+3,IWR,Institute for Water Resources,live,dawn.blanchard,2010-10-21T05:00:00Z,Q0,yes
+4,LRD,Great Lakes and Ohio River Division,live,dawn.blanchard,2010-10-26T05:00:00Z,H0,yes
+5,MVD,Mississippi Valley Division,live,dawn.blanchard,2010-10-26T05:00:00Z,B0,yes
+6,NAD,North Atlantic Division,live,dawn.blanchard,2010-10-26T05:00:00Z,E0,yes
+7,NWD,Northwestern Division,live,dawn.blanchard,2010-10-26T05:00:00Z,G0,yes
+8,POD,Pacific Ocean Division,live,dawn.blanchard,2010-10-26T05:00:00Z,J0,yes
+9,SAD,South Atlantic Division,live,dawn.blanchard,2010-10-26T05:00:00Z,K0,yes
+10,SPD,South Pacific Division,live,dawn.blanchard,2010-10-26T05:00:00Z,L0,yes
+11,SWD,Southwestern Division,live,dawn.blanchard,2010-10-26T05:00:00Z,M0,yes
+12,ERDC,Engineer Research and Development Center ,live,ethan.grayson,2013-10-03T05:00:00Z,U4,yes
+13,TAD,Transatlantic Division,live,dawn.blanchard,2010-10-27T05:00:00Z,N0,yes
+14,Other,Other Division,del,dawn.blanchard,2010-10-29T05:00:00Z, ,yes

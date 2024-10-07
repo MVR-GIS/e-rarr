@@ -21,8 +21,8 @@ public.](https://www.repostatus.org/badges/latest/wip.svg)](https://www.repostat
 This package contains a set of functions to create a
 [`shiny`](https://shiny.posit.co/) application that produces a variety
 of Risk Analysis Reports. These functions help automate and standardize
-report production using the [`rmarkdown`
-package](https://rmarkdown.rstudio.com/lesson-1.html).
+report production using the [`rmarkdown`](https://rmarkdown.rstudio.com/lesson-1.html) 
+package.
 
 ## Funding
 
@@ -45,9 +45,14 @@ Check out the [News](news/index.html) for details on the latest updates.
 - [Barrie Chileen
   Martinez](mailto:barrie.v.chileenmartinez@usace.army.mil), Geographer,
   Rock Island District, U.S. Army Corps of Engineers
-
-  <a itemprop="sameAs" content="https://orcid.org/0000-0002-6960-8167" href="https://0000-0002-6960-8167" target="orcid.widget" rel="me noopener noreferrer" style="vertical-align:top;">
+    <a itemprop="sameAs" content="https://orcid.org/0000-0002-6960-8167" href="https://0000-0002-6960-8167" target="orcid.widget" rel="me noopener noreferrer" style="vertical-align:top;">
   <img src="https://orcid.org/sites/default/files/images/orcid_16x16.png" alt="ORCID iD icon" style="width:1em;margin-right:.5em;"/>https://orcid.org/0000-0002-6960-8167</a>
+  
+- [Michael Dougherty](mailto:Michael.P.Dougherty@usace.army.mil), Geographer, 
+  Rock Island District, U.S. Army Corps of Engineers
+  <a itemprop="sameAs" content="https://orcid.org/0000-0002-1465-5927" href="https://0000-0002-1465-5927" target="orcid.widget" rel="me noopener noreferrer" style="vertical-align:top;">
+  <img src="https://orcid.org/sites/default/files/images/orcid_16x16.png" alt="ORCID iD icon" style="width:1em;margin-right:.5em;"/>https://orcid.org/0000-0002-1465-5927</a>
+
 
 ------------------------------------------------------------------------
 

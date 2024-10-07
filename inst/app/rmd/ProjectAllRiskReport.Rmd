@@ -1,5 +1,5 @@
 ---
-title: "All Risk Report"
+title: ""
 output: html_document
 runtime: shiny
 params:
@@ -54,22 +54,29 @@ library(webshot)
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, include=FALSE}
 options(scipen = 999)
-erisk_item <- read.csv("../data/erisk_item.csv")
+erisk_item <- read_csv("../data/erisk_item.csv")
 risk_item_db <- data.frame(erisk_item)
 erisk_project <- read_csv("../data/erisk_project.csv", show_col_types = FALSE)
 risk_project_db <- data.frame(erisk_project)
+erisk_archive <- read_csv("../data/erisk_modeled.csv",
+                          show_col_types=FALSE)
+
+
+erisk_mean <- erisk_archive|>
+  dplyr::select(COST_MEAN, SCHEDULE_MEAN,OUTCOME_MEAN,PROJECT_ID,RISK_ID)
 
 risk_item_db <- risk_item_db |>
   left_join(risk_project_db |>
-              select(PROJECT_ID, PRIMARYMISSION))
+              select(PROJECT_ID, PRIMARYMISSION))|>
+  left_join(erisk_mean, by = join_by(PROJECT_ID,RISK_ID))
 
 RiskDeets <- risk_item_db |>
   select("PROJECT_ID", "P2_NUMBER", "RISK_IDENTIFIER", "P2_SUB_IDENTIFIER", 
          "PROJECT_NAME", "RISK_NAME", "RISKCATEGORY", "RISK_STATEMENT", 
          "LIFECYCLEPHASENAME", "MILESTONE", "LIKELIHOOD", "DISCIPLINE", 
          "PERFORMANCEIMPACT", "PERFORMANCE_RANK_DESC", 
-         "PERFORMANCEIMPACT_RISK_RANKING", "COST_IMPACT_MOSTLIKELY", 
-         "COST_RANK_DESC", "COST_RISK_RANKING", "SCHEDULE_IMPACT_MOSTLIKELY", 
+         "PERFORMANCEIMPACT_RISK_RANKING", "COST_MEAN", 
+         "COST_RANK_DESC", "COST_RISK_RANKING", "SCHEDULE_MEAN", 
          "SCHEDULE_RANK_DESC", "SCHEDULE_RISK_RANKING", "PRIMARYMISSION", 
          "USACE_ORGANIZATION")
 ```
@@ -77,21 +84,28 @@ RiskDeets <- risk_item_db |>
 ```{r echo=FALSE, eval = params$projID != ""}
 Risk_List_Proj <- RiskDeets |>
   filter(RiskDeets$PROJECT_NAME == params$projID)
-Risk_List_Proj$COST_IMPACT_MOSTLIKELY <- 
-  as.character(formattable::currency(Risk_List_Proj$COST_IMPACT_MOSTLIKELY))
+Risk_List_Proj$COST_MEAN <- 
+  as.character(formattable::currency(Risk_List_Proj$COST_MEAN))
 
 proj_risks <- filter(Risk_List_Proj, 
                      Risk_List_Proj$PROJECT_NAME == params$projID)
 proj_risk_item <- slice_head(Risk_List_Proj)
+header <- paste("Project:", proj_risk_item$PROJECT_NAME)
+header2 <- if (params$p2sub != "") {paste("SubID:", params$p2sub)}
+
 ```
 
 ```{r echo=FALSE, eval = params$p2ID != ""}
 Risk_List_Proj <- filter(RiskDeets, RiskDeets$P2_NUMBER == params$p2ID)
-Risk_List_Proj$COST_IMPACT_MOSTLIKELY <- 
-  as.character(formattable::currency(Risk_List_Proj$COST_IMPACT_MOSTLIKELY))
+Risk_List_Proj$COST_MEAN <- 
+  as.character(formattable::currency(Risk_List_Proj$COST_MEAN))
 
 proj_risks <- filter(Risk_List_Proj, Risk_List_Proj$P2_NUMBER == params$p2ID)
 proj_risk_item <- slice_head(Risk_List_Proj)
+header <- paste("P2 Number:", proj_risk_item$P2_NUMBER)
+header2 <- if (params$p2sub != "") {paste("SubID:", params$p2sub)}
+
+
 ```
 
 ```{r echo=FALSE,  eval = params$p2sub != ""}
@@ -99,6 +113,8 @@ Risk_List_Proj<-filter(Risk_List_Proj,
                   Risk_List_Proj$P2_SUB_IDENTIFIER == params$p2sub)
 proj_risks <- filter(proj_risks,
                      proj_risks$P2_SUB_IDENTIFIER == params$p2sub)
+
+header2 <- if (params$p2sub != "") {paste("SubID:", params$p2sub)}
 ```
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, include=FALSE}
@@ -133,9 +149,6 @@ proj_risks <- proj_risks %>%
 ```
 ###### Report Created On: `r format(Sys.time(), '%d %B, %Y')`
 ```{r, echo=FALSE, warning=FALSE, message=FALSE,results='asis'}
-header <- paste("Project:", proj_risk_item$PROJECT_NAME)
-header2 <- if (params$p2sub != "") {paste("SubID:", params$p2sub)}
-
 cat("###", header, header2)
 ```
 
