@@ -144,6 +144,7 @@ app_ui <- function(request) {
                                     ),
                                     
                                   )))))))),
+
         tabPanel("Project",
                  sidebarLayout(
                    sidebarPanel(

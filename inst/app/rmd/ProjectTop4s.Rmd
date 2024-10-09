@@ -56,7 +56,6 @@ RiskDeets <- risk_item_db |>
       NA, 
       formattable::currency(round(COST_MEAN, -3), digits = 0)))
 
-
 ```
 
 ```{r filter projs, echo=FALSE, eval = params$projID != "" | params$p2ID != "" | params$p2sub != ""}

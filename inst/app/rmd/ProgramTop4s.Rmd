@@ -50,7 +50,6 @@ options(scipen = 999)
 risk_item_db<-readr::read_csv("../data/erisk_program_riskitem.csv",
                                  show_col_types = FALSE)
 
-
 program_risks <- risk_item_db |>
   dplyr::select("MSC","USACE_ORGANIZATION","P2_PROGRAM_CODE","PROGRAMTYPENAME",
                 "PRIMARYMISSION","DISCIPLINE","RISKCATEGORY","LIFECYCLEPHASENAME",
@@ -86,7 +85,6 @@ if (params$progID != "") {
 if (params$missionID != "") {
   proj_risks <- proj_risks %>% filter(PRIMARYMISSION == params$missionID)
 }
-
 if (params$phaseID != "") {
   proj_risks <- proj_risks %>% filter(LIFECYCLEPHASENAME == params$phaseID)
 }
