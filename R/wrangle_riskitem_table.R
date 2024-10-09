@@ -15,21 +15,29 @@
 #' #Create items
 #' risk_item_db<-create_risk_proj(risk, project, archive)
 #'
-#' @importFrom dplyr select left_join
-#' @importFrom magrittr %>%
-#'
+#' @importFrom dplyr select left_join mutate join_by
+#' @importFrom formattable currency
+#' @importFrom usethis use_data
+#' @importFrom readr write_csv
+#' @export
 create_risk_proj <- function(risk, project, archive){
-erisk_mean <- archive|>
-  dplyr::select(COST_MEAN, SCHEDULE_MEAN,PROJECT_ID,RISK_ID)
-
-risk_item_db<- risk |>
-  dplyr::left_join(project|>
-                     dplyr::select(PROJECT_ID, PRIMARYMISSION))|>
-  dplyr::left_join(erisk_mean, by = join_by(PROJECT_ID,RISK_ID))|>
-  filter(RISKSTATUS =="Active")|>
-  mutate(COST_MEAN = formattable::currency(round(COST_MEAN,-3), digits = 0))
-
-
-
+  output_path = "../erarr/inst/app/data/"
+  erisk_mean <- archive |>
+    dplyr::select(COST_MEAN, SCHEDULE_MEAN, PROJECT_ID, RISK_ID)
+  
+  risk_item_db <- risk |>
+    dplyr::left_join(project |>
+                       dplyr::select(PROJECT_ID, PRIMARYMISSION, PROGRAMTYPENAME), by = dplyr::join_by(PROJECT_ID)) |>
+    dplyr::left_join(erisk_mean, by = dplyr::join_by(PROJECT_ID, RISK_ID)) |>
+    dplyr::filter(RISKSTATUS == "Active") |>
+    dplyr::mutate(COST_MEAN =  ifelse(
+      is.na(COST_MEAN), 
+      NA, 
+      formattable::currency(round(COST_MEAN, -3), digits = 0)))
+  
+  readr::write_csv(risk_item_db,
+                   paste0(output_path, "erisk_project_riskitem.csv"))
+  usethis::use_data(risk_item_db, overwrite = TRUE)
+  
 return(risk_item_db)
 }
