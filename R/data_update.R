@@ -22,7 +22,7 @@ update_data <- function(key_service = "egis-db-brandonroad",
                                    host = "egis-db",
                                    port = "1521",
                                    sid = "B5SDEDP1",
-                                   output_path = "C:/workspace/erarr/inst/app/data/") {
+                                   output_path = "../erarr/inst/app/data/") {
   # Set the keyring once on each computer prior to building book
   keyring::key_set(service = key_service, username = user_name)
   
@@ -52,6 +52,8 @@ update_data <- function(key_service = "egis-db-brandonroad",
   
   # Disconnect from the database
   ROracle::dbDisconnect(con_roracle)
+  
+
   
   # Save the tables as CSV files
   readr::write_csv(erisk_project, paste0(output_path, "erisk_project.csv"))
