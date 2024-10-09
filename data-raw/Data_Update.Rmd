@@ -50,13 +50,13 @@ con_roracle <- ROracle::dbConnect(drv,
 
 erisk_project            <- ROracle::dbReadTable(con_roracle, 
                                              "ERR_PROJECTLIST_FULL")
-phase_milestone      <- ROracle::dbReadTable(con_roracle, 
+erisk_phase_milestone      <- ROracle::dbReadTable(con_roracle, 
                                              "ERR_PHASEMILESTONE")
 erisk_item            <- ROracle::dbReadTable(con_roracle, 
                                              "ERR_RISKLIST_FULL")
-risk_transact          <- ROracle::dbReadTable(con_roracle, 
+erisk_transact          <- ROracle::dbReadTable(con_roracle, 
                                              "ERR_RISKTRANSACTIONLIST_FULL")
-risk_treat <- ROracle::dbReadTable(con_roracle, 
+erisk_treat <- ROracle::dbReadTable(con_roracle, 
                                              "ERR_RISKTREATMENTLIST_FULL")
 erisk_orgs          <- ROracle::dbReadTable(con_roracle,
                                               "ERR_USACEORGANIZATION")
@@ -64,7 +64,7 @@ erisk_msc      <- ROracle::dbReadTable(con_roracle,
                                                "ERR_TBLMSC")
 erisk_dist <- ROracle::dbReadTable(con_roracle,
                                                "ERR_TBLDISTRICT")
-risk_modeled <-ROracle::dbReadTable(con_roracle, 
+erisk_modeled <-ROracle::dbReadTable(con_roracle, 
                                              "ERR_RISK_MODELED")
 
 # Disconnect from the database
@@ -73,21 +73,23 @@ ROracle::dbDisconnect(con_roracle)
 
 ```{r save-package-data}
 readr::write_csv(erisk_project,"C:/workspace/erarr/inst/app/data/erisk_project.csv")
-readr::write_csv(phase_milestone,"C:/workspace/erarr/inst/app/data/phase_milestone.csv")
+readr::write_csv(erisk_phase_milestone,"C:/workspace/erarr/inst/app/data/erisk_phase_milestone.csv")
 readr::write_csv(erisk_item,"C:/workspace/erarr/inst/app/data/erisk_item.csv")
-readr::write_csv(risk_transact,"C:/workspace/erarr/inst/app/data/risk_transact.csv")
-readr::write_csv(risk_treat,"C:/workspace/erarr/inst/app/data/risk_treat.csv")
+readr::write_csv(erisk_transact,"C:/workspace/erarr/inst/app/data/erisk_transact.csv")
+readr::write_csv(erisk_treat,"C:/workspace/erarr/inst/app/data/erisk_treat.csv")
 readr::write_csv(erisk_orgs,"C:/workspace/erarr/inst/app/data/erisk_orgs.csv")
 readr::write_csv(erisk_dist,"C:/workspace/erarr/inst/app/data/erisk_dist.csv")
 readr::write_csv(erisk_msc,"C:/workspace/erarr/inst/app/data/erisk_msc.csv")
-readr::write_csv(risk_modeled,"C:/workspace/erarr/inst/app/data/erisk_modeled.csv")
+readr::write_csv(erisk_modeled,"C:/workspace/erarr/inst/app/data/erisk_modeled.csv")
 
 usethis::use_data(erisk_project,
-                  phase_milestone,
+                  erisk_phase_milestone,
                   erisk_item,
-                  risk_transact,
-                  risk_treat,
+                  erisk_transact,
+                  erisk_treat,
                   erisk_orgs,
-                  risk_modeled,
+                  erisk_dist,
+                  erisk_msc,
+                  erisk_modeled,
                   overwrite = TRUE)
 ```

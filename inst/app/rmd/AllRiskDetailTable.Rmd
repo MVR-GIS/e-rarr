@@ -1,11 +1,11 @@
 ---
 title: ''
-output: html_document 
+runtime: shiny
+output: html_notebook
 params:
   projID: LaGrange New 1200-Foot Lock
   p2ID: 505374
   p2sub: ""
-
 ---
 ```{css, echo=FALSE}
 
@@ -63,40 +63,27 @@ library(kableExtra)
 library(tidyverse)
 library(formattable)
 options(scipen = 999)
-erisk_item <- read_csv("../data/erisk_item.csv")
-risk_item_db<-data.frame(erisk_item)
-erisk_project <- read_csv("../data/erisk_project.csv", 
-                          show_col_types = FALSE)
-risk_project_db<-data.frame(erisk_project)
-erisk_archive <- read_csv("../data/erisk_modeled.csv",
-                          show_col_types=FALSE)
 
+risk_item_db <- readr::read_csv("../data/erisk_program_riskitem.csv",
+                                 show_col_types = FALSE)
 
-erisk_mean <- erisk_archive|>
-  dplyr::select(COST_MEAN, SCHEDULE_MEAN,OUTCOME_MEAN,PROJECT_ID,RISK_ID)
-
-
-risk_item_db<-risk_item_db |>
-  left_join(risk_project_db|>
-              select(PROJECT_ID, PRIMARYMISSION))|>
-  left_join(erisk_mean, by = join_by(PROJECT_ID,RISK_ID))
 
 RiskDeets <- risk_item_db |>
+    filter(RISKSTATUS =="Active")|>
   select("PROJECT_ID","RISK_IDENTIFIER","P2_SUB_IDENTIFIER", "PROJECT_NAME",
          "P2_NUMBER","RISK_NAME","RISKCATEGORY","RISK_STATEMENT",
          "LIFECYCLEPHASENAME","MILESTONE","LIKELIHOOD","DISCIPLINE",
          "PERFORMANCEIMPACT", "PERFORMANCE_RANK_DESC",
          "COST_MEAN", "COST_RANK_DESC", "SCHEDULE_MEAN",
-         "SCHEDULE_RANK_DESC", "PRIMARYMISSION", "USACE_ORGANIZATION")
-#  mutate(COST_MEAN = COST_MEAN|> replace_na())
+         "SCHEDULE_RANK_DESC", "PRIMARYMISSION", "USACE_ORGANIZATION")|>
+   dplyr::mutate(COST_MEAN = formattable::currency(round(COST_MEAN, -3), digits = 0))
+
+
 
 ```
 
 ```{r echo=FALSE, eval = params$projID != ""}
 Risk_List_Proj <-filter(RiskDeets, RiskDeets$PROJECT_NAME == params$projID)
-Risk_List_Proj$COST_MEAN <- 
-currency(Risk_List_Proj$COST_MEAN, format = "d")
-
 header<-paste("Project:",params$projID)
 header2<-if (params$p2sub != ""){
   paste("SubID:", params$p2sub)}
@@ -104,9 +91,6 @@ header2<-if (params$p2sub != ""){
 
 ```{r echo=FALSE, eval = params$p2ID != ""}
 Risk_List_Proj <-filter(RiskDeets, RiskDeets$P2_NUMBER == params$p2ID)
-Risk_List_Proj$COST_MEAN <-
-  currency(Risk_List_Proj$COST_MEAN,format = "d")
-
 header<-paste("P2 Number:",params$p2ID)
 header2<-if (params$p2sub != ""){
   paste("SubID:", params$p2sub)}
@@ -116,7 +100,6 @@ header2<-if (params$p2sub != ""){
 ```{r echo=FALSE, eval = params$p2sub != ""}
 Risk_List_Proj <-filter(Risk_List_Proj, 
                         Risk_List_Proj$P2_SUB_IDENTIFIER == params$p2sub)
-Risk_List_Proj$COST_MEAN <- currency(Risk_List_Proj$COST_MEAN,format = "d")
 header2<-if (params$p2sub != ""){
   paste("SubID:", params$p2sub)}
 ```
@@ -124,16 +107,18 @@ header2<-if (params$p2sub != ""){
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, include=FALSE}
 RiskDeetsTable<-Risk_List_Proj |>
+  separate(RISK_IDENTIFIER, c("code", "rnkorder"), sep = "-", remove = FALSE) |>
+  arrange(as.numeric(rnkorder)) |>
   select("RISK_IDENTIFIER","RISK_NAME","RISKCATEGORY","RISK_STATEMENT" ,"LIFECYCLEPHASENAME","MILESTONE","LIKELIHOOD","DISCIPLINE",
          "PERFORMANCEIMPACT","COST_MEAN", "SCHEDULE_MEAN")|>
-    rename("RISK" = RISK_IDENTIFIER,
+  rename("RISK" = RISK_IDENTIFIER,
          "RISK NAME" = RISK_NAME,
          "RISK CATEGORY" = RISKCATEGORY,
          "RISK STATEMENT" = RISK_STATEMENT,
          "PHASE" = LIFECYCLEPHASENAME,
          "PERFORMANCE IMPACT TYPE" = PERFORMANCEIMPACT,
-         "COST IMPACT" = COST_MEAN,
-         "SCHEDULE IMPACT (DAYS)" = SCHEDULE_MEAN)
+         "MEAN COST IMPACT" = COST_MEAN,
+         "MEAN SCHEDULE IMPACT (DAYS)" = SCHEDULE_MEAN)
 
 ```
 ###### Report Created On: `r format(Sys.time(), '%d %B, %Y')`
