@@ -4,7 +4,7 @@
 \alias{create_risk_proj}
 \title{Combine Projects, Means, and Risk Items and only select active risks}
 \usage{
-create_risk_proj(erisk_item, erisk_project, erisk_archive)
+create_risk_proj(risk, project, archive)
 }
 \arguments{
 \item{risk}{data frame; a risk item data frame}

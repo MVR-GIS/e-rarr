@@ -10,7 +10,7 @@ update_data(
   host = "egis-db",
   port = "1521",
   sid = "B5SDEDP1",
-  output_path = "C:/workspace/erarr/inst/app/data/"
+  output_path = "../erarr/inst/app/data/"
 )
 }
 \arguments{
