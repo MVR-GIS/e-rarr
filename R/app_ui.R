@@ -34,7 +34,7 @@ app_ui <- function(request) {
                           "))),
     fluidPage(
       shinyjs::useShinyjs(),
-      theme = bslib::bs_theme(bootswatch = "pulse", version = 5, primary = "#9B4121"),
+      theme = bslib::bs_theme(bootswatch = "pulse", version = 5, primary = "#9B4121", alert = "#9B4121"),
       div(
         style = "background-color: #333; padding: 10px; border-bottom: 1px solid #dee2e6; display: flex; align-items: center;",  # Use Flexbox
         img(src = "www/castle.png", height = "50px", width = "60px"),
@@ -106,6 +106,7 @@ app_ui <- function(request) {
                          multiple = F,
                          options=list(placeholder = 'Enter Milestone'))),
                      actionButton("resetBtn","Reset Filters", 
+                                  style = "color: #9B4121;",
                                   icon =icon("arrows-rotate"))
                      ,
                      width=2
@@ -129,7 +130,7 @@ app_ui <- function(request) {
                                               shiny::downloadButton(
                                                 outputId="download_ProgTop4s",
                                                 label="Download",
-                                                style = "color: #3974db; 
+                                                style = "color: #9B4121; 
                                                 background-color: transparent;
                                                 float:right;
                                                 border-color: transparent;"
@@ -221,6 +222,7 @@ app_ui <- function(request) {
                                           placeholder = 'Select a discipline')
                                       ),
                                       actionButton("resetBtn","Reset Filters", 
+                                                   style = "color: #9B4121;",
                                                    icon =icon("arrows-rotate"))
                      ), width=2),
                    
@@ -245,7 +247,7 @@ app_ui <- function(request) {
                                                 shiny::downloadButton(
                                                   outputId="download_Proj",
                                                   label="Download",
-                                                  style = "color: #3974db; 
+                                                  style = "color: #9B4121; 
                                                 background-color: transparent;
                                                 float:right;
                                                 border-color: transparent;"
@@ -265,7 +267,7 @@ app_ui <- function(request) {
                                                 shiny::downloadButton(
                                                   outputId="download_AllRisk",
                                                   label="Download",
-                                                  style = "color: #3974db; 
+                                                  style = "color: #9B4121; 
                                                 background-color: transparent;
                                                 float:right;
                                                 border-color: transparent;"
@@ -284,7 +286,7 @@ app_ui <- function(request) {
                                                 shiny::downloadButton(
                                                   outputId="download_Top4s",
                                                   label="Download",
-                                                  style = "color: #3974db; 
+                                                  style = "color: #9B4121; 
                                                 background-color: transparent;
                                                 float:right;
                                                 border-color: transparent;"
@@ -312,7 +314,7 @@ app_ui <- function(request) {
                                                 shiny::downloadButton(
                                                   outputId="download_RiskItem",
                                                   label="Download",
-                                                  style = "color: #3974db; 
+                                                  style = "color: #9B4121; 
                                                 background-color: transparent;
                                                 float:right;
                                                 border-color: transparent;"
