@@ -380,7 +380,7 @@ app_server <- function(input, output, session) {
     paste(title_parts[title_parts != ""], collapse = " | ")
   })
   
-  
+ 
   proj_cost_pie <- reactive(
     pieprep(projframe(), "COST_RANK_DESC"))
   
@@ -431,32 +431,36 @@ app_server <- function(input, output, session) {
     shinyalert::shinyalert(html = TRUE, text = tagList(tags$iframe(
       src="www/ProgramTop4s.html", width = 1000, height = 900,  
       style = "border:none;")),
-      size = "l",confirmButtonText = "Close Report",
+      size = "l",
+      confirmButtonText = "Close Report",
+      confirmButtonCol = "#9B4121",
       closeOnClickOutside = TRUE
     )
   })
   
   
-  output$progdownload_Top4s <- downloadHandler(
-    # For PDF output, change this to "report.pdf"
+  output$download_ProgTop4s <- downloadHandler(
     filename = function() {
-      paste0(input$projectInput, " - ", "ProgramTop4s", ".html")
+      paste0("Program_Top_4_Report_", Sys.Date(), ".html")
     },
     content = function(file) {
+      # Render the report to a temporary file
       rmarkdown::render(
-        paste0("./inst/app/rmd/ProgramTop4s.Rmd"),
-        output_file = file,
-        params = list( progID = input$ProgramTypeInput,
-                       missionID = input$MissionInput,
-                       MSCID = input$MSCInput,
-                       districtID = input$districtsInput,
-                       phaseID = input$projphaseInput,
-                       disciplineID = input$projdisInput),
-        envir = new.env(),
-        intermediates_dir = tempdir()
+        "./inst/app/rmd/ProgramTop4s.Rmd",
+        params = list(
+          progID = input$ProgramTypeInput,
+          missionID = input$MissionInput,
+          MSCID = input$MSCInput,
+          districtID = input$districtsInput,
+          phaseID = input$projphaseInput,
+          disciplineID = input$projdisInput
+        ),
+        output_file = file,  # Specify the output file for download
+        envir = new.env()
       )
     }
   )
+  
   
 #### Project level/Risk item reports  
   num <- reactive({
@@ -720,6 +724,7 @@ app_server <- function(input, output, session) {
                                  style = "border:none;")), 
       size = "l",
       confirmButtonText = "Close Report",
+      confirmButtonCol = "#9B4121",
       closeOnClickOutside = TRUE
     )
   })
@@ -743,6 +748,7 @@ app_server <- function(input, output, session) {
                                  style = "border:none;")),
       size = "l", 
       confirmButtonText = "Close Report", 
+      confirmButtonCol = "#9B4121",
       closeOnClickOutside = TRUE
     )
   })
@@ -764,6 +770,7 @@ app_server <- function(input, output, session) {
                                  style = "border:none;")),
       size = "l", 
       confirmButtonText = "Close Report",
+      confirmButtonCol = "#9B4121",
       closeOnClickOutside = TRUE
     )
   })
@@ -781,7 +788,9 @@ app_server <- function(input, output, session) {
     shinyalert::shinyalert(html = TRUE, text = tagList(tags$iframe(
       src="www/ProjectTop4s.html", width = 1000, height = 900,  
       style = "border:none;")),
-      size = "l",confirmButtonText = "Close Report",
+      size = "l",
+      confirmButtonText = "Close Report",
+      confirmButtonCol = "#9B4121",
       closeOnClickOutside = TRUE
     )
   })
