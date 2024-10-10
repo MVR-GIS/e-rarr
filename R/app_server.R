@@ -206,11 +206,11 @@ app_server <- function(input, output, session) {
              conditional(input$ProgramTypeInput != "" , 
                          risk_project_orgs$PROGRAMTYPENAME == input$ProgramTypeInput),
              conditional(input$MissionInput != "" , 
-                         risk_project_orgs$PRIMARYMISSION == input$MissionInput),
-             conditional(input$projcatInput != "", 
-                         risk_project_orgs$RISKCATEGORY == input$projcatInput),
-             conditional(input$projphaseInput !="",
-                         risk_project_orgs$LIFECYCLEPHASENAME == input$phaseInput)
+                         risk_project_orgs$PRIMARYMISSION == input$MissionInput)
+             # conditional(input$projcatInput != "", 
+             #             risk_project_orgs$RISKCATEGORY == input$projcatInput),
+             # conditional(input$projphaseInput !="",
+             #             risk_project_orgs$LIFECYCLEPHASENAME == input$phaseInput)
              
       )
   })
@@ -278,8 +278,10 @@ app_server <- function(input, output, session) {
                          risk_project_orgs$PROGRAMTYPENAME == input$ProgramTypeInput),
              conditional(input$MissionInput != "" , 
                          risk_project_orgs$PRIMARYMISSION == input$MissionInput),
-             conditional(input$projphaseInput !="",
-                         risk_project_orgs$LIFECYCLEPHASENAME == input$projphaseInput),
+             conditional(input$projdisInput != "" ,
+                         risk_project_orgs$DISCIPLINE == input$projdisInput )
+             # conditional(input$projphaseInput !="",
+             #             risk_project_orgs$LIFECYCLEPHASENAME == input$projphaseInput),
       )
   })
   
