@@ -1,7 +1,7 @@
 ---
 title: ''
 runtime: shiny
-output: html_notebook
+output: html_document
 params:
   projID: LaGrange New 1200-Foot Lock
   p2ID: 505374
