@@ -43,51 +43,14 @@ library(dplyr)
 library(kableExtra) 
 library(formattable)
 library(dplyr)
-library(utils)
 library(erarr)
 library(stringr)
 options(scipen = 999)
 
-erisk_item <- utils::read.csv("../data/erisk_item.csv")
-risk_item_db<-data.frame(erisk_item)
-erisk_project <- utils::read.csv("../data/erisk_project.csv")
-risk_project_db<-data.frame(erisk_project)
-erisk_orgs <-read_csv("../data/erisk_orgs.csv",show_col_types = FALSE)
-erisk_archive <- read_csv("../data/erisk_modeled.csv",
-                          show_col_types=FALSE)
-erisk_msc <-read_csv("../data/erisk_msc.csv",
-                     show_col_types = FALSE)
-erisk_dist <-read_csv("../data/erisk_dist.csv",
-                      show_col_types = FALSE)
-erisk_archive <- read_csv("../data/erisk_modeled.csv",
-                          show_col_types=FALSE)
+risk_item_db<-readr::read_csv("../data/erisk_program_riskitem.csv",
+                                 show_col_types = FALSE)
 
-erisk_mean <- erisk_archive|>
-  dplyr::select(COST_MEAN, SCHEDULE_MEAN,OUTCOME_MEAN,PROJECT_ID,RISK_ID)
-
-erisk_orgs_div <- erisk_orgs |>
-  inner_join(erisk_dist, by = join_by(DISTRICT_CODE))
-
-erisk_orgs_div <- erisk_orgs_div |>
-  dplyr::select(DISTRICT_CODE,MSC_ID)
-
-erisk_msc_orgs <- erisk_orgs_div |>
-  inner_join(erisk_msc, by = join_by(MSC_ID), keep = FALSE)
-
-project_orgs <- erisk_project |>
-  inner_join(erisk_msc_orgs|>
-             select(MSC, MSC_DESCRIPT, DISTRICT_CODE), by=join_by(DISTRICT_CODE), keep=FALSE)
-
-risk_proj_orgs <- risk_item_db |>
-  left_join(project_orgs|>
-            select(PROJECT_ID, PRIMARYMISSION,MSC,PROGRAMTYPENAME
-                   ),  by=join_by(PROJECT_ID))|>
-  left_join(erisk_mean, by = join_by(PROJECT_ID,RISK_ID))
-
-
-
-
-program_risks <- risk_proj_orgs |>
+program_risks <- risk_item_db |>
   dplyr::select("MSC","USACE_ORGANIZATION","P2_PROGRAM_CODE","PROGRAMTYPENAME",
                 "PRIMARYMISSION","DISCIPLINE","RISKCATEGORY","LIFECYCLEPHASENAME",
                 "MILESTONE","PROJECT_ID","PROJECT_NAME",
@@ -122,7 +85,6 @@ if (params$progID != "") {
 if (params$missionID != "") {
   proj_risks <- proj_risks %>% filter(PRIMARYMISSION == params$missionID)
 }
-
 if (params$phaseID != "") {
   proj_risks <- proj_risks %>% filter(LIFECYCLEPHASENAME == params$phaseID)
 }
@@ -192,16 +154,16 @@ wrangled_table <- proj_risks %>%
 #### Top 4 Cost Impacts Phase: `r phase_lab`
 ``` {r cost risk log, echo = FALSE, warning=FALSE}
 cost_top4s<-proj_risks |>
-  mutate(MAX_COST = pmax(COST_IMPACT_LOWEST, COST_MEAN, 
+  dplyr::mutate(MAX_COST = pmax(COST_IMPACT_LOWEST, COST_MEAN, 
                          COST_IMPACT_HIGHEST))|>
-  arrange(desc(COST_RISK_RANKING), desc(MAX_COST), desc(PROB_OCCURRENCE))|>
+  dplyr::arrange(desc(COST_RISK_RANKING), desc(MAX_COST), desc(PROB_OCCURRENCE))|>
       dplyr::select(USACE_ORGANIZATION,PROJECT_NAME, PROGRAMTYPENAME,RISK_IDENTIFIER, RISK_NAME, RISKCATEGORY , MILESTONE , LIKELIHOOD, MAX_COST) |>
     dplyr::slice_head(n=4)|>
   mutate(MAX_COST = as.character(formattable::currency(MAX_COST)))|>
   kableExtra::kbl(format = "html", escape = F, 
                   col.names = c("District","Project","Program", "Risk ID",
                                 "Risk Name","Risk Category","Project Milestone",
-                                "Likelihood", "Cost Impact"), align="ccclcccc", 
+                                "Likelihood", "Mean Cost Impact"), align="ccclcccc", 
                   row.names = FALSE)|>
   kableExtra::kable_styling(bootstrap_options = c( "hover", "condensed", 
                                                    "responsive"))
@@ -221,7 +183,7 @@ schedule_top4s<-proj_risks |>
                   col.names =c("District","Project","Program", 
                                "Risk ID","Risk Name","Risk Category",
                                "Project Milestone","Likelihood", 
-                               "Schedule Impact (Days)"), 
+                               "Mean Schedule Impact (Days)"), 
                   align="clcccc", row.names = FALSE)|>
   kableExtra::kable_styling(bootstrap_options = c( "hover", "condensed", 
                                                    "responsive"))
@@ -234,11 +196,14 @@ schedule_top4s
 ``` {r perform risk log, echo = FALSE, warning=FALSE}
 perform_log_table<-proj_risks |>
   arrange(desc(PERFORMANCEIMPACT_RISK_RANKING), desc(PERFORMANCEIMPACT_IMPCT), desc(PROB_OCCURRENCE))|>
-  dplyr::select(RISK_IDENTIFIER, RISK_NAME, RISKCATEGORY , MILESTONE , LIKELIHOOD, PERFORMANCE_RANK_DESC) |>
+  dplyr::select(USACE_ORGANIZATION,PROJECT_NAME,PROGRAMTYPENAME,
+                    RISK_IDENTIFIER, RISK_NAME, RISKCATEGORY , MILESTONE , 
+                     LIKELIHOOD, PERFORMANCE_RANK_DESC) |>
   dplyr::slice_head(n=4)|>
   kableExtra::kbl(format = "html", escape = F, 
-                  col.names =c("Risk ID","Risk Name","Risk Category",
-                               "Project Milestone","Likelihood", "Performance Impact"), align="clcccc", 
+                  col.names =c("District","Project","Program", "Risk ID",
+                                "Risk Name","Risk Category","Project Milestone",
+                                "Likelihood", "Performance Impact"), align="clcccc", 
                   row.names = FALSE)|>
   kableExtra::kable_styling(bootstrap_options = c( "hover", "condensed", "responsive"))
 perform_log_table

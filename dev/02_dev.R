@@ -38,13 +38,15 @@ golem::add_sass_file("custom")
 ## If you have data in your package
 #usethis::use_data_raw(name = "Data_Update", open = FALSE)
 usethis::use_data(erisk_project,
-                  milestonedf,
+                  erisk_phase_milestone,
                   erisk_item,
-                  risk_transact,
-                  risk_treat,
+                  erisk_transact,
+                  erisk_treat,
                   erisk_orgs,
+                  erisk_dist,
+                  erisk_msc,
+                  erisk_modeled,
                   overwrite = TRUE)
-
 
 ## Tests ----
 ## Add one line by test you want to create

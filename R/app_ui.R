@@ -15,26 +15,6 @@
 #' @importFrom plotly plotlyOutput
 #' @importFrom DT DTOutput
 #' @importFrom stringr str_trim
-
-RiskImpactTable <- risk_item_db |>
-  select(
-    "PROJECT_NAME",
-    "RISK_IDENTIFIER",
-    "RISK_NAME",
-    "USACE_ORGANIZATION",
-    "P2_NUMBER",
-    "LIFECYCLEPHASENAME",
-    "MILESTONE",
-    "RISKCATEGORY",
-    "DISCIPLINE",
-    "P2_SUB_IDENTIFIER"
-  ) |>
-  mutate(P2_SUB_IDENTIFIER = ifelse(is.na(P2_SUB_IDENTIFIER), "", 
-                                    P2_SUB_IDENTIFIER))|>
-  mutate(RISK_NAME_ID = paste(RISK_IDENTIFIER,RISK_NAME))|>
-  mutate(RISK_NAME_ID =str_trim(RISK_NAME_ID, side = c("right")))
-
-
 app_ui <- function(request) {
   tagList(
     # Leave this function for adding external resources
@@ -48,27 +28,23 @@ app_ui <- function(request) {
                           .popover {--bs-popover-max-width: 100%;
                           data-bs-animation: FALSE;}
                           .action-button {border-radius: 12px;}
-                          .navbar-header {padding: 20px;}
+                          .navbar-header { padding: 20px;
+                                            height : 75px;}
+                          #upperdiv { background-color: #EAEAEA; } 
                           "))),
     fluidPage(
       shinyjs::useShinyjs(),
-      theme = bslib::bs_theme(bootswatch = "cosmo", version=5),
-      navbarPage(
-        title = div(
-          img(
-            src = "www/castle.png",
-            height = "50px",
-            width = "60px"
-          ),
-          "Risk Analysis Reporting System      "
-        ),
+      theme = bslib::bs_theme(bootswatch = "pulse", version = 5, primary = "#9B4121"),
+      div(
+        style = "background-color: #333; padding: 10px; border-bottom: 1px solid #dee2e6; display: flex; align-items: center;",  # Use Flexbox
+        img(src = "www/castle.png", height = "50px", width = "60px"),
+        h3("Risk Analysis Reporting System", style = "margin: 0; padding-left: 10px; color: white;")  # Remove default margin
+      ),
+      bslib::navset_tab(
         tabPanel("District",
                  sidebarLayout(
                    sidebarPanel(
-                     #class=c"fa-spin"
-                     h5("Filter Projects",div(style = "display:inline-block; float:right",
-                                              actionButton("resetBtn","Reset Filters", 
-                                                           icon =icon("arrows-rotate")))),
+                     h5("Filter Projects"),
                      selectizeInput('MSCInput',
                                     'MSC',
                                     choices = NULL,
@@ -129,43 +105,50 @@ app_ui <- function(request) {
                          selected = NULL,
                          multiple = F,
                          options=list(placeholder = 'Enter Milestone'))),
+                     actionButton("resetBtn","Reset Filters", 
+                                  icon =icon("arrows-rotate"))
                      ,
                      width=2
                    ), 
                    mainPanel(tabsetPanel(
                      tabPanel(
                        "Explore Projects",
+                       textOutput("dynamic_title_program"),
+                       textOutput("last_updated"),
                        plotly::plotlyOutput("projpies"),
-                       DT::DTOutput("projoverview"), value= "Explore Projects"),
+                       DT::DTOutput("projoverview"), 
+                       value= "Explore Projects"),
                      tabPanel("Reports",   
                               layout_column_wrap(
-                       width = 1/4,
-                       height = 275,
-                       bslib::card(
-                         height = 165,
-                         full_screen = FALSE,
-                         card_header("Program Top 4s",
-                                     shiny::downloadButton(
-                                       outputId="download_ProgTop4s",
-                                       label="Download",
-                                       style = "color: #3974db; 
+                                width = 1/4,
+                                height = 275,
+                                bslib::card(
+                                  height = 165,
+                                  full_screen = FALSE,
+                                  card_header("Program Top 4s",
+                                              shiny::downloadButton(
+                                                outputId="download_ProgTop4s",
+                                                label="Download",
+                                                style = "color: #3974db; 
                                                 background-color: transparent;
                                                 float:right;
                                                 border-color: transparent;"
-                                     )),
-                         card_body(
-                           tags$button(id = "Prog4s", 
-                                       class="action-button",
-                                       tags$img(src="www/ProjectTop4.png",
-                                                height = '165px',
-                                                max_width = '100%',
-                                       ),
-                           ),
-                           
-                         )))))))),
+                                              )),
+                                  card_body(
+                                    tags$button(id = "Prog4s", 
+                                                class="action-button",
+                                                tags$img(src="www/ProjectTop4.png",
+                                                         height = '165px',
+                                                         max_width = '100%',
+                                                ),
+                                    ),
+                                    
+                                  )))))))),
+
         tabPanel("Project",
                  sidebarLayout(
                    sidebarPanel(
+                     h5("Filter Risks"),
                      selectizeInput(
                        'districtInput',
                        "District",
@@ -236,16 +219,20 @@ app_ui <- function(request) {
                                         multiple = F,
                                         options=list(
                                           placeholder = 'Select a discipline')
-                                      )
+                                      ),
+                                      actionButton("resetBtn","Reset Filters", 
+                                                   icon =icon("arrows-rotate"))
                      ), width=2),
                    
                    mainPanel(
                      tabsetPanel(
                        tabPanel(
                          "Explore Risks",
-                         textOutput("dynamic_title"),
+                         textOutput("dynamic_title_project"),
+                         textOutput("last_updated"),
                          plotly::plotlyOutput("pie"),
-                         DT::DTOutput("overviewtab"), value= "Explore"
+                         DT::DTOutput("overviewtab"),
+                         value= "Explore"
                        ),
                        tabPanel("Reports",
                                 layout_column_wrap(
@@ -308,7 +295,7 @@ app_ui <- function(request) {
                                                   tags$img(src="www/ProjectTop4.png",
                                                            height = '165px',
                                                            max_width = '100%',
-                                      ),
+                                                  ),
                                       ),
                                       
                                     )
@@ -317,7 +304,7 @@ app_ui <- function(request) {
                                   bslib::card(
                                     height = 165,
                                     full_screen = FALSE,id="RiskItemCard",
-                                    card_header("Risk Item Report",
+                                    card_header("Risk Item",
                                                 tooltip(bsicons::bs_icon("info-circle"),
                                                         "Select a Risk Item", 
                                                         placement="right", 
@@ -342,7 +329,6 @@ app_ui <- function(request) {
                        id = "reporttabs" )
                    )
                  )
-        ), selected = "Project")
+        ), id="upperdiv")
     )
-  )}
-
+  )} 
