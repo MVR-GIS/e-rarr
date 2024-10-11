@@ -12,9 +12,6 @@
 #'
 #' @return None. The function saves the imported tables as CSV files in the specified output path.
 #'
-#' @examples
-#' import_and_save_tables()
-#'
 #' @export
 
 update_data <- function(key_service = "egis-db-brandonroad",
@@ -23,21 +20,25 @@ update_data <- function(key_service = "egis-db-brandonroad",
                                    port = "1521",
                                    sid = "B5SDEDP1",
                                    output_path = "../erarr/inst/app/data/") {
+  
+  # Local db connection approach
   # Set the keyring once on each computer prior to building book
-  keyring::key_set(service = key_service, username = user_name)
+  #keyring::key_set(service = key_service, username = user_name)
   
   # Make Oracle connection
-  drv <- DBI::dbDriver("Oracle")
-  connect_string <- paste0(
-    "(DESCRIPTION=",
-    "(ADDRESS=(PROTOCOL=tcp)(HOST=", host, ")(PORT=", port, "))",
-    "(CONNECT_DATA=(SID=", sid, ")))"
-  )
+  #drv <- DBI::dbDriver("Oracle")
+  #connect_string <- paste0(
+  #  "(DESCRIPTION=",
+  #  "(ADDRESS=(PROTOCOL=tcp)(HOST=", host, ")(PORT=", port, "))",
+  #  "(CONNECT_DATA=(SID=", sid, ")))"
+  #)
+  #
+  #con_roracle <- ROracle::dbConnect(drv,
+  #                                  username = user_name,
+  #                                  password = keyring::key_get(key_service, user_name),
+  #                                  dbname = connect_string)
   
-  con_roracle <- ROracle::dbConnect(drv,
-                                    username = user_name,
-                                    password = keyring::key_get(key_service, user_name),
-                                    dbname = connect_string)
+  # docker container db connection approach
   
   # Import tables from Oracle
   erisk_project <- ROracle::dbReadTable(con_roracle, "ERR_PROJECTLIST_FULL")
