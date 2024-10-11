@@ -47,7 +47,9 @@ oracle <-
   wget https://download.oracle.com/otn_software/linux/instantclient/2350000/oracle-instantclient-odbc-23.5.0.24.07-1.el9.x86_64.rpm
   sudo alien -i --scripts oracle-instantclient*.rpm
   rm -f oracle-instantclient*.rpm  
+"
 
+odbc <- "
 # Configure ODBC
   cd /opt/oracle/instantclient_23_5
   mkdir etc
