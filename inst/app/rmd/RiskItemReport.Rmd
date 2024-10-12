@@ -420,8 +420,8 @@ risk_treat_table<-risk_treatment |>
   select(RISK_TREATMENT_ID,PROPOSED_RISK_TREATMENT,COST_IMPACT_RISK_TREATMENT,
          SCHEDULE_IMPACT_RISK_TREATMENT, IMPLEMENTED, RISK_NAME) |>
   mutate(IMPLEMENT_IMG = case_when(
-    IMPLEMENTED == 1 ~  bsicons::bs_icon("check-lg"),
-    IMPLEMENTED == 0 ~ bsicons::bs_icon("x-lg") )) |>
+    IMPLEMENTED == 1 ~  paste0('<span style="color: green;">', bsicons::bs_icon("check-lg"), '</span>'),
+    IMPLEMENTED == 0 ~ paste0('<span style="color: red;">', bsicons::bs_icon("x-lg"), '</span>'))) |>
   select(RISK_TREATMENT_ID,PROPOSED_RISK_TREATMENT,COST_IMPACT_RISK_TREATMENT,
          SCHEDULE_IMPACT_RISK_TREATMENT, IMPLEMENT_IMG) |>
   mutate(PROPOSED_RISK_TREATMENT = paste0(( "Measure "), 
@@ -452,7 +452,7 @@ mutate(across(c(COST_RISK_RANKING, SCHEDULE_RISK_RANKING, PERFORMANCEIMPACT_RISK
                   . == 3 ~ '#FF7F00',
                   . == 4 ~ '#E31A1C'),
                 .names = "{.col}color")) |>
-  mutate(TREAT_IMPLEMENT_IMG = if_else(is.na(TREATMENTS_IMPLEMENTED), bsicons::bs_icon("x-lg"),  bsicons::bs_icon("check-lg")))
+  mutate(TREAT_IMPLEMENT_IMG = if_else(is.na(TREATMENTS_IMPLEMENTED),paste0('<span style="color: red;">', bsicons::bs_icon("x-lg"), '</span>'),  paste0('<span style="color: green;">', bsicons::bs_icon("check-lg"), '</span>')))
          
 
 risk_log_table <- risk_log |>
