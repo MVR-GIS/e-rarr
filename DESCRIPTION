@@ -30,17 +30,17 @@ Imports:
     kableExtra,
     knitr,
     plotly,
+    purrr,
     readr,
     rlang,
     rmarkdown,
-    scales,
     shiny,
     shinyalert,
-    shinycssloaders,
     shinyjs,
     stringr,
     tidyr,
-    webshot
+    webshot,
+    usethis
 Suggests: 
     htmlwidgets,
     spelling,

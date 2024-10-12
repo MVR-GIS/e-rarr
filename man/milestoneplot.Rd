@@ -19,13 +19,12 @@ Creates a milestone chart
 }
 \examples{
 # Get milestone data and risk item
-milestonedf <- read.csv("inst/app/data/PHASEMILESTONE.csv")
-milestone_df <- data.frame(milestonedf)
+# milestonedf <- read_csv("inst/app/data/erisk_phase_milestone.csv")
+# milestone_df <- data.frame(milestonedf)
 
-riskitem <- risk_item
+# riskitem <- erarr::erisk_item
 
-# example
-milestone_plot <- milestoneplot(riskitem = risk_item, 
-                                milestonedf = milestone_df)
+# milestone_plot <- milestoneplot(riskitem = riskitem, 
+#                                 milestonedf = milestone_df)
 
 }

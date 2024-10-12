@@ -8,12 +8,12 @@
 #'
 #' @examples
 #' #Get test data
-#' risk <- erarr::erisk_item
-#' project <- erarr::erisk_project
-#' archive <- erarr::erisk_modeled
+#' #risk <- erarr::erisk_item
+#' #project <- erarr::erisk_project
+#' #archive <- erarr::erisk_modeled
 #'
 #' #Create items
-#' risk_item_db<-create_risk_proj(risk, project, archive)
+#' #risk_item_db<-create_risk_proj(risk, project, archive)
 #'
 #' @importFrom dplyr select left_join mutate join_by
 #' @importFrom formattable currency

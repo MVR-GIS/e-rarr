@@ -1,17 +1,16 @@
 #' @title Wrangle Project Tables
 #' @description Preps data for table on Project level reports, aggregates cost, schedule, and performance
 #' risks per each project
-#' @param projdf   data frame; A data frame of cost, schedule, and performance risks for projects
-#' @param rankcol  character; The column name containing type of risk, 'Cost", "Schedule', or 'Performance'
+#' @param riskdf   data frame; 
+#' @param colname  character; 
 #'
 #' @return A data.frame of risks summarized for each project
 #'
 #' @importFrom dplyr group_by summarize filter arrange mutate case_when n
-#' @importFrom rlang .data enquo
-#' @importFrom stringr str_to_title
+#' @importFrom rlang .data enquo sym
+#' @importFrom stringr str_to_title str_to_upper
 #' @importFrom formattable currency 
 #' @export
-#'
 #'
 
 proj_tableprep <- function(riskdf, colname) {
