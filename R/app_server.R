@@ -712,7 +712,7 @@ app_server <- function(input, output, session) {
     req(isTruthy(input$riskInput),
         isTruthy(input$projectInput) || isTruthy(input$P2Input)) 
     rmarkdown::render(
-      "./inst/app/rmd/RiskItemReport.Rmd",
+      system.file("app", "rmd", "RiskItemReport.Rmd", package = "erarr"),
       params = list(projID = input$projectInput,
                     riskID = input$riskInput,
                     p2ID   = input$P2Input),
@@ -736,7 +736,7 @@ app_server <- function(input, output, session) {
   observeEvent(input$Proj, {
     req(isTruthy(input$projectInput) || isTruthy(input$P2Input))
     rmarkdown::render(
-      "./inst/app/rmd/ProjectAllRiskReport.Rmd",
+      system.file("app", "rmd", "ProjectAllRiskReport.Rmd", package = "erarr"),
       params = list(projID = input$projectInput, 
                     p2ID   = input$P2Input,
                     p2sub  = input$SubIDInput),
@@ -758,7 +758,7 @@ app_server <- function(input, output, session) {
   observeEvent(input$AllRisk, {
     req(isTruthy(input$projectInput) || isTruthy(input$P2Input))
     rmarkdown::render(
-      "./inst/app/rmd/AllRiskDetailTable.Rmd",
+      system.file("app", "rmd", "AllRiskDetailTable.Rmd", package = "erarr"),
       params = list(projID = input$projectInput,
                     p2ID   = input$P2Input,
                     p2sub  = input$SubIDInput), 
@@ -780,7 +780,7 @@ app_server <- function(input, output, session) {
   observeEvent(input$Proj4s, {
     req(isTruthy(input$projectInput) || isTruthy(input$P2Input))
     rmarkdown::render(
-      "./inst/app/rmd/ProjectTop4s.Rmd",
+      system.file("app", "rmd", "ProjectTop4s.Rmd", package = "erarr"),
       params = list(
         projID = input$projectInput,
         p2ID = input$P2Input,
@@ -804,7 +804,7 @@ app_server <- function(input, output, session) {
     },
     content = function(file) {
       rmarkdown::render(
-        paste0("./inst/app/rmd/ProjectAllRiskReport.Rmd"),
+        system.file("app", "rmd", "ProjectAllRiskReport.Rmd", package = "erarr"), 
         output_file = file,
         params = list(projID = input$projectInput, 
                       p2ID   = input$P2Input,
@@ -822,7 +822,7 @@ app_server <- function(input, output, session) {
     },
     content = function(file) {
       rmarkdown::render(
-        paste0("./inst/app/rmd/AllRiskDetailTable.Rmd"),
+        system.file("app", "rmd", "AllRiskDetailTable.Rmd", package = "erarr"), 
         output_file = file,
         params = list(projID = input$projectInput, 
                       p2ID   = input$P2Input,
@@ -840,6 +840,7 @@ app_server <- function(input, output, session) {
     },
     content = function(file) {
       rmarkdown::render(
+        system.file("app", "rmd", "ProjectTop4s.Rmd", package = "erarr"), 
         paste0("./inst/app/rmd/ProjectTop4s.Rmd"),
         output_file = file,
         params = list(projID = input$projectInput, 
@@ -858,7 +859,7 @@ app_server <- function(input, output, session) {
     },
     content = function(file) {
       rmarkdown::render(
-        paste0("./inst/app/rmd/RiskItemReport.Rmd"),
+        system.file("app", "rmd", "ProjectAllRiskReport.Rmd", package = "erarr"),
         output_file = file,
         params = list(projID = input$projectInput, 
                       p2ID   = input$P2Input,
