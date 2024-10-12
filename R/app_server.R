@@ -14,13 +14,15 @@
 #' @importFrom shinyalert shinyalert
 #' @importFrom formattable currency
 #' @importFrom readr read_csv
+#' @importFrom purrr reduce
+#' @importFrom stats setNames
 #'
 library(shiny)
 library(readr)
 library(dplyr)
 library(tidyr)
 library(stringr)
-library(shinycssloaders)
+#library(shinycssloaders)
 library(shinyalert)
 library(bslib)
 library(shinyjs)
