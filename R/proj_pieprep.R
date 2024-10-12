@@ -3,9 +3,8 @@
 #' @description Preps data for pie charts at project level reports. Counts the values and sets the 
 #' color for each of the rank levels in the specified 'rankcol`.
 #'
-#' @param projdf   data frame; A data frame of wrangled cost schedule and performance 
-#' counts from shiny app
-#' @param rankcol  character; The column name containing the risk ranks. Ranks
+#' @param riskdf   data frame; 
+#' @param colname  character; The column name containing the risk ranks. Ranks
 #'                 values must be one of: "High", "Medium", "Low", or 
 #'                 "Opportunity".
 #'
