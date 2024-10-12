@@ -1,15 +1,14 @@
 FROM rocker/verse:4.4.0
 RUN apt-get update && apt-get install -y  gsfonts imagemagick libcurl4-openssl-dev libfontconfig1-dev libfreetype6-dev libicu-dev libmagick++-dev libpng-dev libssl-dev libxml2-dev make pandoc zlib1g-dev 
 # Install unixODBC packages
-  apt-get install -y unixodbc unixodbc-dev
-
+RUN apt-get install -y unixodbc unixodbc-dev
 # Install Oracle Instant Client components
-  apt-get install -y libaio1 alien
-  wget https://download.oracle.com/otn_software/linux/instantclient/2350000/oracle-instantclient-basiclite-23.5.0.24.07-1.el9.x86_64.rpm
-  wget https://download.oracle.com/otn_software/linux/instantclient/2350000/oracle-instantclient-sqlplus-23.5.0.24.07-1.el9.x86_64.rpm
-  wget https://download.oracle.com/otn_software/linux/instantclient/2350000/oracle-instantclient-odbc-23.5.0.24.07-1.el9.x86_64.rpm
-  sudo alien -i --scripts oracle-instantclient*.rpm
-  rm -f oracle-instantclient*.rpm  
+RUN apt-get install -y libaio1 alien
+# RUN wget https://download.oracle.com/otn_software/linux/instantclient/2350000/oracle-instantclient-basiclite-23.5.0.24.07-1.el9.x86_64.rpm
+# RUN wget https://download.oracle.com/otn_software/linux/instantclient/2350000/oracle-instantclient-sqlplus-23.5.0.24.07-1.el9.x86_64.rpm
+# RUN wget https://download.oracle.com/otn_software/linux/instantclient/2350000/oracle-instantclient-odbc-23.5.0.24.07-1.el9.x86_64.rpm
+# RUN sudo alien -i --scripts oracle-instantclient*.rpm
+# RUN rm -f oracle-instantclient*.rpm  
  && rm -rf /var/lib/apt/lists/*
 RUN mkdir -p /usr/local/lib/R/etc/ /usr/lib/R/etc/
 RUN echo "options(repos = c(CRAN = 'https://cran.rstudio.com/'), download.file.method = 'libcurl', Ncpus = 4)" | tee /usr/local/lib/R/etc/Rprofile.site | tee /usr/lib/R/etc/Rprofile.site

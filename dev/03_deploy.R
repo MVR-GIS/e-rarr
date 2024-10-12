@@ -38,15 +38,14 @@ golem::add_shinyserver_file()
 oracle <- 
 "
 # Install unixODBC packages
-  apt-get install -y unixodbc unixodbc-dev
-
+RUN apt-get install -y unixodbc unixodbc-dev
 # Install Oracle Instant Client components
-  apt-get install -y libaio1 alien
-  wget https://download.oracle.com/otn_software/linux/instantclient/2350000/oracle-instantclient-basiclite-23.5.0.24.07-1.el9.x86_64.rpm
-  wget https://download.oracle.com/otn_software/linux/instantclient/2350000/oracle-instantclient-sqlplus-23.5.0.24.07-1.el9.x86_64.rpm
-  wget https://download.oracle.com/otn_software/linux/instantclient/2350000/oracle-instantclient-odbc-23.5.0.24.07-1.el9.x86_64.rpm
-  sudo alien -i --scripts oracle-instantclient*.rpm
-  rm -f oracle-instantclient*.rpm  
+RUN apt-get install -y libaio1 alien
+# RUN wget https://download.oracle.com/otn_software/linux/instantclient/2350000/oracle-instantclient-basiclite-23.5.0.24.07-1.el9.x86_64.rpm
+# RUN wget https://download.oracle.com/otn_software/linux/instantclient/2350000/oracle-instantclient-sqlplus-23.5.0.24.07-1.el9.x86_64.rpm
+# RUN wget https://download.oracle.com/otn_software/linux/instantclient/2350000/oracle-instantclient-odbc-23.5.0.24.07-1.el9.x86_64.rpm
+# RUN sudo alien -i --scripts oracle-instantclient*.rpm
+# RUN rm -f oracle-instantclient*.rpm  
 "
 
 odbc <- "
