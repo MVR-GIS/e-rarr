@@ -7,9 +7,9 @@
 proj_tableprep(riskdf, colname)
 }
 \arguments{
-\item{projdf}{data frame; A data frame of cost, schedule, and performance risks for projects}
+\item{riskdf}{data frame;}
 
-\item{rankcol}{character; The column name containing type of risk, 'Cost", "Schedule', or 'Performance'}
+\item{colname}{character;}
 }
 \value{
 A data.frame of risks summarized for each project
