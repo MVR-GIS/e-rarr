@@ -420,7 +420,7 @@ app_server <- function(input, output, session) {
   
   observeEvent(input$Prog4s, {
     rmarkdown::render(
-      "./inst/app/rmd/ProgramTop4s.Rmd",
+      system.file("app", "rmd", "ProgramTop4s.Rmd", package = "erarr"), 
       params = list(
         progID = input$ProgramTypeInput,
         missionID = input$MissionInput,
@@ -448,7 +448,7 @@ app_server <- function(input, output, session) {
     content = function(file) {
       # Render the report to a temporary file
       rmarkdown::render(
-        "./inst/app/rmd/ProgramTop4s.Rmd",
+        system.file("app", "rmd", "ProgramTop4s.Rmd", package = "erarr"), 
         params = list(
           progID = input$ProgramTypeInput,
           missionID = input$MissionInput,
