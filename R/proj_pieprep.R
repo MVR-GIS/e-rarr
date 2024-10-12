@@ -10,9 +10,10 @@
 #'
 #' @return A data.frame of colors for each risk rank.
 #'
-#' @importFrom dplyr group_by summarize filter arrange mutate case_when n
-#' @importFrom rlang .data enquo
-#' @importFrom stringr str_to_title
+#' @importFrom dplyr group_by summarize filter arrange mutate case_when n 
+#'                   select all_of 
+#' @importFrom rlang .data enquo sym
+#' @importFrom stringr str_to_title str_to_upper
 #' @export
 #'
 #'

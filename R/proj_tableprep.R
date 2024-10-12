@@ -7,8 +7,8 @@
 #' @return A data.frame of risks summarized for each project
 #'
 #' @importFrom dplyr group_by summarize filter arrange mutate case_when n
-#' @importFrom rlang .data enquo
-#' @importFrom stringr str_to_title
+#' @importFrom rlang .data enquo sym
+#' @importFrom stringr str_to_title str_to_upper
 #' @importFrom formattable currency 
 #' @export
 #'
