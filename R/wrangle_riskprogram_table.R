@@ -35,6 +35,6 @@ create_risk_prog <- function(erisk_orgs, erisk_dist, erisk_msc, risk_item_db){
                  dplyr::select(MSC, MSC_DESCRIPT, DISTRICT_CODE), by=dplyr::join_by(DISTRICT_CODE), keep=FALSE)
     
   readr::write_csv(risk_program_db, paste0(output_path, "erisk_program_riskitem.csv"))
-  usethis::use_data(risk_program_db, overwrite = TRUE)
 return(risk_program_db)
 }
+

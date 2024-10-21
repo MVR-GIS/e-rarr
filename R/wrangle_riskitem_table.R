@@ -37,7 +37,6 @@ create_risk_proj <- function(risk, project, archive){
   
   readr::write_csv(risk_item_db,
                    paste0(output_path, "erisk_project_riskitem.csv"))
-  usethis::use_data(risk_item_db, overwrite = TRUE)
   
 return(risk_item_db)
 }
