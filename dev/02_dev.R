@@ -46,6 +46,8 @@ usethis::use_data(erisk_project,
                   erisk_dist,
                   erisk_msc,
                   erisk_modeled,
+                  erisk_program_riskitem,
+                  erisk_project_riskitem,
                   overwrite = TRUE)
 
 ## Tests ----
