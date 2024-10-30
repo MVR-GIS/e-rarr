@@ -1,6 +1,6 @@
 ---
-  title: "Update Risk Analysis Report Test Data
-date: "`r Sys.Date()`"
+  title: "Update Risk Analysis Report Test Data"
+  date: `r Sys.Date()`
 ---
 
 # Introduction
