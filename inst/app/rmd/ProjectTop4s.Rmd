@@ -4,7 +4,7 @@ runtime: shiny
 output: html_document
 params:
   projID: ""
-  p2ID: 479265
+  p2ID: ""
   p2sub: ""
 ---
 
@@ -113,11 +113,11 @@ cat("###",header,header2)
 #### Top 4 Cost Impacts (All Phases)
 ``` {r cost risk log, echo = FALSE, warning=FALSE}
 cost_top4s<-proj_risks |>
-  mutate(MAX_COST = pmax(COST_IMPACT_LOWEST, COST_MEAN, COST_IMPACT_HIGHEST))|>
-  arrange(desc(COST_RISK_RANKING), desc(MAX_COST), desc(PROB_OCCURRENCE))|>
+  dplyr::mutate(MAX_COST = pmax(COST_IMPACT_LOWEST, COST_MEAN, COST_IMPACT_HIGHEST))|>
+  dplyr::arrange(desc(COST_RISK_RANKING), desc(MAX_COST), desc(PROB_OCCURRENCE))|>
       dplyr::select(RISK_IDENTIFIER, RISK_NAME, RISKCATEGORY , MILESTONE , LIKELIHOOD, MAX_COST) |>
     dplyr::slice_head(n=4)|>
-  mutate(MAX_COST = as.character(formattable::currency(MAX_COST)))|>
+  dplyr::mutate(MAX_COST = as.character(formattable::currency(MAX_COST)))|>
   kableExtra::kbl(format = "html", escape = F, col.names =c("Risk ID","Risk Name","Risk Category","Project Milestone","Likelihood", "Mean Cost Impact"), align="clcccc", row.names = FALSE)|>
   kableExtra::kable_styling(bootstrap_options = c( "hover", "condensed", "responsive"))
 
@@ -127,8 +127,8 @@ cost_top4s
 #### Top 4 Schedule Impacts (All Phases)
 ``` {r schedule risk log, echo = FALSE, warning=FALSE}
 schedule_top4s<-proj_risks |>
-   mutate(MAX_SCHED = pmax(SCHEDULE_IMPACT_LOWEST, SCHEDULE_MEAN, SCHEDULE_IMPACT_HIGHEST))|>
-  arrange(desc(SCHEDULE_RISK_RANKING), desc(MAX_SCHED), desc(PROB_OCCURRENCE))|>
+   dplyr::mutate(MAX_SCHED = pmax(SCHEDULE_IMPACT_LOWEST, SCHEDULE_MEAN, SCHEDULE_IMPACT_HIGHEST))|>
+  dplyr::arrange(desc(SCHEDULE_RISK_RANKING), desc(MAX_SCHED), desc(PROB_OCCURRENCE))|>
       dplyr::select(RISK_IDENTIFIER, RISK_NAME, RISKCATEGORY , MILESTONE , LIKELIHOOD, MAX_SCHED) |>
     dplyr::slice_head(n=4)|>
   kableExtra::kbl(format = "html", escape = F, col.names =c("Risk ID","Risk Name","Risk Category","Project Milestone","Likelihood", "Mean Schedule Impact (Days)"), align="clcccc", row.names = FALSE)|>
@@ -141,7 +141,7 @@ schedule_top4s
 #### Top 4 Performance Impacts (All Phases)
 ``` {r perform risk log, echo = FALSE, warning=FALSE}
 perform_log_table<-proj_risks |>
-  arrange(desc(PERFORMANCEIMPACT_RISK_RANKING), desc(PERFORMANCEIMPACT_IMPCT), desc(PROB_OCCURRENCE))|>
+  dplyr::arrange(desc(PERFORMANCEIMPACT_RISK_RANKING), desc(PERFORMANCEIMPACT_IMPCT), desc(PROB_OCCURRENCE))|>
   dplyr::select(RISK_IDENTIFIER, RISK_NAME, RISKCATEGORY , MILESTONE , LIKELIHOOD, PERFORMANCE_RANK_DESC) |>
   dplyr::slice_head(n=4)|>
   kableExtra::kbl(format = "html", escape = F, col.names =c("Risk ID","Risk Name","Risk Category","Project Milestone","Likelihood", "Performance Impact"), align="clcccc", row.names = FALSE)|>
