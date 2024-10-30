@@ -3,7 +3,7 @@ title: ""
 runtime: shiny
 output: html_document
 params:
-  projID: ""
+  projID: Lee County Conservation Board CAP Sec 204
   p2ID: ""
   p2sub: ""
 ---
@@ -65,12 +65,12 @@ Risk_List_Proj <- RiskDeets
 # Apply filters based on available parameters
 if (params$projID != "") {
   proj_risks <- dplyr::filter(Risk_List_Proj, PROJECT_NAME == params$projID)
-  header <- paste("Project:", Risk_List_Proj$PROJECT_NAME[1])
+  header <- paste("Project:", proj_risks$PROJECT_NAME[1])
 }
 
 if (params$p2ID != "") {
   proj_risks<- dplyr::filter(Risk_List_Proj, P2_NUMBER == params$p2ID)
-  header <- paste("P2 Number:", Risk_List_Proj$P2_NUMBER[1])
+  header <- paste("P2 Number:", proj_risks$P2_NUMBER[1])
 }
 
 if (params$p2sub != "") {
@@ -85,7 +85,7 @@ header2 <- if (params$p2sub != "") {
   ""
 }
 
-proj_risk_item<- dplyr::slice_head(Risk_List_Proj)
+proj_risk_item<- dplyr::slice_head(proj_risks)
 ```
 
 ###### Report Created On: `r format(Sys.time(), '%d %B, %Y')`
