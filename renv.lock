@@ -659,7 +659,13 @@
     "erarr": {
       "Package": "erarr",
       "Version": "0.1.3",
-      "Source": "unknown",
+      "Source": "GitHub",
+      "RemoteType": "github",
+      "RemoteHost": "api.github.com",
+      "RemoteUsername": "MVR-GIS",
+      "RemoteRepo": "erarr",
+      "RemoteRef": "main",
+      "RemoteSha": "631ac93965b022b3da28916d1391bfc05214a47d",
       "Requirements": [
         "DT",
         "R",
@@ -686,7 +692,7 @@
         "stringr",
         "tidyr"
       ],
-      "Hash": "310945a4ca2f2bc5d83f0986f9d17bea"
+      "Hash": "66c95260ac0dc23e1be1dda12c919847"
     },
     "evaluate": {
       "Package": "evaluate",
