@@ -23,12 +23,12 @@ Combine Organization and Division Information and add it to the project risk tab
 }
 \examples{
 #Get test data
-erisk_orgs <- erarr::erisk_orgs
-erisk_dist <- erarr::erisk_dist
-erisk_msc <- erarr::erisk_msc
-risk_item_db <- erarr::risk_item_db
+#erisk_orgs <- erarr::erisk_orgs
+#erisk_dist <- erarr::erisk_dist
+#erisk_msc <- erarr::erisk_msc
+#risk_item_db <- erarr::risk_item_db
 
 #Create items
-risk_project_orgs<-create_risk_prog(erisk_orgs, erisk_dist, erisk_msc, risk_item_db)
+#risk_project_orgs<-create_risk_prog(erisk_orgs, erisk_dist, erisk_msc, risk_item_db)
 
 }

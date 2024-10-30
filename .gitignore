@@ -20,6 +20,10 @@
 # RStudio files
 .Rproj.user/
 
+# rendered reports
+inst/app/www/*.html
+inst/app/rmd/*.png
+
 # produced vignettes
 vignettes/*.html
 vignettes/*.pdf

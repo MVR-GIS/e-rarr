@@ -33,8 +33,32 @@ golem::add_shinyserver_file()
 
 ## Docker ----
 ## If you want to deploy via a generic Dockerfile
-#golem::add_dockerfile(port = 3838)
-golem::add_dockerfile_with_renv(port = 3838)
+
+
+oracle <- 
+"
+# Install unixODBC packages
+RUN apt-get install -y unixodbc unixodbc-dev
+# Install Oracle Instant Client components
+RUN apt-get install -y libaio1 alien
+# RUN wget https://download.oracle.com/otn_software/linux/instantclient/2350000/oracle-instantclient-basiclite-23.5.0.24.07-1.el9.x86_64.rpm
+# RUN wget https://download.oracle.com/otn_software/linux/instantclient/2350000/oracle-instantclient-sqlplus-23.5.0.24.07-1.el9.x86_64.rpm
+# RUN wget https://download.oracle.com/otn_software/linux/instantclient/2350000/oracle-instantclient-odbc-23.5.0.24.07-1.el9.x86_64.rpm
+# RUN sudo alien -i --scripts oracle-instantclient*.rpm
+# RUN rm -f oracle-instantclient*.rpm  
+"
+
+odbc <- "
+# Configure ODBC
+  cd /opt/oracle/instantclient_23_5
+  mkdir etc
+  cp /ect/odbcinst.ini etc/.
+  cp ~/.odbc.ini etc/odbc.ini
+  ./odbc_update_ini.sh .
+  sudo cp etc/odbcinst.ini /etc/.
+"
+golem::add_dockerfile(port = 3838,
+                      extra_sysreqs = oracle)
 
 # In Terminal on computer with docker installed, run the following:
 # docker build -f Dockerfile --progress=plain -t erarr_base .

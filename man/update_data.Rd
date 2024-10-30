@@ -33,7 +33,3 @@ None. The function saves the imported tables as CSV files in the specified outpu
 This function connects to an Oracle database, imports specified tables,
 and saves them as CSV files in the specified output path.
 }
-\examples{
-import_and_save_tables()
-
-}

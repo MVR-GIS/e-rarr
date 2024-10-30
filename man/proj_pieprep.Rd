@@ -7,10 +7,9 @@
 proj_pieprep(riskdf, colname)
 }
 \arguments{
-\item{projdf}{data frame; A data frame of wrangled cost schedule and performance 
-counts from shiny app}
+\item{riskdf}{data frame;}
 
-\item{rankcol}{character; The column name containing the risk ranks. Ranks
+\item{colname}{character; The column name containing the risk ranks. Ranks
 values must be one of: "High", "Medium", "Low", or 
 "Opportunity".}
 }

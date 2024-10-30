@@ -510,6 +510,7 @@ kbl(
   ))
 ```
 
+
 ```{r risk log, echo = FALSE, warning = FALSE}
 risk_log <- data.frame(risk_item_transact)
 risk_log <- risk_log |>
@@ -541,7 +542,6 @@ risk_log <- risk_log |>
       '</span>'
     )
   ))
-
 
 risk_log_table <- risk_log |>
   select(
