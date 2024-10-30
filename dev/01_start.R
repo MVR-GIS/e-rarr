@@ -40,7 +40,7 @@ golem::use_recommended_tests()
 ## Favicon ----
 # If you want to change the favicon (default is golem's one)
 golem::remove_favicon()
-golem::use_favicon(path="inst/app/www/erarr.png")
+golem::use_favicon(path="inst/app/www/castle.png")
 
 
 ## Add helper functions ----

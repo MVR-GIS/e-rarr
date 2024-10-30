@@ -39,15 +39,8 @@ body {-webkit-print-color-adjust: exact;}
 ```{r echo=FALSE, message=FALSE, warning=FALSE, include=FALSE}
 library(readr) 
 library(dplyr)
-library(magrittr) 
 library(tidyr)
-library(rlang)
-library(formattable)
-library(plotly)
-library(ggplot2)
-library(ggrepel)
 library(kableExtra)
-library(english)
 ```
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, include=FALSE}
@@ -56,7 +49,7 @@ risk_item_db<-readr::read_csv("../data/erisk_program_riskitem.csv",
                                  show_col_types = FALSE)
 
 RiskDeets <- risk_item_db |>
-  select("PROJECT_ID", "P2_NUMBER", "RISK_IDENTIFIER", "P2_SUB_IDENTIFIER", 
+  dplyr::select("PROJECT_ID", "P2_NUMBER", "RISK_IDENTIFIER", "P2_SUB_IDENTIFIER", 
          "PROJECT_NAME", "RISK_NAME", "RISKCATEGORY", "RISK_STATEMENT", 
          "LIFECYCLEPHASENAME", "MILESTONE", "LIKELIHOOD", "DISCIPLINE", 
          "PERFORMANCEIMPACT", "PERFORMANCE_RANK_DESC", 
@@ -69,8 +62,8 @@ RiskDeets <- risk_item_db |>
 
 ```{r echo=FALSE, eval = params$projID != ""}
 Risk_List_Proj <- RiskDeets |>
-  filter(RiskDeets$PROJECT_NAME == params$projID)
-proj_risks <- filter(Risk_List_Proj, 
+  dplyr::filter(RiskDeets$PROJECT_NAME == params$projID)
+proj_risks <- dplyr::filter(Risk_List_Proj, 
                      Risk_List_Proj$PROJECT_NAME == params$projID)
 proj_risk_item <- slice_head(Risk_List_Proj)
 header <- paste("Project:", proj_risk_item$PROJECT_NAME)
@@ -79,10 +72,10 @@ header2 <- if (params$p2sub != "") {paste("SubID:", params$p2sub)}
 ```
 
 ```{r echo=FALSE, eval = params$p2ID != ""}
-Risk_List_Proj <- filter(RiskDeets, RiskDeets$P2_NUMBER == params$p2ID)
+Risk_List_Proj <- dplyr::filter(RiskDeets, RiskDeets$P2_NUMBER == params$p2ID)
 
-proj_risks <- filter(Risk_List_Proj, Risk_List_Proj$P2_NUMBER == params$p2ID)
-proj_risk_item <- slice_head(Risk_List_Proj)
+proj_risks <- dplyr::filter(Risk_List_Proj, Risk_List_Proj$P2_NUMBER == params$p2ID)
+proj_risk_item <- dplyr::slice_head(Risk_List_Proj)
 header <- paste("P2 Number:", proj_risk_item$P2_NUMBER)
 header2 <- if (params$p2sub != "") {paste("SubID:", params$p2sub)}
 
@@ -90,9 +83,9 @@ header2 <- if (params$p2sub != "") {paste("SubID:", params$p2sub)}
 ```
 
 ```{r echo=FALSE,  eval = params$p2sub != ""}
-Risk_List_Proj<-filter(Risk_List_Proj,
+Risk_List_Proj<-dplyr::filter(Risk_List_Proj,
                   Risk_List_Proj$P2_SUB_IDENTIFIER == params$p2sub)
-proj_risks <- filter(proj_risks,
+proj_risks <- dplyr::filter(proj_risks,
                      proj_risks$P2_SUB_IDENTIFIER == params$p2sub)
 
 header2 <- if (params$p2sub != "") {paste("SubID:", params$p2sub)}
@@ -100,7 +93,7 @@ header2 <- if (params$p2sub != "") {paste("SubID:", params$p2sub)}
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, include=FALSE}
 proj_risks <- proj_risks %>%
-  mutate(
+  dplyr::mutate(
     'costcolor' = case_when(
       COST_RANK_DESC == "No Risk" ~ "#FFFFFF",
       COST_RANK_DESC == "Opportunity" ~ 'rgb(31,120,180)',
@@ -109,7 +102,7 @@ proj_risks <- proj_risks %>%
       COST_RANK_DESC == 'High' ~ 'rgb(227,26,28)'
     )
   ) |>
-  mutate(
+  dplyr::mutate(
     'schedulecolor' = case_when(
       SCHEDULE_RANK_DESC == "No Risk" ~ "#FFFFFF",
       SCHEDULE_RANK_DESC == "Opportunity" ~ 'rgb(31,120,180)',
@@ -118,7 +111,7 @@ proj_risks <- proj_risks %>%
       SCHEDULE_RANK_DESC == 'High' ~ 'rgb(227,26,28)'
     )
   ) |>
-  mutate(
+  dplyr::mutate(
     'performancecolor' = case_when(
       PERFORMANCE_RANK_DESC == "No Risk" ~ '#FFFFFF',
       PERFORMANCE_RANK_DESC == "Opportunity" ~ 'rgb(31,120,180)',
@@ -152,12 +145,12 @@ erarr::pie_plots(cost_pie, schedule_pie, perform_pie)
 
 ```{r proj risk log, echo = FALSE, warning=FALSE}
 risk_log_tables <- proj_risks |>
-  select(RISK_IDENTIFIER, RISK_NAME, COST_RISK_RANKING, SCHEDULE_RISK_RANKING, 
+  dplyr::select(RISK_IDENTIFIER, RISK_NAME, COST_RISK_RANKING, SCHEDULE_RISK_RANKING, 
          PERFORMANCEIMPACT_RISK_RANKING, costcolor, schedulecolor, 
          performancecolor)
 
 risk_log_tables |>
-  mutate(
+  dplyr::mutate(
     COST_RISK_RANKING = cell_spec(COST_RISK_RANKING, 
                                   color = costcolor, 
                                   align = 'c', 
@@ -171,11 +164,11 @@ risk_log_tables |>
                                                align = 'c', 
                                                background = performancecolor) 
     ) |>
-  select(RISK_IDENTIFIER, RISK_NAME,COST_RISK_RANKING, SCHEDULE_RISK_RANKING, 
+  dplyr::select(RISK_IDENTIFIER, RISK_NAME,COST_RISK_RANKING, SCHEDULE_RISK_RANKING, 
          PERFORMANCEIMPACT_RISK_RANKING) |>
-  separate(RISK_IDENTIFIER, c("code", "rnkorder"), sep = "-", remove = FALSE) |>
-  arrange(code, as.numeric(rnkorder)) |>
-  select(RISK_IDENTIFIER, RISK_NAME, COST_RISK_RANKING, SCHEDULE_RISK_RANKING, 
+  tidyr::separate(RISK_IDENTIFIER, c("code", "rnkorder"), sep = "-", remove = FALSE) |>
+  dplyr::arrange(code, as.numeric(rnkorder)) |>
+  dplyr::select(RISK_IDENTIFIER, RISK_NAME, COST_RISK_RANKING, SCHEDULE_RISK_RANKING, 
          PERFORMANCEIMPACT_RISK_RANKING) |>
   kbl(format = "html", 
       escape = F, 

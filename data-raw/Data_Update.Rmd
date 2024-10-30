@@ -1,6 +1,6 @@
 ---
-  title: "Update Risk Analysis Report Test Data
-date: "`r Sys.Date()`"
+  title: "Update Risk Analysis Report Test Data"
+  date: `r Sys.Date()`
 ---
 
 # Introduction
@@ -82,6 +82,7 @@ readr::write_csv(erisk_dist,"C:/workspace/erarr/inst/app/data/erisk_dist.csv")
 readr::write_csv(erisk_msc,"C:/workspace/erarr/inst/app/data/erisk_msc.csv")
 readr::write_csv(erisk_modeled,"C:/workspace/erarr/inst/app/data/erisk_modeled.csv")
 
+erisk_item_db <- risk_item_db
 usethis::use_data(erisk_project,
                   erisk_phase_milestone,
                   erisk_item,

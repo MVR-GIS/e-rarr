@@ -11,15 +11,8 @@
 #' @param p2sub    numeric; P2 sub identifier
 #' 
 #' @importFrom readr read_csv
-#' @importFrom dplyr left_join select filter mutate arrange slice_head 
-#'                   case_when
+#' @importFrom dplyr select filter arrange mutate
 #' @importFrom tidyr separate
-#' @importFrom formattable currency
 #' @importFrom kableExtra kbl kable_styling
-#' @import rlang
-#' @import ggplot2
-#' @import ggrepel
-#' @import english
-#' @import webshot
 #' 
 NULL
