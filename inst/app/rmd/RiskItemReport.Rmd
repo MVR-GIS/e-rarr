@@ -160,7 +160,7 @@ cat("####",header)
 ##### Risk Summary: `r risk_item$RISK_NAME`
 
 <center>
-```{r milestoneplot, fig.height=1.40, fig.width=8, echo=FALSE, message=FALSE, warning = FALSE}
+```{r milestoneplot, fig.height=1.40, fig.width=7.5, echo=FALSE, message=FALSE, warning = FALSE}
 mileplot <- erarr::milestoneplot(riskitem = risk_item, 
                                  milestonedf = milestone_df)
 knitr::include_graphics("mileplot.png")
