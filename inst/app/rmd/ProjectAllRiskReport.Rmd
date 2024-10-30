@@ -92,7 +92,7 @@ header2 <- if (params$p2sub != "") {paste("SubID:", params$p2sub)}
 ```
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, include=FALSE}
-proj_risks <- proj_risks %>%
+proj_risks <- proj_risks |> 
   dplyr::mutate(
     'costcolor' = case_when(
       COST_RANK_DESC == "No Risk" ~ "#FFFFFF",

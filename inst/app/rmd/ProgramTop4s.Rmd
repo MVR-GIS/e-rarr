@@ -71,26 +71,26 @@ proj_risks <- program_risks
 
 # Filter based on parameters
 if (params$MSCID != "") {
-  proj_risks <- proj_risks %>% filter(MSC == params$MSCID)
+  proj_risks <- proj_risks |> filter(MSC == params$MSCID)
 }
 
 if (params$districtID != "") {
-  proj_risks <- proj_risks %>% filter(USACE_ORGANIZATION == params$districtID)
+  proj_risks <- proj_risks |>  filter(USACE_ORGANIZATION == params$districtID)
 }
 
 if (params$progID != "") {
-  proj_risks <- proj_risks %>% filter(PROGRAMTYPENAME == params$progID)
+  proj_risks <- proj_risks |>  filter(PROGRAMTYPENAME == params$progID)
 }
 
 if (params$missionID != "") {
-  proj_risks <- proj_risks %>% filter(PRIMARYMISSION == params$missionID)
+  proj_risks <- proj_risks |>  filter(PRIMARYMISSION == params$missionID)
 }
 if (params$phaseID != "") {
-  proj_risks <- proj_risks %>% filter(LIFECYCLEPHASENAME == params$phaseID)
+  proj_risks <- proj_risks |>  filter(LIFECYCLEPHASENAME == params$phaseID)
 }
 
 if (params$disciplineID != "") {
-  proj_risks <- proj_risks %>% filter(DISCIPLINE == params$disciplineID)
+  proj_risks <- proj_risks |>  filter(DISCIPLINE == params$disciplineID)
 }
 
 # Create a header
@@ -131,8 +131,8 @@ cat("###",header)
 ```
 
 ```{r aggregate by project,warning=FALSE, message=FALSE,echo=FALSE }
-wrangled_table <- proj_risks %>%    
-    group_by(PROJECT_NAME) %>%
+wrangled_table <- proj_risks |>    
+    group_by(PROJECT_NAME) |> 
     summarise(Count = n(),Mean_Cost = sum(COST_MEAN, na.rm = TRUE),Mean_Schedule = sum(SCHEDULE_MEAN, na.rm = TRUE), .groups = 'drop') 
   
 ```

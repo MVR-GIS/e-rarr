@@ -25,9 +25,9 @@ proj_tableprep <- function(riskdf, colname) {
   }
   
   # Data wrangling
-  wrangled_table <- riskdf %>%    
+  wrangled_table <- riskdf |>  
     group_by(PROJECT_NAME, PROJECT_ID,P2_NUMBER, DISTRICT_CODE,
-             PRIMARYMISSION, PROGRAMTYPENAME) %>%
+             PRIMARYMISSION, PROGRAMTYPENAME) |>
     summarise(Count = n(), !!sym(paste0('Potential_Mean_', 
                                         colname, '_Impact')) := sum(!!sym(sum_name)), .groups = 'drop')
   
