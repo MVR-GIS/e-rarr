@@ -65,12 +65,12 @@ Risk_List_Proj <- RiskDeets
 # Apply filters based on available parameters
 if (params$projID != "") {
   proj_risks <- dplyr::filter(Risk_List_Proj, PROJECT_NAME == params$projID)
-  header <- paste("Project:", proj_risks$PROJECT_NAME[1])
+  header <- paste("Project:", params$projID)
 }
 
 if (params$p2ID != "") {
   proj_risks<- dplyr::filter(Risk_List_Proj, P2_NUMBER == params$p2ID)
-  header <- paste("P2 Number:", proj_risks$P2_NUMBER[1])
+  header <- paste("P2 Number:", params$p2ID)
 }
 
 if (params$p2sub != "") {
