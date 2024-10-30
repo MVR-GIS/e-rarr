@@ -1,7 +1,7 @@
 Package: erarr
 Title: A package to support the Enterprise Risk Analysis Reporting
     Application
-Version: 0.1.2
+Version: 0.1.3
 Authors@R: c(
     person("Barrie", "Chileen Martinez", , "barrie.chileen@gmail.com", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0002-6960-8167")),
@@ -39,8 +39,7 @@ Imports:
     shinycssloaders,
     shinyjs,
     stringr,
-    tidyr,
-    webshot
+    tidyr
 Suggests: 
     htmlwidgets,
     spelling,
