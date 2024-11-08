@@ -840,8 +840,7 @@ app_server <- function(input, output, session) {
     },
     content = function(file) {
       rmarkdown::render(
-        system.file("app", "rmd", "ProjectTop4s.Rmd", package = "erarr"), 
-        paste0("./inst/app/rmd/ProjectTop4s.Rmd"),
+        "./inst/app/rmd/ProjectTop4s.Rmd",
         output_file = file,
         params = list(projID = input$projectInput, 
                       p2ID   = input$P2Input,
@@ -859,7 +858,7 @@ app_server <- function(input, output, session) {
     },
     content = function(file) {
       rmarkdown::render(
-        "./inst/app/rmd/ProjectTop4s.Rmd",
+        "./inst/app/rmd/RiskItemReport.Rmd",
         output_file = file,
         params = list(projID = input$projectInput, 
                       p2ID   = input$P2Input,
